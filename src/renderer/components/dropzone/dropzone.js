@@ -1,11 +1,13 @@
 import React, { useContext } from 'react';
 
-import WebSocketContext from '../../websocket';
+import { WebSocketContext } from '../../websocket';
 
 import './dropzone.scss';
 
 export function Dropzone() {
     const ws = useContext(WebSocketContext)
+
+    console.log(ws)
 
     return (
         <div className='dropzone'>

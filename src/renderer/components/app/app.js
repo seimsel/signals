@@ -4,7 +4,7 @@ import './app.scss';
 import { TabbedView } from '../tabbedview';
 import { MeasurementView } from '../measurementview';
 
-import WebSocketContext from '../../websocket';
+import { WebSocketContext } from '../../websocket';
 
 function App() {
     const [tabs, setTabs] = useState([]);
