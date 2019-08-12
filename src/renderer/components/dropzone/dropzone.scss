@@ -1,0 +1,14 @@
+.dropzone {
+    display: inline-grid;
+    grid-template-areas: "main";
+
+    input {
+        grid-area: main;
+        opacity: 0;
+    }
+
+    div {
+        grid-area: main;
+        border: 1px dashed black;
+    }
+}
