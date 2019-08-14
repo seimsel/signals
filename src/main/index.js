@@ -1,5 +1,4 @@
-import { app, BrowserWindow } from 'electron';
-import { startBackend } from './backend';
+const { app, BrowserWindow } = require('electron');
 
 if (module.hot) {
     module.hot.accept();
@@ -11,6 +10,5 @@ app.on('ready', () => {
             nodeIntegration: true
         }
     });
-    startBackend();
-    window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
+    window.loadURL(`http://localhost:8080`);
 });

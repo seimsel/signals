@@ -2,15 +2,27 @@
   "name": "pope",
   "version": "0.0.1",
   "scripts": {
-    "start": "electron-webpack dev"
+    "start": "concurrently --kill-others \"yarn run frontend:dev\" \"yarn run backend:dev\" \"yarn run electron:dev\"",
+    "electron:dev": "electron src/main/index.js",
+    "frontend:dev": "webpack-dev-server --config webpack.renderer.config.js",
+    "backend:dev": "nodemon src/backend/main.py"
   },
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "concurrently": "^4.1.1",
+    "css-loader": "^3.2.0",
     "electron": "^6.0.1",
-    "electron-webpack": "^2.7.4",
+    "html-webpack-plugin": "^3.2.0",
     "node-sass": "^4.12.0",
+    "nodemon": "^1.19.1",
     "sass-loader": "^7.2.0",
-    "webpack": "^4.39.1"
+    "style-loader": "^1.0.0",
+    "webpack": "^4.39.1",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
     "react": "^16.9.0",
