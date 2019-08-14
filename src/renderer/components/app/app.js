@@ -1,10 +1,10 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './app.scss';
 
 import { TabbedView } from '../tabbedview';
 import { MeasurementView } from '../measurementview';
 
-import { WebSocketContext } from '../../websocket';
+import { WebSocketProvider } from '../../websocket';
 
 function App() {
     const [tabs, setTabs] = useState([]);
@@ -16,7 +16,7 @@ function App() {
     }, [tabs]);
 
     return (
-        <WebSocketContext.Provider>
+        <WebSocketProvider>
             <TabbedView>
                 {
                     tabs.map(tab => (
@@ -24,7 +24,7 @@ function App() {
                     ))
                 }
             </TabbedView>
-        </WebSocketContext.Provider>
+        </WebSocketProvider>
 
     );
 }
