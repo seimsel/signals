@@ -4,8 +4,6 @@ import './app.scss';
 import { TabbedView } from '../tabbedview';
 import { MeasurementView } from '../measurementview';
 
-import { WebSocketProvider } from '../../websocket';
-
 function App() {
     const [tabs, setTabs] = useState([]);
 
@@ -16,16 +14,13 @@ function App() {
     }, [tabs]);
 
     return (
-        <WebSocketProvider>
-            <TabbedView>
-                {
-                    tabs.map(tab => (
-                        <MeasurementView key={tab.path} path={tab.path} name={tab.name} />
-                    ))
-                }
-            </TabbedView>
-        </WebSocketProvider>
-
+        <TabbedView>
+            {
+                tabs.map(tab => (
+                    <MeasurementView key={tab.path} path={tab.path} name={tab.name} />
+                ))
+            }
+        </TabbedView>
     );
 }
 

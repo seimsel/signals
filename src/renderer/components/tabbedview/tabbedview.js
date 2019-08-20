@@ -1,9 +1,11 @@
 import React, { Children } from 'react';
 import { HashRouter as Router, Route, Link, Redirect } from 'react-router-dom';
 
+import './tabbedview.scss';
+
 export function TabbedView({ children }) {
     return (
-        <div>
+        <div className='tabbedview'>
             <Router>
                 <ul>
                     {
