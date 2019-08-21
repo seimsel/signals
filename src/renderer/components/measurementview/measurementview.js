@@ -23,6 +23,19 @@ export function MeasurementView({path}) {
                 type: 'open_file',
                 value: path
             }));
+
+            window.onresize = () => {
+                canvasRef.current.width = canvasRef.current.offsetWidth;
+                canvasRef.current.height = canvasRef.current.offsetHeight;
+                websocket.send(JSON.stringify({
+                    type: 'resize',
+                    width: canvasRef.current.width,
+                    height: canvasRef.current.height,
+                    figure_id: figureId
+                }));
+            };
+    
+            window.onresize();
         }
 
         websocket.onmessage = ({data}) => {
