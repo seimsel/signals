@@ -2,21 +2,24 @@ import React, { useState, useEffect } from 'react';
 import './app.scss';
 
 import { TabbedView } from '../tabbedview';
+import { Dropzone } from '../dropzone';
 import { MeasurementView } from '../measurementview';
 
 function App() {
     const [tabs, setTabs] = useState([]);
 
-    useEffect(() => {
-        if (tabs.length === 0) {
-            setTabs([{ path: '/new', name: 'New' }])
-        }
-    }, [tabs]);
-
     return (
         <TabbedView>
             {
-                tabs.map(tab => (
+                tabs.length === 0 ? <Dropzone key='/new' path='/new' name='New' onChange={
+                    (event) => {
+                        const newTabs = Array.from(event.target.files).map((file) => ({
+                            name: file.name,
+                            path: file.path
+                        }));
+                        setTabs([...tabs, ...newTabs]);
+                    }
+                }/> : tabs.map(tab => (
                     <MeasurementView key={tab.path} path={tab.path} name={tab.name} />
                 ))
             }
