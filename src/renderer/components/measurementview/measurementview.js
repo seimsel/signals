@@ -3,13 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import './measurementview.scss';
 
 export function MeasurementView({path}) {
+    const canvasRef = useRef();
     const [websocket, setWebsocket] = useState();
-    const [figure, setFigure] = useState();
-    const figureElement = useRef();
+    const [image, setImage] = useState();
+    const [figureId, setFigureId] = useState();
 
     useEffect(() => {
-        const websocket_type = mpl.get_websocket_type();
-        setWebsocket(new websocket_type('ws://localhost:8888'));
+        setWebsocket(new WebSocket('ws://localhost:8888'));
+        setImage(new Image());
     }, []);
 
     useEffect(() => {
@@ -21,18 +22,47 @@ export function MeasurementView({path}) {
             websocket.send(JSON.stringify({
                 type: 'open_file',
                 value: path
-            }))
+            }));
         }
 
         websocket.onmessage = ({data}) => {
-            const message = JSON.parse(data)
-            if (message['type'] === 'open_file_success' && message['value'] === path) {
-                setFigure(new mpl.figure(parseInt(message['figure_id']), websocket, () => {}, figureElement.current))
+            if (data instanceof Blob) {
+                if (image.src) {
+                    window.URL.revokeObjectURL(image.src);
+                }
+
+                image.src = window.URL.createObjectURL(data);
+                image.onload = () => {
+                    canvasRef.current.getContext('2d').drawImage(image, 0, 0);
+                }
+                websocket.send(JSON.stringify({
+                    type: 'ack',
+                    figure_id: figureId
+                }));
+            }
+            else {
+                const message = JSON.parse(data)
+
+                if (message['type'] === 'open_file_success' && message['value'] === path) {
+                    setFigureId(message['figure_id']);
+                }
+                else if (message['type'] === 'refresh') {
+                    websocket.send(JSON.stringify({
+                        type: 'refresh',
+                        figure_id: figureId
+                    }));
+                }
+                else if (message['type'] === 'draw') {
+                    websocket.send(JSON.stringify({
+                        type: 'draw',
+                        figure_id: figureId
+                    }));
+                }
             }
         }
     }, [websocket]);
 
     return (
-        <div className='figure' ref={figureElement}></div>
+        <canvas width={640} height={480} ref={canvasRef} className='figure'></canvas>
     );
 }

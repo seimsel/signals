@@ -8,47 +8,27 @@ from matplotlib.backends.backend_webagg_core import (
     new_figure_manager_given_figure
 )
 
+from uuid import uuid4
 import json
 
-class Measurement(object):
-    def __init__(self, path):
-        self.path = path
-        self.figure = Figure()
-        self.axis = self.figure.add_subplot(111)
-        self.axis.plot([1, 2, 3, 4, 5], [1, 2, 3, 2, 1])
-        self.figure_manager = new_figure_manager_given_figure(id(self.figure), self.figure)
-
 class MainHandler(WebSocketHandler):
-    def initialize(self):
-        self.measurements = []
-        self.supports_binary = True
-
-    def open(self):
-        pass
-
     def on_message(self, message):
         message = json.loads(message)
 
         if message['type'] == 'open_file':
-            measurement = Measurement(message['value'])
-            self.measurements.append(measurement)
+            self.figure = Figure()
+            self.figure_id = str(uuid4())
+            axis = self.figure.add_subplot(111)
+            axis.plot([1,2,3,2,1])
+            self.figure_manager = new_figure_manager_given_figure(self.figure_id, self.figure)
             self.send_json({
                 'type': 'open_file_success',
-                'figure_id': measurement.figure_manager.num,
+                'figure_id': self.figure_id,
                 'value': message['value']
             })
-            measurement.figure_manager.add_web_socket(self)
-            
-        elif message['type'] == 'supports_binary':
-            self.supports_binary = message['value']
-
+            self.figure_manager.add_web_socket(self)
         else:
-            for measurement in self.measurements:
-                if measurement.figure_manager.num == message['figure_id']:
-                    measurement.figure_manager.handle_json(message)
-
-    def on_close(self):
-        pass
+            self.figure_manager.handle_json(message)
 
     def check_origin(self, origin):
         return True
@@ -57,12 +37,7 @@ class MainHandler(WebSocketHandler):
         self.write_message(json.dumps(content))
 
     def send_binary(self, blob):
-        if self.supports_binary:
-            self.write_message(blob, binary=True)
-        else:
-            data_uri = "data:image/png;base64,{0}".format(
-                blob.encode('base64').replace('\n', ''))
-            self.write_message(data_uri)
+        self.write_message(blob, binary=True)
 
 class MatplotlibHandler(RequestHandler):
     def get(self):

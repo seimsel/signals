@@ -7,7 +7,7 @@ export function TabbedView({ children }) {
     return (
         <div className='tabbedview'>
             <Router>
-                <ul>
+                <ul className='tabs'>
                     {
                         Children.map(children, ({ props: { path, name } }) => (
                             <li><Link to={path}>{name}</Link></li>
