@@ -39,7 +39,12 @@ export function MeasurementView({path}) {
                 }, 250);
             };
     
-            window.onresize();
+            websocket.send(JSON.stringify({
+                type: 'resize',
+                width: canvasRef.current.offsetWidth,
+                height: canvasRef.current.offsetHeight,
+                figure_id: figureId
+            }));
         }
 
         websocket.onmessage = ({data}) => {
@@ -64,6 +69,12 @@ export function MeasurementView({path}) {
                     setFigureId(message['figure_id']);
                 }
                 else if (message['type'] === 'refresh') {
+                    const [width, height] = message['size'];
+
+                    if (width !== canvasRef.current.offsetWidth || height !== canvasRef.current.offsetHeight) {
+                        return;
+                    }
+
                     websocket.send(JSON.stringify({
                         type: 'refresh',
                         figure_id: figureId
