@@ -2,11 +2,14 @@ from tornado.web import Application, RequestHandler, StaticFileHandler
 from tornado.ioloop import IOLoop
 from tornado.websocket import WebSocketHandler
 
+from matplotlib.pyplot import style
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_webagg_core import (
     FigureManagerWebAgg,
     new_figure_manager_given_figure
 )
+
+from pathlib import Path
 
 from uuid import uuid4
 import json
@@ -20,6 +23,9 @@ class MainHandler(WebSocketHandler):
             self.figure_id = str(uuid4())
             axis = self.figure.add_subplot(111)
             axis.plot([1,2,3,2,1])
+            axis.plot([2,2,2,2,2])
+            axis.plot([3,2,1,2,3])
+            axis.plot([1,2,3,4,5])
             self.figure_manager = new_figure_manager_given_figure(self.figure_id, self.figure)
             self.send_json({
                 'type': 'open_file_success',
@@ -53,6 +59,8 @@ if __name__ == '__main__':
             StaticFileHandler,
             {'path': FigureManagerWebAgg.get_static_file_path()})
     ])
+
+    style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
     app.listen(8888)
     IOLoop.current().start()

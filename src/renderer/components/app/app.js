@@ -8,6 +8,13 @@ import { MeasurementView } from '../measurementview';
 function App() {
     const [tabs, setTabs] = useState([]);
 
+    useEffect(() => {
+        setTabs([
+            { name: 'Hello', path: '/hello' },
+            { name: 'World', path: '/world' }
+        ])
+    }, [])
+
     return (
         <TabbedView>
             {
