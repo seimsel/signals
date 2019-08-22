@@ -4,6 +4,7 @@ import './measurementview.scss';
 
 export function MeasurementView({path}) {
     const canvasRef = useRef();
+    const resizeTimerRef = useRef();
     const [websocket, setWebsocket] = useState();
     const [image, setImage] = useState();
     const [figureId, setFigureId] = useState();
@@ -25,14 +26,17 @@ export function MeasurementView({path}) {
             }));
 
             window.onresize = () => {
-                canvasRef.current.width = canvasRef.current.offsetWidth;
-                canvasRef.current.height = canvasRef.current.offsetHeight;
-                websocket.send(JSON.stringify({
-                    type: 'resize',
-                    width: canvasRef.current.width,
-                    height: canvasRef.current.height,
-                    figure_id: figureId
-                }));
+                if (resizeTimerRef) {
+                    clearTimeout(resizeTimerRef.current);
+                }
+                resizeTimerRef.current = setTimeout(() => {
+                    websocket.send(JSON.stringify({
+                        type: 'resize',
+                        width: canvasRef.current.offsetWidth,
+                        height: canvasRef.current.offsetHeight,
+                        figure_id: figureId
+                    }));
+                }, 250);
             };
     
             window.onresize();
@@ -71,11 +75,15 @@ export function MeasurementView({path}) {
                         figure_id: figureId
                     }));
                 }
+                else if (message['type'] === 'resize') {
+                    canvasRef.current.width = canvasRef.current.offsetWidth;
+                    canvasRef.current.height = canvasRef.current.offsetHeight;
+                }
             }
         }
     }, [websocket]);
 
     return (
-        <canvas width={640} height={480} ref={canvasRef} className='figure'></canvas>
+        <canvas ref={canvasRef} className='figure'></canvas>
     );
 }
