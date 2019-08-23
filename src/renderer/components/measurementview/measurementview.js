@@ -5,22 +5,25 @@ import './measurementview.scss';
 export function MeasurementView({path}) {
     const canvasRef = useRef();
     const resizeTimerRef = useRef();
-    const [websocket, setWebsocket] = useState();
-    const [image, setImage] = useState();
-    const [figureId, setFigureId] = useState();
+    const websocketRef = useRef();
+    const imageRef = useRef();
+    const figureIdRef = useRef();
 
     useEffect(() => {
-        setWebsocket(new WebSocket('ws://localhost:8888'));
-        setImage(new Image());
-    }, []);
-
-    useEffect(() => {
-        if (!websocket) {
+        if (!canvasRef.current) {
             return;
         }
 
-        websocket.onopen = () => {
-            websocket.send(JSON.stringify({
+        if (!imageRef.current) {
+            imageRef.current = new Image();
+        }
+
+        if (!websocketRef.current) {
+            websocketRef.current = new WebSocket('ws://localhost:8888');
+        }
+
+        websocketRef.current.onopen = () => {
+            websocketRef.current.send(JSON.stringify({
                 type: 'open_file',
                 value: path
             }));
@@ -30,60 +33,54 @@ export function MeasurementView({path}) {
                     clearTimeout(resizeTimerRef.current);
                 }
                 resizeTimerRef.current = setTimeout(() => {
-                    websocket.send(JSON.stringify({
+                    websocketRef.current.send(JSON.stringify({
                         type: 'resize',
                         width: canvasRef.current.offsetWidth,
                         height: canvasRef.current.offsetHeight,
-                        figure_id: figureId
+                        figure_id: figureIdRef.current
                     }));
                 }, 250);
             };
     
-            websocket.send(JSON.stringify({
+            websocketRef.current.send(JSON.stringify({
                 type: 'resize',
                 width: canvasRef.current.offsetWidth,
                 height: canvasRef.current.offsetHeight,
-                figure_id: figureId
+                figure_id: figureIdRef.current
             }));
         }
 
-        websocket.onmessage = ({data}) => {
+        websocketRef.current.onmessage = ({data}) => {
             if (data instanceof Blob) {
-                if (image.src) {
-                    window.URL.revokeObjectURL(image.src);
+                if (imageRef.current.src) {
+                    window.URL.revokeObjectURL(imageRef.current.src);
                 }
 
-                image.src = window.URL.createObjectURL(data);
-                image.onload = () => {
-                    canvasRef.current.getContext('2d').drawImage(image, 0, 0);
+                imageRef.current.src = window.URL.createObjectURL(data);
+                imageRef.current.onload = () => {
+                    canvasRef.current.getContext('2d').drawImage(imageRef.current, 0, 0);
                 }
-                websocket.send(JSON.stringify({
+                websocketRef.current.send(JSON.stringify({
                     type: 'ack',
-                    figure_id: figureId
+                    figure_id: figureIdRef.current
                 }));
             }
             else {
                 const message = JSON.parse(data)
 
                 if (message['type'] === 'open_file_success' && message['value'] === path) {
-                    setFigureId(message['figure_id']);
+                    figureIdRef.current = message['figure_id'];
                 }
                 else if (message['type'] === 'refresh') {
-                    const [width, height] = message['size'];
-
-                    if (width !== canvasRef.current.offsetWidth || height !== canvasRef.current.offsetHeight) {
-                        return;
-                    }
-
-                    websocket.send(JSON.stringify({
+                    websocketRef.current.send(JSON.stringify({
                         type: 'refresh',
-                        figure_id: figureId
+                        figure_id: figureIdRef.current
                     }));
                 }
                 else if (message['type'] === 'draw') {
-                    websocket.send(JSON.stringify({
+                    websocketRef.current.send(JSON.stringify({
                         type: 'draw',
-                        figure_id: figureId
+                        figure_id: figureIdRef.current
                     }));
                 }
                 else if (message['type'] === 'resize') {
@@ -92,7 +89,7 @@ export function MeasurementView({path}) {
                 }
             }
         }
-    }, [websocket]);
+    }, []);
 
     return (
         <canvas ref={canvasRef} className='figure'></canvas>

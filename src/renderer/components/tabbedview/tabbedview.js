@@ -5,13 +5,18 @@ import { HashRouter as Router, Route, Link, Redirect } from 'react-router-dom';
 import './tabbedview.scss';
 
 const TabList = withRouter(({ children, location }) => (
-    <ul className='tabs'>
-        {
-            Children.map(children, ({ props: { path, name, active }}) => (
-                <Link className={`tab ${location.pathname === path ? 'active' : ''}`} to={path}><li>{name}</li></Link>
-            ))
-        }
-    </ul>
+    <div className='handle'>
+        <ul className='tabs'>
+            {
+                Children.map(children, ({ props: { path, name, active }}) => (
+                    <Link className={`tab ${location.pathname === path ? 'active' : ''}`} to={path}><li>{name}</li></Link>
+                ))
+            }
+        </ul>
+        <button className='minimize'></button>
+        <button className='maximize'></button>
+        <button className='close'></button>
+    </div>
 ));
 
 export function TabbedView({ children }) {

@@ -6,6 +6,7 @@ if (module.hot) {
 
 app.on('ready', () => {
     const window = new BrowserWindow({
+        frame: false,
         webPreferences: {
             nodeIntegration: true
         }
