@@ -13,9 +13,11 @@ const TabList = withRouter(({ children, location }) => (
                 ))
             }
         </ul>
-        <button className='minimize'></button>
-        <button className='maximize'></button>
-        <button className='close'></button>
+        <button className='minimize' onClick={() => {window.minimize()}}></button>
+        <button className='maximize' onClick={() => {
+            window.isMaximized() ? window.restore() : window.maximize();
+        }}></button>
+        <button className='close' onClick={() => {window.close()}}></button>
     </div>
 ));
 
