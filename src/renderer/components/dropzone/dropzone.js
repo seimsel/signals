@@ -5,9 +5,9 @@ import './dropzone.scss';
 export function Dropzone({onChange}) {
     return (
         <div className='dropzone'>
-            <input type='file' multiple onChange={onChange} />
+            <input type='file' onChange={onChange} />
             <div>
-                Drop files here or click to upload.
+                Drop files here or click to import.
             </div>
         </div>
     );

@@ -5,7 +5,7 @@
     "start": "concurrently --kill-others \"npm run frontend:dev\" \"npm run backend:dev\" \"npm run electron:dev\"",
     "electron:dev": "electron src/main/index.js",
     "frontend:dev": "webpack-dev-server --config webpack.renderer.config.js",
-    "backend:dev": "nodemon src/backend/main.py"
+    "backend:dev": "nodemon --exec python3 src/backend/main.py"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -27,6 +27,7 @@
   "dependencies": {
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-router-dom": "^5.0.1"
+    "react-router-dom": "^5.0.1",
+    "uuid": "^3.3.3"
   }
 }
