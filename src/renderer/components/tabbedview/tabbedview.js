@@ -1,6 +1,6 @@
 import React, { Children } from 'react';
 import { withRouter } from "react-router";
-import { HashRouter as Router, Route, Link, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
 import './tabbedview.scss';
 
@@ -8,7 +8,7 @@ const TabList = withRouter(({ children, location, onNew }) => (
     <div className='handle'>
         <ul className='tabs'>
             {
-                Children.map(children, ({ props: { path, name, active }}) => (
+                Children.map(children, ({ props: { path, name }}) => (
                     <Link className={`tab ${location.pathname === path ? 'active' : ''}`} to={path}><li>{name}</li></Link>
                 ))
             }

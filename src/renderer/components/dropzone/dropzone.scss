@@ -1,12 +1,11 @@
 .dropzone-page {
     margin: 5em;
+    display: grid;
 }
 
 .dropzone {
     display: grid;
     grid-template-areas: "main";
-    width: 100%;
-    height: 100%;
 
     input {
         grid-area: main;

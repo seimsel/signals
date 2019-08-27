@@ -1,5 +1,4 @@
-import React, { useEffect, useRef } from 'react';
-import { Dropzone } from '../dropzone';
+import React, { useLayoutEffect, useRef } from 'react';
 
 import './measurementview.scss';
 
@@ -10,11 +9,7 @@ export function MeasurementView({path}) {
     const imageRef = useRef();
     const figureIdRef = useRef();
 
-    useEffect(() => {
-        if (!canvasRef.current) {
-            return;
-        }
-
+    useLayoutEffect(() => {
         if (!imageRef.current) {
             imageRef.current = new Image();
         }

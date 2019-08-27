@@ -21,24 +21,23 @@ function App() {
         <TabbedView onNew={() => {
             const path = `/new://${v4()}`;
             setTabs([...tabs, {path, name: 'New'}])
-            window.location.href = `#${path}`;
+            history.push(`#${path}`);
         }}>
             {
                 tabs.map(tab => {
                     if (tab.path.split('/')[1] === 'new:') {
                         return <div key={tab.path} path={tab.path} name={tab.name} className='dropzone-page'><Dropzone onChange={({target}) => {
                             const file = target.files[0];
-                            const path = `/file://${file.path}`;
+                            const path = `/file://${file.path}`.replace(/\\/g, "/");
 
                             setTabs([...tabs.filter(t => t.path !== tab.path), {
                                 name: file.name,
                                 path
                             }]);
 
-                            window.location.href = `#${path}`;
+                            history.push(`#${path}`);
                         }} /></div>;
                     } else {
-                        console.log(tab.path)
                         return <MeasurementView key={tab.path} path={tab.path} name={tab.name} />;
                     }
                 })
