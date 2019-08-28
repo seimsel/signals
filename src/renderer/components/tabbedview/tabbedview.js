@@ -1,46 +1,37 @@
-import React, { Children } from 'react';
+import React, { useState, createContext } from 'react';
 import { withRouter } from "react-router";
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import { NavTab } from 'react-router-tabs';
 
 import './tabbedview.scss';
 
-const TabList = withRouter(({ children, location, onNew }) => (
-    <div className='handle'>
-        <ul className='tabs'>
-            {
-                Children.map(children, ({ props: { path, name }}) => (
-                    <Link className={`tab ${location.pathname === path ? 'active' : ''}`} to={path}><li>{name}</li></Link>
-                ))
-            }
-            <button className={'new'} onClick={onNew}></button>
-        </ul>
-        <button className='minimize' onClick={() => {window.minimize()}}></button>
-        <button className='maximize' onClick={() => {
-            window.isMaximized() ? window.restore() : window.maximize();
-        }}></button>
-        <button className='close' onClick={() => {window.close()}}></button>
-    </div>
-));
+export const TabsContext = createContext();
 
-export function TabbedView({ children, onNew }) {
-    
+export function TabbedView({ mainComponent }) {
+    const [tabs, setTabs] = useState([]);
+
     return (
         <div className='tabbedview'>
-            <Router>
-                <TabList onNew={onNew}>
-                    { children }
-                </TabList>
-                {
-                    Children.map(children, child => {
-                        const { props: { path } } = child;
+            <TabsContext.Provider value={[tabs, setTabs]}>
+                <Router>
+                    <div className='header'>
+                        <ul className='tabs'>
+                        {
+                            tabs.map(tab => <NavTab className='tab' key={tab.path} to={tab.path}><li>{tab.name}</li></NavTab>)
+                        }
+                        </ul>
+                    </div>
 
-                        return (
-                            <Route path={path} component={() => (child)} />
-                        )
-                    })
-                }
-            </Router>
+                    <div className='content'>
+                    <Switch>
+                        {
+                            tabs.map(tab => <Route key={tab.path} path={tab.path} component={withRouter(tab.component)} />)
+                        }
+                        <Route path='/' component={withRouter(mainComponent)} />
+                    </Switch>
+                    </div>
+                </Router>
+            </TabsContext.Provider>
         </div>
-
     );
 }

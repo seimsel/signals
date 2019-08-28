@@ -3,114 +3,11 @@
     display: grid;
     grid-template-rows: min-content auto;
 
-    .handle {
+    .header {
         -webkit-app-region: drag;
-        display: grid;
         background-color: #333333;
-        grid-template-areas: "tabs minimize maximize close";
-        grid-template-columns: auto min-content min-content min-content;
-
-        .minimize {
-            grid-area: minimize;
-            align-self: start;
-            justify-self: end;
-            -webkit-app-region: no-drag;
-            width: 40px;
-            height: 25px;
-            background-color: transparent;
-            border: none;
-            margin: 0;
-            padding: 0;
-            position: relative;
-
-            &:hover {
-                background-color: #515151;
-            }
-
-            &:before {
-                content: ' ';
-                position: absolute;
-                background-color: #aaaaaa;
-                top: 12px;
-                left: 12px;
-                height: 1px;
-                width: 11px;
-                box-sizing: border-box;
-            }
-        }
-
-        .maximize {
-            grid-area: maximize;
-            align-self: start;
-            justify-self: end;
-            -webkit-app-region: no-drag;
-            width: 40px;
-            height: 25px;
-            background-color: transparent;
-            border: none;
-            margin: 0;
-            padding: 0;
-            position: relative;
-
-            &:hover {
-                background-color: #515151;
-            }
-
-            &:before {
-                content: ' ';
-                position: absolute;
-                border: 1px solid #aaaaaa;
-                top: 7px;
-                left: 14.5px;
-                height: 11px;
-                width: 11px;
-                box-sizing: border-box;
-            }
-        }
-
-        .close {
-            grid-area: close;
-            align-self: start;
-            justify-self: end;
-            -webkit-app-region: no-drag;
-            width: 40px;
-            height: 25px;
-            background-color: transparent;
-            border: none;
-            margin: 0;
-            padding: 0;
-            position: relative;
-
-            &:hover {
-                background-color: red;
-            }
-
-            &:before {
-                content: ' ';
-                position: absolute;
-                background-color: white;
-                top: 12px;
-                left: 12px;
-                height: 1px;
-                width: 15px;
-                box-sizing: border-box;
-                transform: rotate(45deg);
-            }
-            &:after {
-                content: ' ';
-                position: absolute;
-                background-color: white;
-                top: 12px;
-                left: 12px;
-                height: 1px;
-                width: 15px;
-                box-sizing: border-box;
-                transform: rotate(-45deg);
-            }
-        }
 
         .tabs {
-            grid-area: tabs;
             display: grid;
             grid-auto-flow: column;
             justify-content: start;
@@ -127,12 +24,12 @@
                 &.active {
                     background-color: #1e1e1e;
                 }
-
+    
                 &:first-of-type {
                     border-left: 1px solid #1e1e1e;
                 }
             }
-
+    
             .new {
                 position: relative;
                 padding: 0;
@@ -168,5 +65,9 @@
                 }
             }
         }
+    }
+
+    .content {
+        display: grid;
     }
 }

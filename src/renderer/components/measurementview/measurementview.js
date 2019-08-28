@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useRef } from 'react';
 
 import './measurementview.scss';
 
-export function MeasurementView({path}) {
+export function MeasurementView({ location }) {
     const canvasRef = useRef();
     const resizeTimerRef = useRef();
     const websocketRef = useRef();
@@ -21,7 +21,7 @@ export function MeasurementView({path}) {
         websocketRef.current.onopen = () => {
             websocketRef.current.send(JSON.stringify({
                 type: 'open_file',
-                value: path
+                value: location.pathname
             }));
 
             window.onresize = () => {
@@ -64,7 +64,7 @@ export function MeasurementView({path}) {
             else {
                 const message = JSON.parse(data)
 
-                if (message['type'] === 'open_file_success' && message['value'] === path) {
+                if (message['type'] === 'open_file_success' && message['value'] === location.pathname) {
                     figureIdRef.current = message['figure_id'];
                 }
                 else if (message['type'] === 'refresh') {
