@@ -21,7 +21,7 @@ export function MeasurementView({ location }) {
         websocketRef.current.onopen = () => {
             websocketRef.current.send(JSON.stringify({
                 type: 'open_file',
-                value: location.pathname
+                value: location.pathname.substr(1)
             }));
 
             window.onresize = () => {

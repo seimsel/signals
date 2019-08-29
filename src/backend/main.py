@@ -12,20 +12,35 @@ from matplotlib.backends.backend_webagg_core import (
 from pathlib import Path
 
 from uuid import uuid4
+from urllib.parse import urlparse
 import json
+import csv
+import numpy as np
 
 class MainHandler(WebSocketHandler):
     def on_message(self, message):
         message = json.loads(message)
 
         if message['type'] == 'open_file':
+            path = urlparse(message['value']).path
+
+            data = None
+
+            with open(path, newline='') as csvfile:
+                dialect = csv.Sniffer().sniff(csvfile.read(1024))
+                csvfile.seek(0)
+                reader = csv.reader(csvfile, dialect)
+                data = np.array(list(reader))
+
+            x = data.T[0]
+
             self.figure = Figure()
             self.figure_id = str(uuid4())
             axis = self.figure.add_subplot(111)
-            axis.plot([1,2,3,2,1])
-            axis.plot([2,2,2,2,2])
-            axis.plot([3,2,1,2,3])
-            axis.plot([1,2,3,4,5])
+            
+            for y in data.T[1:]:
+                axis.plot(x, y)
+
             self.figure_manager = new_figure_manager_given_figure(self.figure_id, self.figure)
             self.send_json({
                 'type': 'open_file_success',
