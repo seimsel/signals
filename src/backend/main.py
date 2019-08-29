@@ -17,6 +17,11 @@ import json
 import csv
 import numpy as np
 
+class XYData():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
 class Channel():
     _data_changed = False
     _current_data = None
@@ -36,14 +41,46 @@ class Channel():
         self._data_changed = True
 
 class MathsChannel(Channel):
-    def __init__(self, input_channels):
-        self._input_channels = input_channels
+    sources = []
 
     def process(self):
         raise NotImplementedError()
 
 class AdditionChannel(MathsChannel):
-    pass
+    def process(self):
+        result = self.sources[0]._current_data.y
+
+        for channel in self.sources[1:]:
+            result += channel._current_data.y
+
+        self.current_data = XYData(self._current_data.x, result)
+
+class Measurement():
+    channels=[]
+
+    @classmethod
+    def from_csv(cls, path):
+        measurement = Measurement()
+
+        with open(path, newline='') as csvfile:
+
+            dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            csvfile.seek(0)
+            reader = csv.reader(csvfile, dialect)
+            data = np.array(list(reader))
+
+        x = data.T[0]
+        
+        for y in data.T[1:]:
+            channel = Channel()
+            channel.current_data = XYData(x, y)
+            measurement.channels.append(channel)
+
+        return measurement
+
+    @staticmethod
+    def plot(measurement, axis):
+        pass
 
 class MainHandler(WebSocketHandler):
     def on_message(self, message):
