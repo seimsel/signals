@@ -17,6 +17,34 @@ import json
 import csv
 import numpy as np
 
+class Channel():
+    _data_changed = False
+    _current_data = None
+
+    @property
+    def data_changed(self):
+        return self._data_changed
+
+    @property
+    def current_data(self):
+        self._data_changed = False
+        return self._current_data
+
+    @current_data.setter
+    def current_data(self, data):
+        self._current_data = data
+        self._data_changed = True
+
+class MathsChannel(Channel):
+    def __init__(self, input_channels):
+        self._input_channels = input_channels
+
+    def process(self):
+        raise NotImplementedError()
+
+class AdditionChannel(MathsChannel):
+    pass
+
 class MainHandler(WebSocketHandler):
     def on_message(self, message):
         message = json.loads(message)
@@ -37,7 +65,7 @@ class MainHandler(WebSocketHandler):
             self.figure = Figure()
             self.figure_id = str(uuid4())
             axis = self.figure.add_subplot(111)
-            
+                        
             for y in data.T[1:]:
                 axis.plot(x, y)
 
