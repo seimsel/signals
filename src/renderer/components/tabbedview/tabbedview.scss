@@ -19,7 +19,12 @@
                 width: 10em;
                 padding: 0.5em 1em;
                 -webkit-app-region: no-drag;
-                border-right: 1px solid #1e1e1e;
+
+                li {
+                    white-space: nowrap; 
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
     
                 &.active {
                     background-color: #1e1e1e;
