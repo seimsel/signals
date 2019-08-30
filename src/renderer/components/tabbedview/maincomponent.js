@@ -1,9 +1,9 @@
-import React, { useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 
 import { MeasurementView } from '../measurementview/measurementview';
 import { TabsContext } from './tabbedview';
 import { WelcomeComponent } from './welcomecomponent';
-import { filename } from '../../util/pathutils';
+import { filename, to_unix_path } from '../../util/pathutils';
 
 export function MainComponent({ location, history }) {
     const [tabs, setTabs] = useContext(TabsContext);
@@ -25,7 +25,7 @@ export function MainComponent({ location, history }) {
             } else {
                 setTabs([...tabs, {
                     name: filename(location.pathname),
-                    path: location.pathname,
+                    path: to_unix_path(location.pathname),
                     component: MeasurementView
                 }])
             }

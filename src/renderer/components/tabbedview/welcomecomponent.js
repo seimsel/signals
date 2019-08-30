@@ -3,6 +3,7 @@ import { TabsContext } from './tabbedview';
 import { MeasurementView } from '../measurementview/measurementview';
 import { Dropzone } from './../dropzone/dropzone';
 import { distinct } from '../../util/arrayutils';
+import { to_unix_path } from '../../util/pathutils';
 
 export function WelcomeComponent({ history }) {
     const [tabs, setTabs] = useContext(TabsContext);
@@ -14,7 +15,7 @@ export function WelcomeComponent({ history }) {
             for (let file of target.files) {
                 newTabs.push({
                     name: file.name,
-                    path: `/file://${file.path || file.name}`,
+                    path: to_unix_path(`/file://${file.path || file.name}`),
                     component: MeasurementView
                 });
             }
