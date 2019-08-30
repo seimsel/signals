@@ -15,7 +15,7 @@ export function MeasurementView({ location }) {
         }
 
         if (!websocketRef.current) {
-            websocketRef.current = new WebSocket('ws://localhost:8888');
+            websocketRef.current = new WebSocket(`ws://localhost:${window.backendPort}`);
         }
 
         websocketRef.current.onopen = () => {

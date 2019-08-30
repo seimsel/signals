@@ -2,10 +2,8 @@
   "name": "pope",
   "version": "0.0.1",
   "scripts": {
-    "start": "concurrently --kill-others \"npm run frontend:dev\" \"npm run backend:dev\" \"npm run electron:dev\"",
-    "electron:dev": "electron src/main/index.js",
-    "frontend:dev": "webpack-dev-server --config webpack.renderer.config.js",
-    "backend:dev": "nodemon src/backend/main.py"
+    "start": "nodemon --exec electron src/main/index.js",
+    "frontend:dev": "webpack-dev-server --config webpack.renderer.config.js"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -25,6 +23,7 @@
     "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
+    "find-free-port": "^2.0.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-router-dom": "^5.0.1",

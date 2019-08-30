@@ -10,6 +10,7 @@ from matplotlib.backends.backend_webagg_core import (
 )
 
 from pathlib import Path
+from argparse import ArgumentParser
 
 from uuid import uuid4
 from urllib.parse import urlparse
@@ -132,6 +133,10 @@ class MatplotlibHandler(RequestHandler):
 
 
 if __name__ == '__main__':
+    argumentParser = ArgumentParser()
+    argumentParser.add_argument('--port', dest='port', type=int)
+    args = argumentParser.parse_args()
+
     app = Application([
         (r'/', MainHandler),
         (r'/mpl.js', MatplotlibHandler),
@@ -142,5 +147,5 @@ if __name__ == '__main__':
 
     style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
-    app.listen(8888)
+    app.listen(args.port)
     IOLoop.current().start()
