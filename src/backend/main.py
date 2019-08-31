@@ -64,11 +64,10 @@ class Measurement():
         measurement = Measurement()
 
         with open(path, newline='') as csvfile:
-
             dialect = csv.Sniffer().sniff(csvfile.read(1024))
             csvfile.seek(0)
             reader = csv.reader(csvfile, dialect)
-            data = np.array(list(reader))
+            data = np.asarray(list(reader), dtype='float64')
 
         x = data.T[0]
         
@@ -96,7 +95,7 @@ class MainHandler(WebSocketHandler):
                 dialect = csv.Sniffer().sniff(csvfile.read(1024))
                 csvfile.seek(0)
                 reader = csv.reader(csvfile, dialect)
-                data = np.array(list(reader))
+                data = np.asarray(list(reader), dtype='float64')
 
             x = data.T[0]
 
