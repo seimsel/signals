@@ -3,35 +3,44 @@ const { resolve } = require('path');
 const { findPorts } = require('./util/networkutils');
 const { spawn } = require('child_process');
 
+const { findPython } = require('./util/pythonutils');
+
 if (module.hot) {
     module.hot.accept();
 }
 
-
 app.on('ready', () => {
-    findPorts(3000, 5000, 2, ([backendPort, frontendPort]) => {
-        const backend = spawn('cmd', ['/C', 'nodemon', 'src/backend/main.py', '--port', `${backendPort}`]);
-        backend.stdout.on('data', data => console.log(`${data}`));
-        backend.stderr.on('data', data => console.error(`${data}`));
+    findPython(['python', 'python3'], (python) => {
+        findPorts(3000, 5000, 2, ([backendPort, frontendPort]) => {
+            const backend = spawn('nodemon', ['--exec', python, 'src/backend/main.py', '--port', `${backendPort}`], {
+                shell: true
+            });
+            backend.stdout.on('data', data => console.log(`${data}`));
+            backend.stderr.on('data', data => console.error(`${data}`));
 
-        const frontend = spawn('cmd', ['/C', 'webpack-dev-server', '--config', 'webpack.renderer.config.js', '--port', `${frontendPort}`]);
-        frontend.stdout.on('data', data => console.log(`${data}`));
-        frontend.stderr.on('data', data => console.error(`${data}`));
+            const frontend = spawn('webpack-dev-server', ['--config', 'webpack.renderer.config.js', '--port', `${frontendPort}`], {
+                shell: true
+            });
+            frontend.stdout.on('data', data => console.log(`${data}`));
+            frontend.stderr.on('data', data => console.error(`${data}`));
 
-        process.env.backendPort = backendPort;
+            process.env.backendPort = backendPort;
 
-        const window = new BrowserWindow({
-            frame: false,
-            webPreferences: {
-                preload: resolve(__dirname, 'preload.js')
-            }
+            const window = new BrowserWindow({
+                frame: false,
+                webPreferences: {
+                    preload: resolve(__dirname, 'preload.js')
+                }
+            });
+            
+            window.loadURL(`http://localhost:${frontendPort}`);
+
+            app.on('before-quit', () => {
+                frontend.kill();
+                backend.kill();
+            })
         });
-        
-        window.loadURL(`http://localhost:${frontendPort}`);
-
-        app.on('before-quit', () => {
-            frontend.kill();
-            backend.kill();
-        })
     });
+
+
 });
