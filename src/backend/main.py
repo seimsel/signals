@@ -18,11 +18,6 @@ import json
 import csv
 import numpy as np
 
-class XYData():
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
 class Channel():
     _data_changed = False
     _current_data = None
@@ -49,12 +44,14 @@ class MathsChannel(Channel):
 
 class AdditionChannel(MathsChannel):
     def process(self):
-        result = self.sources[0]._current_data.y
+        x1, y1 = self.sources[0]._current_data
+        y_result = y1
 
         for channel in self.sources[1:]:
-            result += channel._current_data.y
+            _, y = channel._current_data
+            y_result += y
 
-        self.current_data = XYData(self._current_data.x, result)
+        self.current_data = (x1, y_result)
 
 class Measurement():
     channels=[]
@@ -73,14 +70,16 @@ class Measurement():
         
         for y in data.T[1:]:
             channel = Channel()
-            channel.current_data = XYData(x, y)
+            channel.current_data = (x, y)
             measurement.channels.append(channel)
 
         return measurement
 
     @staticmethod
     def plot(measurement, axis):
-        pass
+        for channel in measurement.channels:
+            x, y = channel.current_data
+            axis.plot(x, y)
 
 class MainHandler(WebSocketHandler):
     def on_message(self, message):
@@ -89,22 +88,18 @@ class MainHandler(WebSocketHandler):
         if message['type'] == 'open_file':
             path = urlparse(message['value']).path
 
-            data = None
+            self.measurement = Measurement.from_csv(path)
 
-            with open(path, newline='') as csvfile:
-                dialect = csv.Sniffer().sniff(csvfile.read(1024))
-                csvfile.seek(0)
-                reader = csv.reader(csvfile, dialect)
-                data = np.asarray(list(reader), dtype='float64')
-
-            x = data.T[0]
+            self.additionChannel = AdditionChannel()
+            self.additionChannel.sources = self.measurement.channels[0:2]
+            self.additionChannel.process()
+            self.measurement.channels.append(self.additionChannel)
 
             self.figure = Figure()
             self.figure_id = str(uuid4())
             axis = self.figure.add_subplot(111)
                         
-            for y in data.T[1:]:
-                axis.plot(x, y)
+            Measurement.plot(self.measurement, axis)
 
             self.figure_manager = new_figure_manager_given_figure(self.figure_id, self.figure)
             self.send_json({
