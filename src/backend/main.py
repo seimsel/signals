@@ -19,8 +19,9 @@ import csv
 import numpy as np
 
 class Channel():
-    _data_changed = False
-    _current_data = None
+    def __init__(self):
+        self._data_changed = False
+        self._current_data = None
 
     @property
     def data_changed(self):
@@ -37,7 +38,8 @@ class Channel():
         self._data_changed = True
 
 class MathsChannel(Channel):
-    sources = []
+    def __init__(self):
+        self.sources = []
 
     def process(self):
         raise NotImplementedError()
@@ -45,7 +47,7 @@ class MathsChannel(Channel):
 class AdditionChannel(MathsChannel):
     def process(self):
         x1, y1 = self.sources[0]._current_data
-        y_result = y1
+        y_result = np.copy(y1)
 
         for channel in self.sources[1:]:
             _, y = channel._current_data
@@ -54,7 +56,8 @@ class AdditionChannel(MathsChannel):
         self.current_data = (x1, y_result)
 
 class Measurement():
-    channels=[]
+    def __init__(self):
+        self.channels = []
 
     @classmethod
     def from_csv(cls, path):
@@ -90,10 +93,10 @@ class MainHandler(WebSocketHandler):
 
             self.measurement = Measurement.from_csv(path)
 
-            self.additionChannel = AdditionChannel()
-            self.additionChannel.sources = self.measurement.channels[0:2]
-            self.additionChannel.process()
-            self.measurement.channels.append(self.additionChannel)
+            additionChannel = AdditionChannel()
+            additionChannel.sources = self.measurement.channels[0:2]
+            additionChannel.process()
+            self.measurement.channels.append(additionChannel)
 
             self.figure = Figure()
             self.figure_id = str(uuid4())
