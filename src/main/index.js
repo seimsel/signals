@@ -28,6 +28,7 @@ app.on('ready', () => {
 
             const window = new BrowserWindow({
                 frame: false,
+                backgroundColor: '#1e1e1e',
                 webPreferences: {
                     preload: resolve(__dirname, 'preload.js')
                 }
