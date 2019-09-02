@@ -1,93 +1,28 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
-import './measurementview.scss';
+import { WebsocketContext } from '../app/app';
+import { Figure } from './figure';
 
 export function MeasurementView({ location }) {
-    const canvasRef = useRef();
-    const resizeTimerRef = useRef();
-    const websocketRef = useRef();
-    const imageRef = useRef();
-    const figureIdRef = useRef();
-
-    useLayoutEffect(() => {
-        if (!imageRef.current) {
-            imageRef.current = new Image();
-        }
-
-        if (!websocketRef.current) {
-            websocketRef.current = new WebSocket(`ws://localhost:${window.backendPort}`);
-        }
-
-        websocketRef.current.onopen = () => {
-            websocketRef.current.send(JSON.stringify({
-                type: 'open_file',
-                value: location.pathname.substr(1)
-            }));
-
-            window.onresize = () => {
-                if (resizeTimerRef) {
-                    clearTimeout(resizeTimerRef.current);
-                }
-                resizeTimerRef.current = setTimeout(() => {
-                    websocketRef.current.send(JSON.stringify({
-                        type: 'resize',
-                        width: canvasRef.current.offsetWidth,
-                        height: canvasRef.current.offsetHeight,
-                        figure_id: figureIdRef.current
-                    }));
-                }, 250);
-            };
+    const [figureId, setFigureId] = useState();
+    const websocket = useContext(WebsocketContext);
     
-            websocketRef.current.send(JSON.stringify({
-                type: 'resize',
-                width: canvasRef.current.offsetWidth,
-                height: canvasRef.current.offsetHeight,
-                figure_id: figureIdRef.current
-            }));
-        }
-
-        websocketRef.current.onmessage = ({data}) => {
-            if (data instanceof Blob) {
-                if (imageRef.current.src) {
-                    window.URL.revokeObjectURL(imageRef.current.src);
-                }
-
-                imageRef.current.src = window.URL.createObjectURL(data);
-                imageRef.current.onload = () => {
-                    canvasRef.current.getContext('2d').drawImage(imageRef.current, 0, 0);
-                }
-                websocketRef.current.send(JSON.stringify({
-                    type: 'ack',
-                    figure_id: figureIdRef.current
-                }));
+    useEffect(() => {
+        websocket.send(JSON.stringify({
+            service: 'measurements',
+            action: 'create',
+            data: {
+                path: location.pathname.substr(1)
             }
-            else {
-                const message = JSON.parse(data)
+        }));
 
-                if (message['type'] === 'open_file_success' && message['value'] === location.pathname) {
-                    figureIdRef.current = message['figure_id'];
-                }
-                else if (message['type'] === 'refresh') {
-                    websocketRef.current.send(JSON.stringify({
-                        type: 'refresh',
-                        figure_id: figureIdRef.current
-                    }));
-                }
-                else if (message['type'] === 'draw') {
-                    websocketRef.current.send(JSON.stringify({
-                        type: 'draw',
-                        figure_id: figureIdRef.current
-                    }));
-                }
-                else if (message['type'] === 'resize') {
-                    canvasRef.current.width = canvasRef.current.offsetWidth;
-                    canvasRef.current.height = canvasRef.current.offsetHeight;
-                }
+        websocket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message['action'] === 'created' && message['service'] === 'measurements' && message['data']['path'] === location.pathname.substr(1)) {
+                setFigureId(message['data']['figure']);
             }
-        }
+        };
     }, []);
 
-    return (
-        <canvas ref={canvasRef} className='figure'></canvas>
-    );
+    return <Figure id={figureId} />;
 }

@@ -1,11 +1,15 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useRef, useEffect, createContext } from 'react';
 import './app.scss'; 
 
 import { TabbedView } from '../tabbedview/tabbedview';
 import { MainComponent } from '../tabbedview/maincomponent';
 
+export const WebsocketContext = createContext();
+
 export function App() {
     return (
-        <TabbedView mainComponent={MainComponent} />
+        <WebsocketContext.Provider value={new WebSocket(`ws://localhost:${window.backendPort}`)}>
+            <TabbedView mainComponent={MainComponent} />
+        </WebsocketContext.Provider>
     );
 }

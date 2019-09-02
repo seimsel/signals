@@ -2,7 +2,7 @@
   "name": "pope",
   "version": "0.0.1",
   "scripts": {
-    "start": "nodemon --exec electron src/main/index.js"
+    "start": "electron src/main/index.js"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
