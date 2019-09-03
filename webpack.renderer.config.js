@@ -4,8 +4,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     mode: 'development',
     entry: './src/renderer/index.js',
+    watch: true,
     output: {
-        path: resolve(__dirname, 'dist/renderer'),
+        path: resolve(__dirname, 'static'),
         filename: 'bundle.js'
     },
     module: {
@@ -28,7 +29,6 @@ module.exports = {
     devtool: 'eval-source-map',
     target: 'web',
     stats: 'errors-warnings',
-    devServer: {},
     plugins: [
         new HtmlWebpackPlugin({
             template: './src/renderer/index.html'
