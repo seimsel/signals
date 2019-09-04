@@ -3,24 +3,35 @@ from tornado.ioloop import IOLoop
 from tornado.options import define, options, parse_command_line
 from socketio import AsyncServer, get_tornado_handler
 
-define('port', default=3000, help='run on the given port', type=int)
+from service.memoryservice import MemoryService
 
-sio = AsyncServer()
-
-@sio.on('connect')
-async def on_connect(sid, environ):
-    sio.emit('Hello', room=sid)
-
-def main():
-    parse_command_line()
-    app = Application(
-        [
-            (r'/socket.io/', get_tornado_handler(sio)),
+class Pope(Application):
+    def __init__(self, sio):
+        self.services = {}
+        self.sio = sio
+        super().__init__([
+            (r'/socket.io/', get_tornado_handler(self.sio)),
             (r'/(.*)', StaticFileHandler, {
                 'path': 'static',
                 'default_filename': 'index.html'})
-        ]
-    )
+        ])
+
+def main():
+    define('port', default=3000, help='run on the given port', type=int)
+    parse_command_line()
+
+    sio = AsyncServer()
+
+    app = Pope(sio)
+    app.services['clients'] = MemoryService(app, 'clients')
+    app.services['clients'].create({
+        'hello': 'world'
+    })
+
+    @sio.event
+    def connect(sid, environ):
+        app.services['clients'].publish('all', sid)
+
     app.listen(options.port)
     IOLoop.current().start()
 

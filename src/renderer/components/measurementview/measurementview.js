@@ -1,28 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 
-import { WebsocketContext } from '../app/app';
-import { Figure } from './figure';
+import { SocketContext } from '../app/app';
 
 export function MeasurementView({ location }) {
-    const [figureId, setFigureId] = useState();
-    const websocket = useContext(WebsocketContext);
-    
+    const socket = useContext(SocketContext);
+
     useEffect(() => {
-        websocket.send(JSON.stringify({
-            service: 'measurements',
-            action: 'create',
-            data: {
-                path: location.pathname.substr(1)
-            }
-        }));
+        socket.on('connect', () => {
+            // socket.emit('clients', 'create', (client) => {
+            //     console.log(client);
+            // });
+        })
+    }, [socket])
 
-        websocket.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            if (message['action'] === 'created' && message['service'] === 'measurements' && message['data']['path'] === location.pathname.substr(1)) {
-                setFigureId(message['data']['figure']);
-            }
-        };
-    }, []);
-
-    return <Figure id={figureId} />;
+    return null;
 }

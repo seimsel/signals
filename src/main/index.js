@@ -5,10 +5,6 @@ const { spawn } = require('child_process');
 
 const { findPython } = require('./util/pythonutils');
 
-if (module.hot) {
-    module.hot.accept();
-}
-
 app.on('ready', () => {
     findPython(['python', 'python3'], (python) => {
         findPorts(3000, 5000, 1, ([port]) => {
@@ -18,7 +14,7 @@ app.on('ready', () => {
             backend.stdout.on('data', data => console.log(`${data}`));
             backend.stderr.on('data', data => console.error(`${data}`));
 
-            const frontend = spawn('webpack', ['--config', 'webpack.renderer.config.js'], {
+            const frontend = spawn('webpack', ['--config', 'webpack.renderer.config.js', '--watch'], {
                 shell: true
             });
             frontend.stdout.on('data', data => console.log(`${data}`));

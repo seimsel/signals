@@ -1,10 +1,10 @@
 const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const LiveReloadPlugin = require('webpack-livereload-plugin');
 
 module.exports = {
     mode: 'development',
     entry: './src/renderer/index.js',
-    watch: true,
     output: {
         path: resolve(__dirname, 'static'),
         filename: 'bundle.js'
@@ -30,6 +30,7 @@ module.exports = {
     target: 'web',
     stats: 'errors-warnings',
     plugins: [
+        new LiveReloadPlugin(),
         new HtmlWebpackPlugin({
             template: './src/renderer/index.html'
         })

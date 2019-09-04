@@ -1,15 +1,16 @@
 import React, { useRef, useEffect, createContext } from 'react';
-import './app.scss'; 
+import io from 'socket.io-client';
 
-import { TabbedView } from '../tabbedview/tabbedview';
-import { MainComponent } from '../tabbedview/maincomponent';
+import './app.scss';
 
-export const WebsocketContext = createContext();
+import { MeasurementView } from '../measurementview/measurementview';
+
+export const SocketContext = createContext();
 
 export function App() {
     return (
-        <WebsocketContext.Provider value={new WebSocket(`ws://localhost:${window.backendPort}`)}>
-            <TabbedView mainComponent={MainComponent} />
-        </WebsocketContext.Provider>
+        <SocketContext.Provider value={io()}>
+            <MeasurementView />
+        </SocketContext.Provider>
     );
 }
