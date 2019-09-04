@@ -16,6 +16,9 @@ class Pope(Application):
                 'default_filename': 'index.html'})
         ])
 
+def populateSid(context):
+    context['data']['sid'] = context['sid']
+
 def main():
     define('port', default=3000, help='run on the given port', type=int)
     parse_command_line()
@@ -23,14 +26,12 @@ def main():
     sio = AsyncServer()
 
     app = Pope(sio)
-    app.services['clients'] = MemoryService(app, 'clients')
-    app.services['clients'].create({
-        'hello': 'world'
-    })
+    app.services['measurements'] = MemoryService(app, 'measurements')
+    app.services['measurements'].hooks['before']['create'].append(populateSid)
 
-    @sio.event
-    def connect(sid, environ):
-        app.services['clients'].publish('all', sid)
+    @app.sio.event
+    def connect(sid, env):
+        app.services['measurements'].publish('created', sid)
 
     app.listen(options.port)
     IOLoop.current().start()

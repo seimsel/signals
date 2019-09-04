@@ -1,6 +1,37 @@
 from functools import wraps
+from inspect import getargspec
+
 from tornado.ioloop import IOLoop
 from tornado.gen import coroutine
+
+def method(f):
+    @wraps(f)
+    def withHooksAndEvents(self, *args, **kwargs):
+        context = {
+            'service': self,
+            'method': f.__name__,
+            'sid': kwargs.pop('sid', '0')
+        }
+
+        context.update(kwargs)
+
+        for i, arg in enumerate(getargspec(f).args[1:]):
+            if not arg in kwargs:
+                context[arg] = args[i]
+
+        self.applyHooks('before', context)
+        result = f(self, *args, **kwargs)
+        context['result'] = result
+        self.applyHooks('after', context)
+
+        for eventName, callbacks in self.callbacks.items():
+            if f.__name__ in eventName:
+                for callback in callbacks:
+                    callback(self.name, eventName, result)
+
+        return result
+
+    return withHooksAndEvents
 
 class Service():
     def __init__(self, app, name):
@@ -32,59 +63,13 @@ class Service():
         }
 
         @self.app.sio.on(name)
-        def handle_events(sid, action, data={}):
-            data['sid'] = sid
-            return getattr(self, action)(data)
+        def handle_events(sid, method, data={}):
+            return getattr(self, method)(data, sid=sid)
 
-    def __getattribute__(self, name):
-        attribute = super().__getattribute__(name)
-
-        if name in ['find', 'get', 'create', 'update', 'patch', 'remove']:
-            @wraps(attribute)
-            def with_hooks(*args, **kwargs):
-
-                context = {
-                    'app': self.app
-                }
-
-                if name == 'create':
-                    context['data'] = args[0]
-
-                for hook in self.hooks['before'][name]:
-                    hook(context)
-
-                if name == 'get':
-                    result = attribute(args[0])
-                elif name == 'create':
-                    result = attribute(context['data'])
-                else:
-                    result = attribute()
-
-                context = {
-                    'app': self.app,
-                    'result': result
-                }
-
-                for hook in self.hooks['after'][name]:
-                    hook(context)
-
-                return result
-                
-            if name in ['create', 'update', 'patch', 'remove']:
-                @wraps(with_hooks)
-                def with_callbacks(*args, **kwargs):
-                    result = with_hooks(*args, **kwargs)
-                    for eventName, callbacks in self.callbacks.items():
-                        for callback in callbacks:
-                            if name in eventName:
-                                callback(self.name, eventName, result)
-                    return result
-
-                return with_callbacks
-            
-            return with_hooks
-
-        return attribute
+    def applyHooks(self, moment, context):
+        print(moment, context['method'], flush=True)
+        for hook in self.hooks[moment][context['method']]:
+            hook(context)
 
     def on(self, eventName, callback):
         if eventName == 'all':
@@ -101,7 +86,7 @@ class Service():
 
     def find(self, *params):
         raise NotImplementedError()
-        
+
     def get(self, id, *params):
         raise NotImplementedError()
 
@@ -113,6 +98,7 @@ class Service():
 
     def patch(self, id, data, *params):
         raise NotImplementedError()
-    
+
     def remove(self, id, *params):
         raise NotImplementedError()
+
