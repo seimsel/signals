@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, createContext } from 'react';
+import React, { useState, useRef, useContext, useEffect, createContext } from 'react';
 import io from 'socket.io-client';
 
 import { TabbedView, Tab } from '../tabbedview/tabbedview';
@@ -9,15 +9,26 @@ import './app.scss';
 
 export const SocketContext = createContext();
 
-function MainView() {
-    const [measurements, setMeasurements] = useState([]);
+function useListener(eventName, listener, dependencies) {
     const socket = useContext(SocketContext);
+    const oldListener = useRef();
 
     useEffect(() => {
-        socket.on('measurements created', m => {
-            setMeasurements([...measurements, m])
-        });
-    }, []);
+        if (oldListener.current) {
+            socket.removeListener(oldListener);
+        }
+    
+        socket.on(eventName, listener);
+        oldListener.current = listener;
+    }, dependencies);
+}
+
+function MainView() {
+    const [measurements, setMeasurements] = useState([]);
+
+    useListener('measurements created', m => {
+        setMeasurements([...measurements, m]);
+    }, [measurements]);
 
     return (
         <TabbedView>
