@@ -7,13 +7,16 @@ class MemoryService(Service):
         super().__init__(app, name)
     
     @method
-    def find(self, *params):
-        return self.items
+    def find(self, filterFunction=None, *params):
+        if not filterFunction:
+            return self.items
+
+        return [item for item in self.items if filterFunction(item)]
 
     @method
-    def get(self, id, *params):
+    def get(self, uid, *params):
         for item in self.items:
-            if item['id'] == id:
+            if item['id'] == uid:
                 return item
 
     @method
@@ -27,24 +30,24 @@ class MemoryService(Service):
         return item
 
     @method
-    def update(self, id, data, *params):
+    def update(self, uid, data, *params):
         for i, item in enumerate(self.items):
-            if item['id'] == id:
+            if item['id'] == uid:
                 self.items[i] = {
-                    'id': id,
+                    'id': uid,
                     **data
                 }
 
                 return item
 
     @method
-    def patch(self, id, data, *params):
+    def patch(self, uid, data, *params):
         for item in self.items:
-            if item['id'] == id:
+            if item['id'] == uid:
                 return item.update(data)
 
     @method 
-    def remove(self, id, *params):
+    def remove(self, uid, *params):
         for item in self.items:
-            if item['id'] == id:
+            if item['id'] == uid:
                 return self.items.remove(item)

@@ -19,6 +19,9 @@ class Pope(Application):
 def populateSid(context):
     context['data']['sid'] = context['sid']
 
+def publishToSid(app, service, method, data, sid):
+    IOLoop.current().add_callback(app.sio.emit, f'{service} {method}', data, room=sid)
+
 def main():
     define('port', default=3000, help='run on the given port', type=int)
     parse_command_line()
@@ -26,12 +29,26 @@ def main():
     sio = AsyncServer()
 
     app = Pope(sio)
+    app.services['clients'] = MemoryService(app, 'clients')
     app.services['measurements'] = MemoryService(app, 'measurements')
     app.services['measurements'].hooks['before']['create'].append(populateSid)
 
     @app.sio.event
     def connect(sid, env):
-        app.services['measurements'].publish('created', sid)
+        def publish(service, method, data):
+            publishToSid(app, service, method, data, sid)
+
+        listenerIds = app.services['measurements'].on('created', publish)
+        app.services['clients'].create({
+            'sid': sid,
+            'listenerIds': listenerIds
+        })
+
+    @app.sio.event
+    def disconnect(sid):
+        client = app.services['clients'].find(lambda client: client['sid'] == sid)[0]
+        for listenerId in client['listenerIds']:
+            app.services['measurements'].removeListener(listenerId)
 
     app.listen(options.port)
     IOLoop.current().start()

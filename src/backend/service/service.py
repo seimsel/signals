@@ -1,5 +1,6 @@
 from functools import wraps
 from inspect import getargspec
+from uuid import uuid4
 
 from tornado.ioloop import IOLoop
 from tornado.gen import coroutine
@@ -24,10 +25,10 @@ def method(f):
         context['result'] = result
         self.applyHooks('after', context)
 
-        for eventName, callbacks in self.callbacks.items():
+        for eventName, listeners in self.listeners.items():
             if f.__name__ in eventName:
-                for callback in callbacks:
-                    callback(self.name, eventName, result)
+                for listener in listeners:
+                    listener['callback'](self.name, eventName, result)
 
         return result
 
@@ -37,7 +38,7 @@ class Service():
     def __init__(self, app, name):
         self.app = app
         self.name = name
-        self.callbacks = {
+        self.listeners = {
             'created': [],
             'updated': [],
             'patched': [],
@@ -67,38 +68,50 @@ class Service():
             return getattr(self, method)(data, sid=sid)
 
     def applyHooks(self, moment, context):
-        print(moment, context['method'], flush=True)
         for hook in self.hooks[moment][context['method']]:
             hook(context)
 
     def on(self, eventName, callback):
         if eventName == 'all':
-            for eventName in self.callbacks.keys():
-                self.callbacks[eventName].append(callback)
+            result = []
+            for eventName in self.listeners.keys():
+                uid = str(uuid4())
+                result.append(uid)
+                self.listeners[eventName].append({
+                    'id': uid,
+                    'callback': callback
+                })
+
+                return result
         else:
-            self.callbacks[eventName].append(callback)
+            uid = str(uuid4())
+            self.listeners[eventName].append({
+                    'id': uid,
+                    'callback': callback
+                })
+            return [uid]
 
-    def publish(self, eventName, room):
-        def callback(name, eventName, data):
-            IOLoop.current().add_callback(self.app.sio.emit, f'{name} {eventName}', data, room=room)
-
-        self.on(eventName, callback)
+    def removeListener(self, uid):
+        for eventName in self.listeners.keys():
+            for i, listener in enumerate(self.listeners[eventName]):
+                if listener['id'] == uid:
+                    self.listeners[eventName].pop(i)
 
     def find(self, *params):
         raise NotImplementedError()
 
-    def get(self, id, *params):
+    def get(self, uid, *params):
         raise NotImplementedError()
 
     def create(self, data, *params):
         raise NotImplementedError()
 
-    def update(self, id, data, *params):
+    def update(self, uid, data, *params):
         raise NotImplementedError()
 
-    def patch(self, id, data, *params):
+    def patch(self, uid, data, *params):
         raise NotImplementedError()
 
-    def remove(self, id, *params):
+    def remove(self, uid, *params):
         raise NotImplementedError()
 
