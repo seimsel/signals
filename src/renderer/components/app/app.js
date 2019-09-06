@@ -9,7 +9,7 @@ import './app.scss';
 
 export const SocketContext = createContext();
 
-function useListener(eventName, listener, dependencies) {
+function useListener(eventName, callback, dependencies) {
     const socket = useContext(SocketContext);
     const oldListener = useRef();
 
@@ -18,8 +18,8 @@ function useListener(eventName, listener, dependencies) {
             socket.removeListener(oldListener);
         }
     
-        socket.on(eventName, listener);
-        oldListener.current = listener;
+        socket.on(eventName, callback);
+        oldListener.current = callback;
     }, dependencies);
 }
 
