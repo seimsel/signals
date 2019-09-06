@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 
 import { TabbedView, Tab } from '../tabbedview/tabbedview';
 import { WelcomeComponent } from '../tabbedview/welcomecomponent';
+import { MeasurementView } from '../measurementview/measurementview';
 import { to_unix_path } from '../../util/pathutils';
 
 import './app.scss';
@@ -25,16 +26,21 @@ function useListener(eventName, callback, dependencies) {
 
 function MainView() {
     const [measurements, setMeasurements] = useState([]);
+    const socket = useContext(SocketContext);
 
-    useListener('measurements created', m => {
-        setMeasurements([...measurements, m]);
+    useListener('measurements created', id => {
+        socket.emit('measurements', 'get', id, m => {
+            setMeasurements([...measurements, m]);
+        });
     }, [measurements]);
 
     return (
         <TabbedView>
             <Tab path='/welcome' name='Welcome'><WelcomeComponent /></Tab>
             {
-                measurements.map(m => <Tab key={m.id} name={'Wooow'} path={to_unix_path(`/file://${m.path}`)}>Hello</Tab>)
+                measurements.map(m => <Tab key={m.id} name={m.name} path={to_unix_path(`/${m.path}`)}>
+                    <MeasurementView measurement={m} />
+                </Tab>)
             }
         </TabbedView>
     );

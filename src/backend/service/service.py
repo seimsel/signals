@@ -50,7 +50,7 @@ class Service():
                 'get': [],
                 'create': [],
                 'update': [],
-                'patche': [],
+                'patch': [],
                 'remove': []
             },
             'after': {
@@ -58,14 +58,14 @@ class Service():
                 'get': [],
                 'create': [],
                 'update': [],
-                'patche': [],
+                'patch': [],
                 'remove': []
             }
         }
 
         @self.app.sio.on(name)
-        def handle_events(sid, method, data={}):
-            return getattr(self, method)(data, sid=sid)
+        def handle_events(sid, method, data={}, *params):
+            return getattr(self, method)(data, *params, sid=sid)
 
     def applyHooks(self, moment, context):
         for hook in self.hooks[moment][context['method']]:

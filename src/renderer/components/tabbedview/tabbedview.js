@@ -1,6 +1,5 @@
 import React, { Children, createContext } from 'react';
-import { withRouter } from "react-router";
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { NavTab } from 'react-router-tabs';
 
 import './tabbedview.scss';

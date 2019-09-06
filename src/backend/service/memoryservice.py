@@ -15,9 +15,25 @@ class MemoryService(Service):
 
     @method
     def get(self, uid, *params):
+        if type(uid) == list:
+            result = []
+            for single_uid in uid:
+                result.append(self.get(single_uid, *params))
+
+            return result
+
         for item in self.items:
             if item['id'] == uid:
-                return item
+
+                if len(params) == 0:
+                    return item
+
+                result = {}
+
+                for param in params:
+                    result[param] = item[param]
+
+                return result
 
     @method
     def create(self, data, *params):
