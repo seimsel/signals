@@ -1,4 +1,5 @@
 from uuid import uuid4
+from copy import deepcopy
 from .service import Service, method
 
 class MemoryService(Service):
@@ -33,7 +34,7 @@ class MemoryService(Service):
                 for param in params:
                     result[param] = item[param]
 
-                return result
+                return deepcopy(result)
 
     @method
     def create(self, data, *params):

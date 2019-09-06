@@ -45,25 +45,24 @@ def import_csv(context):
 
     x = data.T[0]
 
-    channelIds = []
+    channels = []
     for i, y in enumerate(data.T[1:], start=1):
         channel = app.services['channels'].create({
             'name': header[i] if header else f'Channel {i}',
             'x': x,
             'y': y
         })
-        channelIds.append(channel['id'])
+        channels.append(channel['id'])
 
     context['data']['name'] = path.name
-    context['data']['channelIds'] = channelIds
+    context['data']['channels'] = channels
 
 def populate_channels(context):
     service = context['service']
     app = service.app
 
-    context['result']['channels'] = []
-    for uid in context['result']['channelIds']:
-        context['result']['channels'].append(app.services['channels'].get(uid, 'id', 'name'))
+    for i, uid in enumerate(context['result']['channels']):
+        context['result']['channels'][i] = app.services['channels'].get(uid, 'id', 'name')
 
 def publish_to_sid(app, service, method, data, sid):
     IOLoop.current().add_callback(app.sio.emit, f'{service} {method}', data['id'], room=sid)
@@ -80,6 +79,7 @@ def main():
     app.services['measurements'].hooks['before']['create'].append(add_sid)
     app.services['measurements'].hooks['before']['create'].append(import_csv)
     app.services['measurements'].hooks['after']['get'].append(populate_channels)
+    app.services['measurements'].on('created', lambda s, m, d: print(d, flush=True))
 
     app.services['channels'] = MemoryService(app, 'channels')
 

@@ -29,7 +29,7 @@ function MainView() {
     const socket = useContext(SocketContext);
 
     useListener('measurements created', id => {
-        socket.emit('measurements', 'get', id, m => {
+        socket.emit('measurements', 'get', id, 'id', 'name', 'path', 'channels', m => {
             setMeasurements([...measurements, m]);
         });
     }, [measurements]);
