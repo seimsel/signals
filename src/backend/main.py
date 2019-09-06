@@ -36,7 +36,8 @@ def main():
     @app.sio.event
     def connect(sid, env):
         def publish(service, method, data):
-            publishToSid(app, service, method, data, sid)
+            if data['sid'] == sid:
+                publishToSid(app, service, method, data, sid)
 
         listenerIds = app.services['measurements'].on('created', publish)
         app.services['clients'].create({
