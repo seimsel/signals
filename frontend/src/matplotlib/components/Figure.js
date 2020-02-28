@@ -1,24 +1,19 @@
 import React, { useLayoutEffect, useRef } from 'react';
+import { figure } from '../styles/figure.module.scss';
 
-import './figure.scss';
-
-export function Figure({ id }) {
+export function Figure() {
     const canvasRef = useRef();
     const resizeTimerRef = useRef();
     const websocketRef = useRef();
     const imageRef = useRef();
 
     useLayoutEffect(() => {
-        if (!id) {
-            return;
-        }
-
         if (!imageRef.current) {
             imageRef.current = new Image();
         }
 
         if (!websocketRef.current) {
-            websocketRef.current = new WebSocket(`ws://localhost:${window.backendPort}/matplotlib`);
+            websocketRef.current = new WebSocket(`ws://10.1.11.8:5000/matplotlib`);
         }
 
         websocketRef.current.onopen = () => {
@@ -31,7 +26,7 @@ export function Figure({ id }) {
                         type: 'resize',
                         width: canvasRef.current.offsetWidth,
                         height: canvasRef.current.offsetHeight,
-                        figure_id: id
+                        figure_id: 1
                     }));
                 }, 250);
             };
@@ -40,7 +35,7 @@ export function Figure({ id }) {
                 type: 'resize',
                 width: canvasRef.current.offsetWidth,
                 height: canvasRef.current.offsetHeight,
-                figure_id: id
+                figure_id: 1
             }));
         }
 
@@ -56,7 +51,7 @@ export function Figure({ id }) {
                 }
                 websocketRef.current.send(JSON.stringify({
                     type: 'ack',
-                    figure_id: id
+                    figure_id: 1
                 }));
             }
             else {
@@ -65,13 +60,13 @@ export function Figure({ id }) {
                 if (message['type'] === 'refresh') {
                     websocketRef.current.send(JSON.stringify({
                         type: 'refresh',
-                        figure_id: id
+                        figure_id: 1
                     }));
                 }
                 else if (message['type'] === 'draw') {
                     websocketRef.current.send(JSON.stringify({
                         type: 'draw',
-                        figure_id: id
+                        figure_id: 1
                     }));
                 }
                 else if (message['type'] === 'resize') {
@@ -80,13 +75,12 @@ export function Figure({ id }) {
                 }
             }
         }
-    }, [id]);
-
-    if (!id) {
-        return null;
-    }
+    }, []);
 
     return (
-        <canvas ref={canvasRef} className='figure'></canvas>
+        <canvas 
+            ref={canvasRef}
+            className={figure}
+        />
     );
 }
