@@ -26,8 +26,14 @@ class Application(tornado.web.Application):
     class MatplotlibHandler(tornado.websocket.WebSocketHandler):
         def open(self):
             self.instrument = LeCroyScope('10.1.11.79')
+
+            moving_average = MovingAverage()
+
             self.functions = [
-                MovingAverage()
+                {
+                    'id': 1,
+                    'function': moving_average
+                }
             ]
             self.line = None
             self.figure = Figure()
@@ -57,7 +63,7 @@ class Application(tornado.web.Application):
             wave_desc, wave_array_1 = self.instrument.read()
 
             for function in self.functions:
-                wave_array_1 = function.process(wave_desc, wave_array_1)
+                wave_array_1 = function['function'].process(wave_desc, wave_array_1)
                 time_array = np.linspace(0, 1, len(wave_array_1))
 
             if not self.line:
