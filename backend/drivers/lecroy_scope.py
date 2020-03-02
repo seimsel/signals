@@ -1,5 +1,5 @@
 import struct
-import numpy
+import numpy as np
 from enum import Enum
 from vxi11 import Instrument
 
@@ -72,9 +72,9 @@ class LeCroyScope(Instrument):
 
         wave_desc = LeCroyWaveDesc(data[LeCroyWaveDesc.DESC_START:LeCroyWaveDesc.DESC_END])
 
-        wave_array_1 = numpy.frombuffer(
+        wave_array_1 = np.frombuffer(
             data[LeCroyWaveDesc.DESC_END+1:LeCroyWaveDesc.DESC_END+wave_desc.wave_array_1-1],
-            dtype=numpy.int8
+            dtype=np.int8
         )
 
         return wave_desc, wave_array_1

@@ -18,6 +18,7 @@ from matplotlib.backends.backend_webagg_core import (
 from tornado.websocket import WebSocketClosedError
 
 from drivers.lecroy_scope import LeCroyScope
+from functions.moving_average import MovingAverage
 
 matplotlib.pyplot.style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
@@ -25,6 +26,9 @@ class Application(tornado.web.Application):
     class MatplotlibHandler(tornado.websocket.WebSocketHandler):
         def open(self):
             self.instrument = LeCroyScope('10.1.11.79')
+            self.functions = [
+                MovingAverage()
+            ]
             self.line = None
             self.figure = Figure()
             self.figure_id = 1
@@ -51,6 +55,9 @@ class Application(tornado.web.Application):
 
         def update(self):
             wave_desc, wave_array_1 = self.instrument.read()
+
+            for function in self.functions:
+                wave_array_1 = function.process(wave_desc, wave_array_1)
 
             if self.line:
                 self.line.set_ydata(wave_array_1)
