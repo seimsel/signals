@@ -1,4 +1,3 @@
-import vxi11
 import re
 import sys
 import asyncio
@@ -18,12 +17,14 @@ from matplotlib.backends.backend_webagg_core import (
 )
 from tornado.websocket import WebSocketClosedError
 
+from drivers.lecroy_scope import LeCroyScope
+
 matplotlib.pyplot.style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
 class Application(tornado.web.Application):
     class MatplotlibHandler(tornado.websocket.WebSocketHandler):
         def open(self):
-            self.instrument = vxi11.Instrument('10.1.10.224')
+            self.instrument = LeCroyScope('10.1.11.79')
             self.line = None
             self.figure = Figure()
             self.figure_id = 1
@@ -49,14 +50,12 @@ class Application(tornado.web.Application):
             return True
 
         def update(self):
-            response = self.instrument.ask('C1:INSPECT? "SIMPLE"')
-            value_strings = re.findall('-?\d\..{10}', response)
-            values = np.array(list(map(float, value_strings)))
+            wave_desc, wave_array_1 = self.instrument.read()
 
             if self.line:
-                self.line.set_ydata(values)
+                self.line.set_ydata(wave_array_1)
             else:
-                [self.line] = self.figure.gca().plot(values)
+                [self.line] = self.figure.gca().plot(wave_array_1)
 
             try:
                 self.send_json({
