@@ -58,11 +58,13 @@ class Application(tornado.web.Application):
 
             for function in self.functions:
                 wave_array_1 = function.process(wave_desc, wave_array_1)
+                time_array = np.linspace(0, 1, len(wave_array_1))
 
-            if self.line:
-                self.line.set_ydata(wave_array_1)
+            if not self.line:
+                [self.line] = self.figure.gca().plot(time_array, wave_array_1)
             else:
-                [self.line] = self.figure.gca().plot(wave_array_1)
+                self.line.set_xdata(time_array)
+                self.line.set_ydata(wave_array_1)
 
             try:
                 self.send_json({
