@@ -1,0 +1,11 @@
+type Scope {
+    channels: [ScopeChannel]
+}
+
+type ScopeChannel {
+    waveform: Waveform
+}
+
+type Waveform {
+    triggerTime: String
+}

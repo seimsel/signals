@@ -1,0 +1,11 @@
+type Query {
+    _unused: Boolean
+}
+
+type Mutation {
+    _unused: Boolean
+}
+
+type Subscription {
+    scope(address: String!): Scope
+}

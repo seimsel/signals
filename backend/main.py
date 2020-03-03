@@ -1,94 +1,54 @@
-import re
-import sys
-import asyncio
-import json
-import numpy as np
-import tornado.web
-import tornado.websocket
-import tornado.ioloop
-import matplotlib.pyplot
-import matplotlib.animation
-
-from pathlib import Path
-from matplotlib.lines import Line2D
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_webagg_core import (
-    new_figure_manager_given_figure
-)
-from tornado.websocket import WebSocketClosedError
-
+from io import BytesIO
+from asyncio import sleep
+from ariadne import load_schema_from_path, make_executable_schema
+from ariadne.asgi import GraphQL
+from starlette.applications import Starlette as Application
+from starlette.routing import Route
+from starlette.responses import StreamingResponse
+from ariadne import SubscriptionType
+from vxi11 import Instrument
 from drivers.lecroy_scope import LeCroyScope
-from functions.moving_average import MovingAverage
+from matplotlib.figure import Figure
+from numpy.random import rand
+from numpy import linspace
 
-matplotlib.pyplot.style.use(str(Path(__file__).with_name('dark.mplstyle')))
+subscription = SubscriptionType()
 
-class Application(tornado.web.Application):
-    class MatplotlibHandler(tornado.websocket.WebSocketHandler):
-        def open(self):
-            self.instrument = LeCroyScope('10.1.11.79')
+@subscription.source('scope')
+async def scope_generator(obj, info, address):
+    scope = LeCroyScope(address)
 
-            moving_average = MovingAverage()
-
-            self.functions = [
+    while True:
+        wave_desc, wave_array_1 = scope.read()
+        yield {
+            'channels': [
                 {
-                    'id': 1,
-                    'function': moving_average
+                    'waveform': {
+                        'triggerTime': wave_desc.trigger_time
+                    }
                 }
             ]
-            self.line = None
-            self.figure = Figure()
-            self.figure_id = 1
-            self.figure_manager = new_figure_manager_given_figure(1, self.figure)
-        
-            self.timer = tornado.ioloop.PeriodicCallback(self.update, 1000/30, 0.1)
-            self.timer.start()
-            self.figure_manager.add_web_socket(self)
+        }
+        await sleep(1)
 
-        def on_message(self, message):
-            self.figure_manager.handle_json(json.loads(message))
+@subscription.field('scope')
+def scope_resolver(scope, info, address):
+    return scope
 
-        def on_close(self):
-            self.figure_manager.remove_web_socket(self)
+async def figure(request):
+    filetype = request.path_params['filetype']
+    figure = Figure()
+    figure.gca().plot(linspace(0, 1, 5), rand(5))
+    buffer = BytesIO()
+    figure.savefig(buffer, format=filetype)
+    buffer.seek(0)
+    return StreamingResponse(buffer)
 
-        def send_json(self, content):
-            self.write_message(json.dumps(content))
+type_defs = load_schema_from_path('./graphql')
+schema = make_executable_schema(type_defs, subscription)
 
-        def send_binary(self, blob):
-            self.write_message(blob, binary=True)
+app = Application(routes=[
+    Route('/figure.{filetype}', endpoint=figure)
+], debug=True)
 
-        def check_origin(self, origin):
-            return True
-
-        def update(self):
-            wave_desc, wave_array_1 = self.instrument.read()
-
-            for function in self.functions:
-                wave_array_1 = function['function'].process(wave_desc, wave_array_1)
-                time_array = np.linspace(0, 1, len(wave_array_1))
-
-            if not self.line:
-                [self.line] = self.figure.gca().plot(time_array, wave_array_1)
-            else:
-                self.line.set_xdata(time_array)
-                self.line.set_ydata(wave_array_1)
-
-            try:
-                self.send_json({
-                    'type': 'refresh',
-                    'figure_id': 1
-                })
-            except:
-                self.timer.stop()
-
-    def __init__(self):
-        super().__init__([
-            (r'/matplotlib', self.MatplotlibHandler)
-        ])
-        
-if __name__ == "__main__":
-    if sys.platform == 'win32':
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    
-    app = Application()
-    app.listen(5000)
-    tornado.ioloop.IOLoop.instance().start()
+app.mount('/graphql', GraphQL(schema, debug=True))
