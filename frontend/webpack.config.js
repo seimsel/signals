@@ -15,14 +15,14 @@ function titleCase(str) {
 }
 
 module.exports = {
-    mode: isDevelopment ? 'development' : 'production',
+    mode: 'development',//isDevelopment ? 'development' : 'production',
     entry: './src/index.js',
     devtool: isDevelopment && 'source-map',
 
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js',
-        publicPath: '/'
+        publicPath: '/app'
     },
 
     module: {
