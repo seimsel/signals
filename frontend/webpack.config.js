@@ -15,7 +15,7 @@ function titleCase(str) {
 }
 
 module.exports = {
-    mode: 'development',//isDevelopment ? 'development' : 'production',
+    mode: isDevelopment ? 'development' : 'production',
     entry: './src/index.js',
     devtool: isDevelopment && 'source-map',
 

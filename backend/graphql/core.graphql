@@ -1,5 +1,5 @@
 type Query {
-    _unused: Boolean
+    functions(instrumentAddress: String): [Function]
 }
 
 type Mutation {
@@ -7,5 +7,27 @@ type Mutation {
 }
 
 type Subscription {
-    scope(address: String!): Scope
+    waveform(instrumentAddress: String): Waveform
+}
+
+type Waveform {
+    instrumentAddress: String
+    figure: String
+}
+
+type Function {
+    name: String!
+    instrumentAddress: String!
+    params: [Param]
+}
+
+interface Param {
+    name: String!
+}
+
+type IntParam {
+    name: String!
+    value: Int!
+    lowerLimit: Int
+    upperLimit: Int
 }
