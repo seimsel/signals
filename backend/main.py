@@ -62,8 +62,7 @@ type_defs = load_schema_from_path('./graphql')
 schema = make_executable_schema(type_defs, subscription)
 
 routes = [
-    Mount('/graphql', GraphQL(schema, debug=True)),
-    Mount('/app', StaticFiles(directory='../frontend/dist', html=True))
+    Mount('/graphql', CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*']))
 ]
 
 app = Application(routes=routes, debug=True)
