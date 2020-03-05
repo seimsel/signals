@@ -9,11 +9,11 @@ import { getMainDefinition } from 'apollo-utilities';
 import { ApolloProvider } from '@apollo/react-hooks';
 
 const httpLink = new HttpLink({
-    uri: 'http://10.1.11.8:8000/graphql/'
+    uri: 'http://localhost:8000/graphql/'
 });
 
 const wsLink = new WebSocketLink({
-    uri: 'ws://10.1.11.8:8000/graphql/',
+    uri: 'ws://localhost:8000/graphql/',
     options: {
         reconnect: true
     }

@@ -9,7 +9,7 @@ export function App() {
     return (
         <ApiProvider>
             <aside>
-                <FunctionList address={address}/>
+                {/* <FunctionList address={address}/> */}
             </aside>
             <main>
                 <Figure address={address} />

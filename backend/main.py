@@ -4,7 +4,7 @@ from ariadne import load_schema_from_path, make_executable_schema, ObjectType, S
 from ariadne.asgi import GraphQL
 from starlette.middleware.cors import CORSMiddleware
 from vxi11 import Instrument
-from drivers.lecroy_scope import LeCroyScope
+from drivers.demo_scope import DemoScope
 from matplotlib.figure import Figure
 from matplotlib.pyplot import style
 from numpy.random import rand
@@ -15,39 +15,23 @@ subscription = SubscriptionType()
 
 style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
-state = {
-    'functions': [
-        {
-            'instrumentAddress': '10.1.11.79',
-            'name': 'MovingAverage'
-        },
-        {
-            'instrumentAddress': '10.1.11.79',
-            'name': 'MovingAverage'
-        }
-    ]
-}
-
 @subscription.source('waveform')
 async def waveform_generator(obj, info, instrumentAddress):
+    scope = DemoScope()
     figure = Figure()
-    line = None
-    scope = LeCroyScope(instrumentAddress)
+    lines = {}
 
     while True:
-        wave_desc, wave_array_1 = scope.read()
-        time_array = linspace(0, 1, len(wave_array_1))
+        for channel in scope.channels:
+            if not channel.active:
+                if channel.name in lines:
+                    del lines[channel.name]
+                    continue
 
-        for function in state['functions']:
-            if function['instrumentAddress'] == instrumentAddress:
-                f = eval(function['name']+'()')
-                time_array, wave_array_1 = f.process(wave_desc, time_array, wave_array_1)
-
-        if not line:
-            [line] = figure.gca().plot(time_array, wave_array_1)
-        else:
-            line.set_xdata(time_array)
-            line.set_ydata(wave_array_1)
+            if not channel.name in lines:
+                lines[channel.name] = figure.gca().plot(scope.t, channel.y)[0]
+            else:
+                lines[channel.name].set_ydata(channel.y)
 
         buffer = BytesIO()
         figure.savefig(buffer, format='svg')
@@ -63,14 +47,7 @@ async def waveform_generator(obj, info, instrumentAddress):
 def waveform_resolver(waveform, info, instrumentAddress):
     return waveform
 
-query = ObjectType('Query')
-
-@query.field('functions')
-def functions_resolver(query, info, instrumentAddress):
-    print(state['functions'])
-    return filter(lambda f: f['instrumentAddress'] == instrumentAddress, state['functions'])
-
 type_defs = load_schema_from_path('./graphql')
-schema = make_executable_schema(type_defs, query, subscription)
+schema = make_executable_schema(type_defs, subscription)
 
 app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
