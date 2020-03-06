@@ -2,11 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Switch, Route } from 'react-router';
 import { ApiProvider } from '../../api/components/api-provider';
-import { ChannelList } from '../../channels/components/channel-list';
+import { SingleInstrument } from '../../instruments/components/single-instrument';
 import { SingleChannel } from '../../channels/components/single-channel';
+import { SingleParameter } from '../../parameters/components/single-parameter';
 import { Figure } from '../../figure/components/figure';
-
-const address = 'scope1.demo';
 
 export function App() {
     return (
@@ -14,12 +13,13 @@ export function App() {
             <Router>
                 <aside>
                     <Switch>
-                        <Route exact path='/' component={() => <ChannelList address={address} />} />
-                        <Route path='/channels/:name' component={SingleChannel} />
+                        <Route path='/instruments/:instrumentAddress/channels/:channelName/parameters/:parameterName' component={SingleParameter} />
+                        <Route path='/instruments/:instrumentAddress/channels/:channelName' component={SingleChannel} />
+                        <Route path='/instruments/:instrumentAddress' component={SingleInstrument} />
                     </Switch>
                 </aside>
                 <main>
-                    <Figure address={address} />
+                    <Route path='/instruments/:instrumentAddress' component={Figure} />
                 </main>
             </Router>
         </ApiProvider>

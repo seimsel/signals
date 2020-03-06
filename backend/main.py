@@ -1,6 +1,6 @@
 from io import BytesIO
 from pathlib import Path
-from ariadne import load_schema_from_path, make_executable_schema, ObjectType, SubscriptionType
+from ariadne import load_schema_from_path, make_executable_schema, ObjectType, SubscriptionType, InterfaceType
 from ariadne.asgi import GraphQL
 from starlette.middleware.cors import CORSMiddleware
 from matplotlib.figure import Figure
@@ -54,14 +54,28 @@ def waveform_resolver(waveform, info, instrumentAddress):
 query = ObjectType('Query')
 
 @query.field('instrument')
-def instrument_resolver(instrument, info, address):
+def instrument_resolver(query, info, address):
     instrument = State.instruments[address]
     return {
         'address': address,
         'channels': instrument.channels
     }
 
+instrument = ObjectType('Instrument')
+
+@instrument.field('channel')
+def channel_resolver(instrument, info, name):
+    instrument = State.instruments[instrument['address']]
+    channel = instrument.get_channel_by_name(name)
+    return channel
+
+channel = ObjectType('Channel')
+
+@channel.field('parameter')
+def parameter_resolver(channel, info, name):
+    return channel.get_parameter_by_name(name)
+
 type_defs = load_schema_from_path('./graphql')
-schema = make_executable_schema(type_defs, query, subscription)
+schema = make_executable_schema(type_defs, query, instrument, channel, subscription)
 
 app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])

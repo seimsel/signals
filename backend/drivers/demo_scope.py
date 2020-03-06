@@ -40,3 +40,6 @@ class DemoScope:
     def add_channel(self, channel):
         channel.scope = self
         self.channels.append(channel)
+
+    def get_channel_by_name(self, name):
+        return next(filter(lambda channel: channel.name == name, self.channels))

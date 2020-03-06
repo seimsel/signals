@@ -10,6 +10,8 @@ class DemoChannel:
         self.function = function
         self.frequency = frequency
 
+        self.parameters = []
+
     @property
     def y(self):
         return (self.amplitude*self.function(2*pi*self.frequency*self.scope.t)

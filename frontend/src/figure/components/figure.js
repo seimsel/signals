@@ -1,19 +1,21 @@
 import React, { useRef, useLayoutEffect } from 'react';
 import gql from 'graphql-tag';
+import { useParams } from 'react-router';
 import { useSubscription } from '@apollo/react-hooks';
 
 const FIGURE_SUBSCRIPTION = gql`
-    subscription TestSubscription($address: String!) {
-        waveform(instrumentAddress: $address) {
+    subscription TestSubscription($instrumentAddress: String!) {
+        waveform(instrumentAddress: $instrumentAddress) {
             figure
         }
     }
 `;
 
-export function Figure({ address }) {
+export function Figure() {
+    const { instrumentAddress } = useParams();
     const { data } = useSubscription(FIGURE_SUBSCRIPTION, {
         variables: {
-            address
+            instrumentAddress: instrumentAddress.replace(/_/g, '.')
         }
     });
     const container = useRef();
