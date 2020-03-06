@@ -1,20 +1,7 @@
-from numpy import linspace, pi, sin
-from numpy.random import rand
+from numpy import linspace, sin
 from scipy.signal import square
-
-class DemoChannel:
-    def __init__(self, name, amplitude, function, frequency):
-        self.name = name
-        self.active = False
-
-        self.amplitude = amplitude
-        self.function = function
-        self.frequency = frequency
-
-    @property
-    def y(self):
-        return (self.amplitude*self.function(2*pi*self.frequency*self.scope.t)
-            + 0.1*self.amplitude*rand(self.scope.sample_depth))
+from channels.demo import DemoChannel
+from channels.moving_average import MovingAverageChannel
 
 class DemoScope:
     def __init__(self):
@@ -28,8 +15,9 @@ class DemoScope:
         self._t = None
         self._t_needs_refresh = True
 
-        self.add_channel(DemoChannel('C1', amplitude=1, function=square, frequency=100)) 
-        self.add_channel(DemoChannel('C2', amplitude=1, function=sin, frequency=100)) 
+        self.add_channel(DemoChannel('Demo1', amplitude=1, function=square, frequency=100))
+        self.add_channel(DemoChannel('Demo2', amplitude=1, function=sin, frequency=100))
+        self.add_channel(MovingAverageChannel('MovingAverage1', source=self.channels[1], n=16))
 
         for channel in self.channels:
             channel.active = True

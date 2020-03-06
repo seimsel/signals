@@ -1,5 +1,5 @@
 type Query {
-    functions(instrumentAddress: String): [Function]
+    instrument(address: String!): Instrument
 }
 
 type Mutation {
@@ -7,27 +7,19 @@ type Mutation {
 }
 
 type Subscription {
-    waveform(instrumentAddress: String): Waveform
+    waveform(instrumentAddress: String!): Waveform
 }
 
 type Waveform {
-    instrumentAddress: String
+    instrumentAddress: String!
     figure: String
 }
 
-type Function {
-    name: String!
-    instrumentAddress: String!
-    params: [Param]
+type Instrument {
+    address: String!
+    channels: [Channel]
 }
 
-interface Param {
+type Channel {
     name: String!
-}
-
-type IntParam {
-    name: String!
-    value: Int!
-    lowerLimit: Int
-    upperLimit: Int
 }
