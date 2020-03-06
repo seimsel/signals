@@ -1,8 +1,8 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { useParams } from 'react-router';
 import { useQuery } from '@apollo/react-hooks';
-
+import { useParams } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const PARAMETER = gql`
     query Parameter($instrumentAddress: String!, $channelName: String!, $parameterName: String!) {
@@ -33,6 +33,7 @@ export function SingleParameter() {
         <>
             <h2>{ parameterName }</h2>
             <input defaultValue={data.instrument.channel.parameter.value} />
+            <Link to={`/instruments/${instrumentAddress}/channels/${channelName}`}>{`Back to ${channelName}`}</Link>
         </>
     );
 }
