@@ -27,7 +27,11 @@ type Channel {
     parameter(name: String!): Parameter
 }
 
-type Parameter {
+interface Parameter {
+    name: String!
+}
+
+type IntegerParameter implements Parameter {
     name: String!
     value: Int!
 }

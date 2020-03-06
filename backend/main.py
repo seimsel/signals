@@ -75,7 +75,13 @@ channel = ObjectType('Channel')
 def parameter_resolver(channel, info, name):
     return channel.get_parameter_by_name(name)
 
+parameter = InterfaceType('Parameter')
+
+@parameter.type_resolver
+def parameter_type_resolver(obj, *_):
+    return obj.__class__.__name__
+
 type_defs = load_schema_from_path('./graphql')
-schema = make_executable_schema(type_defs, query, instrument, channel, subscription)
+schema = make_executable_schema(type_defs, query, instrument, channel, parameter, subscription)
 
 app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])

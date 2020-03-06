@@ -9,7 +9,9 @@ const PARAMETER = gql`
         instrument(address: $instrumentAddress) {
             channel(name: $channelName) {
                 parameter(name: $parameterName) {
+                ... on IntegerParameter {
                     value
+                }
                 }
             }
         }
