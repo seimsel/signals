@@ -1,5 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/react-hooks';
 
 const LIST_CHANNELS = gql`
@@ -23,9 +24,11 @@ export function ChannelList({ address }) {
         <ul>
         {
             data ? data.instrument.channels.map(channel => (
-                <li key={channel.name}>
-                    { channel.name }
-                </li>
+                <Link to={`/channels/${channel.name}`}>
+                    <li key={channel.name}>
+                        { channel.name }
+                    </li>
+                </Link>
             )) : null
         }
         </ul>
