@@ -9,8 +9,8 @@ export function ChannelList({ channels }) {
         <ul>
         {
             channels.map(channel => (
-                <Link to={`/instruments/${instrumentAddress}/channels/${channel.name}`}>
-                    <li key={channel.name}>
+                <Link key={channel.name} to={`/instruments/${instrumentAddress}/channels/${channel.name}`}>
+                    <li>
                         { channel.name }
                     </li>
                 </Link>

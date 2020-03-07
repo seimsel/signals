@@ -4,14 +4,13 @@ import { Link } from 'react-router-dom';
 
 export function ParameterList({ parameters }) {
     const { instrumentAddress, channelName } = useParams();
-    console.log(parameters)
 
     return (
         <ul>
             {
                 parameters.map(parameter => (
-                    <Link to={`/instruments/${instrumentAddress}/channels/${channelName}/parameters/${parameter.name}`}>
-                        <li key={parameter.name}>
+                    <Link key={parameter.name}to={`/instruments/${instrumentAddress}/channels/${channelName}/parameters/${parameter.name}`}>
+                        <li>
                             { parameter.name }
                         </li>
                     </Link>

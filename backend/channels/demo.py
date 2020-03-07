@@ -1,10 +1,11 @@
 from numpy import linspace, pi
 from numpy.random import rand
 
-class DemoChannel:
+from channel import Channel
+
+class DemoChannel(Channel):
     def __init__(self, name, amplitude, function, frequency):
-        self.name = name
-        self.active = False
+        super().__init__(name)
 
         self.amplitude = amplitude
         self.function = function

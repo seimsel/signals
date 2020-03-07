@@ -1,14 +1,10 @@
 from numpy import convolve, ones
+from parameters import IntegerParameter
+from channel import Channel
 
-class IntegerParameter:
-    def __init__(self, name, initialValue):
-        self.name = name
-        self.value = initialValue
-
-class MovingAverageChannel:
+class MovingAverageChannel(Channel):
     def __init__(self, name, source, n):
-        self.name = name
-        self.active = False
+        super().__init__(name)
         
         self.source = source
         self.n = IntegerParameter('n', n)
