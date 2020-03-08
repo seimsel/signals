@@ -28,6 +28,9 @@ function Editor({ parameter }) {
         case 'IntegerParameter':
             return <input defaultValue={parameter.value} />
 
+        case 'FloatParameter':
+            return <input defaultValue={parameter.value} />
+
         case 'SelectParameter':
             return (
                 <select defaultValue={parameter.value}>
@@ -40,7 +43,7 @@ function Editor({ parameter }) {
             )
     
         default:
-            parameter.value;
+            return parameter.value;
     }
 }
 

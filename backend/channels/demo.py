@@ -3,7 +3,7 @@ from numpy.random import rand
 from scipy.signal import square
 
 from channel import Channel
-from parameters import SelectParameter
+from parameters import FloatParameter, SelectParameter
 
 functions = {
     'sine': sin,
@@ -14,15 +14,22 @@ class DemoChannel(Channel):
     def __init__(self, name, amplitude, function, frequency):
         super().__init__(name)
 
-        self.amplitude = amplitude
         self.function = SelectParameter('Function', function, functions.keys())
-        self.frequency = frequency
+        self.amplitude = FloatParameter('Amplitude', amplitude)
+        self.frequency = FloatParameter('Frequency', frequency)
 
         self.parameters = [
-            self.function
+            self.function,
+            self.amplitude,
+            self.frequency
         ]
 
     @property
     def y(self):
-        return (self.amplitude*functions[self.function.value](2*pi*self.frequency*self.scope.t)
-            + 0.1*self.amplitude*rand(self.scope.sample_depth))
+        function = functions[self.function.value]
+        f = self.frequency.value
+        t = self.scope.t
+        A = self.amplitude.value
+
+        return (A*function(2*pi*f*t)
+            + 0.1*A*rand(len(t)))

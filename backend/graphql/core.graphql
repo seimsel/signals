@@ -39,6 +39,13 @@ type IntegerParameter implements Parameter {
     upperLimit: Int
 }
 
+type FloatParameter implements Parameter {
+    name: String!
+    value: Value!
+    lowerLimit: Float
+    upperLimit: Float
+}
+
 type SelectParameter implements Parameter {
     name: String!
     value: Value!

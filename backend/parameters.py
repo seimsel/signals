@@ -4,8 +4,10 @@ class Parameter:
         self.value = initialValue
 
 class IntegerParameter(Parameter):
-    def __init__(self, name, initialValue):
-        super().__init__(name, initialValue)
+    pass
+
+class FloatParameter(Parameter):
+    pass
 
 class SelectParameter(Parameter):
     def __init__(self, name, initialValue, options):
