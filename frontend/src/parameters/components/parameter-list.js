@@ -16,6 +16,7 @@ export function ParameterList({ parameters }) {
                     </Link>
                 ))
             }
+            <Link key='back' to={`/instruments/${instrumentAddress}`}><li>Back to Instrument</li></Link>
         </ul>
     );
 }

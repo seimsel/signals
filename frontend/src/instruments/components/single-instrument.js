@@ -25,6 +25,9 @@ export function SingleInstrument() {
     if (loading) { return 'Loading'; }
 
     return (
-        <ChannelList channels={data.instrument.channels} />
+        <>
+            <h2>Channels</h2>
+            <ChannelList channels={data.instrument.channels} />
+        </>
     );
 }

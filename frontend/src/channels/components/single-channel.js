@@ -33,7 +33,6 @@ export function SingleChannel() {
         <>
             <h2>{ channelName }</h2>
             <ParameterList parameters={data.instrument.channel.parameters} />
-            <Link to={`/instruments/${instrumentAddress}`}>{'Back to Instrument'}</Link>
         </>
     );
 }
