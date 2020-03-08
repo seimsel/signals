@@ -1,6 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 
@@ -9,9 +9,14 @@ const PARAMETER = gql`
         instrument(address: $instrumentAddress) {
             channel(name: $channelName) {
                 parameter(name: $parameterName) {
-                ... on IntegerParameter {
                     value
-                }
+                    ... on IntegerParameter {
+                        lowerLimit
+                        upperLimit
+                    }
+                    ... on SelectParameter {
+                        options
+                    }
                 }
             }
         }

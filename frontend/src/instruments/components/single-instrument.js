@@ -1,7 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useParams } from 'react-router';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { ChannelList } from '../../channels/components/channel-list';
 
 const INSTRUMENT = gql`

@@ -1,6 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ParameterList } from '../../parameters/components/parameter-list';

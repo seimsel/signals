@@ -29,9 +29,20 @@ type Channel {
 
 interface Parameter {
     name: String!
+    value: Value!
 }
 
 type IntegerParameter implements Parameter {
     name: String!
-    value: Int!
+    value: Value!
+    lowerLimit: Int
+    upperLimit: Int
 }
+
+type SelectParameter implements Parameter {
+    name: String!
+    value: Value!
+    options: [String]
+}
+
+scalar Value

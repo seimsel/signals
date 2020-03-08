@@ -1,12 +1,8 @@
 import React from 'react';
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
+import { ApolloClient, ApolloProvider, ApolloLink, InMemoryCache, HttpLink, split } from '@apollo/client';
 import { WebSocketLink } from 'apollo-link-ws';
 import { onError } from 'apollo-link-error';
-import { ApolloLink, split } from 'apollo-link';
 import { getMainDefinition } from 'apollo-utilities';
-import { ApolloProvider } from '@apollo/react-hooks';
 
 const httpLink = new HttpLink({
     uri: 'http://localhost:8000/graphql/'
@@ -51,7 +47,14 @@ const client = new ApolloClient({
         errorHandler,
         link
     ]),
-    cache: new InMemoryCache()
+    cache: new InMemoryCache({
+        possibleTypes: {
+            'Parameter': [
+                'IntegerParameter',
+                'SelectionParameter'
+            ]
+        }
+    })
 });
 
 export function ApiProvider({ children }) {

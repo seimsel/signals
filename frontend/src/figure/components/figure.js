@@ -1,7 +1,7 @@
 import React, { useRef, useLayoutEffect } from 'react';
 import gql from 'graphql-tag';
 import { useParams } from 'react-router';
-import { useSubscription } from '@apollo/react-hooks';
+import { useSubscription } from '@apollo/client';
 
 const FIGURE_SUBSCRIPTION = gql`
     subscription TestSubscription($instrumentAddress: String!) {
