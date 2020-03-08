@@ -23,6 +23,27 @@ const PARAMETER = gql`
     }
 `;
 
+function Editor({ parameter }) {
+    switch (parameter.__typename) {
+        case 'IntegerParameter':
+            return <input defaultValue={parameter.value} />
+
+        case 'SelectParameter':
+            return (
+                <select defaultValue={parameter.value}>
+                    {
+                        parameter.options.map(option => (
+                            <option>{ option }</option>
+                        ))
+                    }
+                </select>
+            )
+    
+        default:
+            parameter.value;
+    }
+}
+
 export function SingleParameter() {
     const { instrumentAddress, channelName, parameterName } = useParams();
     const { data, loading } = useQuery(PARAMETER, {
@@ -33,13 +54,12 @@ export function SingleParameter() {
         }
     });
 
-
     if (loading) { return 'Loading'; }
 
     return (
         <>
             <h2>{ parameterName }</h2>
-            <input defaultValue={data.instrument.channel.parameter.value} />
+            <Editor parameter={data.instrument.channel.parameter} />
             <Link to={`/instruments/${instrumentAddress}/channels/${channelName}`}>{`Back to ${channelName}`}</Link>
         </>
     );
