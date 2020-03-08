@@ -3,7 +3,12 @@ type Query {
 }
 
 type Mutation {
-    _unused: Boolean
+    updateParameter(name: String!, value: Value!): MutationResponse
+}
+
+type MutationResponse {
+    success: Boolean
+    errorMessage: String
 }
 
 type Subscription {
