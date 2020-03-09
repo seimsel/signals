@@ -1,21 +1,23 @@
 import React from 'react';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
+import { List } from 'antd';
 
 export function ChannelList({ channels }) {
+    const history = useHistory();
     const { instrumentAddress } = useParams();
 
     return (
-        <ul>
-        {
-            channels.map(channel => (
-                <Link key={channel.name} to={`/instruments/${instrumentAddress}/channels/${channel.name}`}>
-                    <li>
-                        { channel.name }
-                    </li>
-                </Link>
-            ))
-        }
-        </ul>
+        <List
+            dataSource={channels}
+            renderItem={channel => (
+                <List.Item
+                    key={channel.name}
+                    onClick={() => history.push(`/instruments/${instrumentAddress}/channels/${channel.name}`)}
+                >
+                    { channel.name }
+                </List.Item>
+            )}
+        />
     );
 }

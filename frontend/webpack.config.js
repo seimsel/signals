@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const package = require('./package.json');
+const { dark } = require('./theme');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -39,6 +40,10 @@ module.exports = {
                                 '@babel/preset-react'
                             ],
                             plugins: [
+                                ['import', {
+                                    libraryName: 'antd',
+                                    style: true
+                                }],
                                 isDevelopment && 'react-refresh/babel'
                             ].filter(Boolean),
                         }
@@ -46,31 +51,18 @@ module.exports = {
                 ]
             },
             {
-                test: /\.module\.scss$/,
-                exclude: /node_modules/,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: true
-                        }
-                    },
-                    'sass-loader'
-                ]
-            },
-            {
-                test: /(?<!\.module)\.scss$/,
-                exclude: /node_modules/,
-                use: [
-                    'style-loader',
-                    'css-loader',
-                    'sass-loader'
-                ]
-            },
-            {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader']
+                test: /\.less$/,
+                use: [{
+                    loader: "style-loader"
+                }, {
+                    loader: "css-loader"
+                }, {
+                    loader: "less-loader",
+                    options: {
+                        modifyVars: dark,
+                        javascriptEnabled: true
+                    }
+                }]
             }
         ]
     },
