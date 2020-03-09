@@ -1,6 +1,6 @@
 from io import BytesIO
 from pathlib import Path
-from ariadne import load_schema_from_path, make_executable_schema, ObjectType, SubscriptionType, InterfaceType
+from ariadne import load_schema_from_path, make_executable_schema, ObjectType, MutationType, SubscriptionType, InterfaceType
 from ariadne.asgi import GraphQL
 from starlette.middleware.cors import CORSMiddleware
 from matplotlib.figure import Figure
@@ -51,6 +51,20 @@ async def waveform_generator(obj, info, instrumentAddress):
 def waveform_resolver(waveform, info, instrumentAddress):
     return waveform
 
+mutation = MutationType()
+
+@mutation.field('updateParameter')
+def update_parameter(mutation, info, instrumentAddress, channelName, parameterName, value):
+    instrument = State.instruments[instrumentAddress]
+    channel = instrument.get_channel_by_name(channelName)
+    parameter = channel.get_parameter_by_name(parameterName)
+    parameter.value = value
+
+    return {
+        'success': True,
+        'errorMessage': None
+    }
+
 query = ObjectType('Query')
 
 @query.field('instrument')
@@ -82,6 +96,6 @@ def parameter_type_resolver(obj, *_):
     return obj.__class__.__name__
 
 type_defs = load_schema_from_path('./graphql')
-schema = make_executable_schema(type_defs, query, instrument, channel, parameter, subscription)
+schema = make_executable_schema(type_defs, query, mutation, instrument, channel, parameter, subscription)
 
 app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
