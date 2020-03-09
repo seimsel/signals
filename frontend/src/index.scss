@@ -47,10 +47,17 @@ ul {
 
     a {
         text-decoration: none;
+        
+        li {
+            padding: 12px 24px;
+        }
+
+        &:not(:last-child) {
+            li {
+                border-bottom: solid 1px #333333;
+            }
+        }
     }
 
-    li {
-        padding: 12px 24px;
-        border: solid 1px;
-    }
+
 }
