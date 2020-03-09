@@ -1,4 +1,5 @@
 from io import BytesIO
+from re import sub
 from pathlib import Path
 from ariadne import load_schema_from_path, make_executable_schema, ObjectType, MutationType, SubscriptionType, InterfaceType
 from ariadne.asgi import GraphQL
@@ -55,7 +56,7 @@ mutation = MutationType()
 
 @mutation.field('updateParameter')
 def update_parameter(mutation, info, instrumentAddress, channelName, parameterName, value):
-    instrument = State.instruments[instrumentAddress]
+    instrument = State.instruments[sub(r'_', '.', instrumentAddress)]
     channel = instrument.get_channel_by_name(channelName)
     parameter = channel.get_parameter_by_name(parameterName)
     parameter.value = value
