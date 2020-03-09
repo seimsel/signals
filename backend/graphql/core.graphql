@@ -3,7 +3,12 @@ type Query {
 }
 
 type Mutation {
-    updateParameter(name: String!, value: Value!): MutationResponse
+    updateParameter(
+        instrumentAddress: String!,
+        channelName: String!,
+        parameterName: String!,
+        value: Value!
+    ): MutationResponse
 }
 
 type MutationResponse {
