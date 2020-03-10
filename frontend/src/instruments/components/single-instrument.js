@@ -8,7 +8,9 @@ import { ChannelList } from '../../channels/components/channel-list';
 const INSTRUMENT = gql`
     query Instrument($address: String!) {
         instrument(address: $address) {
+            id
             channels {
+                id
                 name
             }
         }

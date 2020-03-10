@@ -1,7 +1,9 @@
 from numpy import linspace
 
 class Scope:
-    def __init__(self):
+    def __init__(self, address):
+        self.id = id(self)
+        self.address = address
         self.channels = []
 
         self._t = None

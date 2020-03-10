@@ -7,8 +7,11 @@ import { PageHeader, InputNumber, Select } from 'antd';
 const PARAMETER = gql`
     query Parameter($instrumentAddress: String!, $channelName: String!, $parameterName: String!) {
         instrument(address: $instrumentAddress) {
+            id
             channel(name: $channelName) {
+                id
                 parameter(name: $parameterName) {
+                    id
                     value
                     ... on IntegerParameter {
                         lowerLimit

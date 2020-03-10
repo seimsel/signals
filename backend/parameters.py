@@ -1,5 +1,6 @@
 class Parameter:
     def __init__(self, name, initialValue):
+        self.id = id(self)
         self.name = name
         self.value = initialValue
 

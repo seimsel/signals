@@ -8,9 +8,12 @@ import { ParameterList } from '../../parameters/components/parameter-list';
 const CHANNEL = gql`
     query Channel($instrumentAddress: String!, $channelName: String!) {
         instrument(address: $instrumentAddress) {
+            id
             channel(name: $channelName) {
+                id
                 name
                 parameters {
+                    id
                     name
                 }
             }

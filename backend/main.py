@@ -17,7 +17,7 @@ style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
 class State:
     instruments = {
-        'scope1.demo': DemoScope()
+        'scope1.demo': DemoScope('scope1.demo')
     }
 
 @subscription.source('waveform')
@@ -71,16 +71,13 @@ query = ObjectType('Query')
 @query.field('instrument')
 def instrument_resolver(query, info, address):
     instrument = State.instruments[address]
-    return {
-        'address': address,
-        'channels': instrument.channels
-    }
+    return instrument
 
 instrument = ObjectType('Instrument')
 
 @instrument.field('channel')
 def channel_resolver(instrument, info, name):
-    instrument = State.instruments[instrument['address']]
+    instrument = State.instruments[instrument.address]
     channel = instrument.get_channel_by_name(name)
     return channel
 
