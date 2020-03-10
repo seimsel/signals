@@ -25,14 +25,15 @@ export function SingleInstrument() {
         }
     });
 
-    if (loading) { return 'Loading'; }
-
     return (
         <>
             <PageHeader
                 title={instrumentAddress}
             />
-            <ChannelList channels={data.instrument.channels} />
+            <ChannelList
+                channels={data ? data.instrument.channels : []}
+                loading={loading}
+            />
         </>
     );
 }

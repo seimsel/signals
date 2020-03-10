@@ -3,7 +3,7 @@ import { useParams, useHistory } from 'react-router';
 import { List } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
 
-export function ChannelList({ channels }) {
+export function ChannelList({ channels, ...props }) {
     const history = useHistory();
     const { instrumentAddress } = useParams();
 
@@ -19,6 +19,7 @@ export function ChannelList({ channels }) {
                     { channel.name }
                 </List.Item>
             )}
+            {...props}
         />
     );
 }

@@ -30,8 +30,6 @@ export function SingleChannel() {
             channelName
         }
     });
-
-    if (loading) { return 'Loading'; }
     
     return (
         <>
@@ -39,7 +37,10 @@ export function SingleChannel() {
                 title={channelName}
                 onBack={() => history.push(`/instruments/${instrumentAddress}`)}
             />
-            <ParameterList parameters={data.instrument.channel.parameters} />
+            <ParameterList
+                parameters={data ? data.instrument.channel.parameters : []}
+                loading={loading}
+            />
         </>
     );
 }

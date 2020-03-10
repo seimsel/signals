@@ -2,7 +2,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/client';
 import { useParams, useHistory } from 'react-router';
-import { PageHeader, InputNumber, Select } from 'antd';
+import { PageHeader, InputNumber, Select, Spin } from 'antd';
 
 const PARAMETER = gql`
     query Parameter($instrumentAddress: String!, $channelName: String!, $parameterName: String!) {
@@ -45,7 +45,11 @@ const UPDATE_PARAMETER = gql`
     }
 `;
 
-function Editor({ parameter, update }) {
+function Editor({ parameter, update, loading }) {
+    if (loading) {
+        return <Spin spinning={true} />
+    }
+
     switch (parameter.__typename) {
         case 'IntegerParameter':
             return (
@@ -126,15 +130,17 @@ export function SingleParameter() {
         }
     })
 
-    if (loading) { return 'Loading'; }
-
     return (
         <>
             <PageHeader
                 title={parameterName}
                 onBack={() => history.push(`/instruments/${instrumentAddress}/channels/${channelName}`)}
             />
-            <Editor parameter={data.instrument.channel.parameter} update={update} />
+            <Editor
+                parameter={data ? data.instrument.channel.parameter : {}}
+                update={update}
+                loading={loading}
+            />
         </>
     );
 }
