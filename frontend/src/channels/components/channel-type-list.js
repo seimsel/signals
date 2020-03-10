@@ -17,7 +17,7 @@ const CHANNEL_TYPES = gql`
     }
 `;
 
-export function AvailableChannelList() {
+export function ChannelTypeList() {
     const history = useHistory();
     const { instrumentAddress } = useParams();
     const { data, loading } = useQuery(CHANNEL_TYPES, {

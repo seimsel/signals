@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useHistory } from 'react-router';
 import { PageHeader } from 'antd';
-import { AvailableChannelList } from './available-channel-list';
+import { ChannelTypeList } from './channel-type-list';
 
 export function AddChannel() {
     const history = useHistory()
@@ -10,10 +10,10 @@ export function AddChannel() {
     return (
         <>
             <PageHeader
-                title={'Available Channels'}
+                title={'Channel Types'}
                 onBack={() => history.push(`/instruments/${instrumentAddress}`)}
             />
-            <AvailableChannelList />
+            <ChannelTypeList />
         </>
     );
 }
