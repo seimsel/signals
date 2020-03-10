@@ -15,6 +15,14 @@ const CHANNEL = gql`
                 parameters {
                     id
                     name
+                    value
+                    ... on IntegerParameter {
+                        lowerLimit
+                        upperLimit
+                    }
+                    ... on SelectParameter {
+                        options
+                    }
                 }
             }
         }
