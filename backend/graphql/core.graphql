@@ -25,7 +25,7 @@ type Instrument {
     address: String!
     channels: [Channel]
     channel(name: String!): Channel
-    availableChannels: [ChannelType]
+    channelTypes: [ChannelType]
 }
 
 type Channel {

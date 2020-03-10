@@ -5,12 +5,6 @@ class Scope:
         self.id = id(self)
         self.address = address
         self.channels = []
-        self.available_channels = [
-            {
-                'id': '1',
-                'name': 'DemoChannel'
-            }
-        ]
 
         self._t = None
         self._t_needs_refresh = True

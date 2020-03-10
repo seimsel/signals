@@ -5,11 +5,11 @@ import { useParams, useHistory } from 'react-router';
 import { List, Button, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-const AVAILABLE_CHANNELS = gql`
-    query AvailableChannels($instrumentAddress: String!) {
+const CHANNEL_TYPES = gql`
+    query ChannelTypes($instrumentAddress: String!) {
         instrument(address: $instrumentAddress) {
             id
-            availableChannels {
+            channelTypes {
                 id
                 name
             }
@@ -20,26 +20,26 @@ const AVAILABLE_CHANNELS = gql`
 export function AvailableChannelList() {
     const history = useHistory();
     const { instrumentAddress } = useParams();
-    const { data, loading } = useQuery(AVAILABLE_CHANNELS, {
+    const { data, loading } = useQuery(CHANNEL_TYPES, {
         variables: {
             instrumentAddress: instrumentAddress.replace(/_/g, '.')
         }
     });
 
-    const availableChannels = data ? data.instrument.availableChannels : [];
+    const channelTypes = data ? data.instrument.channelTypes : [];
 
     return (
         <List
             loading={loading}
-            dataSource={availableChannels}
-            renderItem={channel => (
+            dataSource={channelTypes}
+            renderItem={channelType => (
                 <List.Item
                     extra={<PlusOutlined />}
-                    key={channel.name}
-                    title={channel.name}
+                    key={channelType.name}
+                    title={channelType.name}
                 >
                     <List.Item.Meta
-                        title={channel.name}
+                        title={channelType.name}
                     />
                 </List.Item>
             )}

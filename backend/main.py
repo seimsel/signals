@@ -77,9 +77,14 @@ def channel_resolver(instrument, info, name):
     channel = instrument.get_channel_by_name(name)
     return channel
 
-@instrument.field('availableChannels')
-def available_channel_resolver(instrument, info):
-    return instrument.available_channels
+@instrument.field('channelTypes')
+def channel_types_resolver(instrument, info):
+    return map(
+        lambda channel_type: {
+            'id': id(channel_type),
+            'name': channel_type.__name__
+        },
+        instrument.channel_types)
 
 channel = ObjectType('Channel')
 
