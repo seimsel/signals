@@ -17,8 +17,9 @@ const UPDATE_PARAMETER = gql`
             parameterName: $parameterName
             value: $value
         ) {
-            success
-            errorMessage
+            id
+            name
+            value
         }
     }
 `;

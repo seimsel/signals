@@ -8,12 +8,7 @@ type Mutation {
         channelName: String!,
         parameterName: String!,
         value: Value!
-    ): MutationResponse
-}
-
-type MutationResponse {
-    success: Boolean
-    errorMessage: String
+    ): Parameter
 }
 
 type Subscription {

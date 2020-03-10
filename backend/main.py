@@ -61,10 +61,7 @@ def update_parameter(mutation, info, instrumentAddress, channelName, parameterNa
     parameter = channel.get_parameter_by_name(parameterName)
     parameter.value = value
 
-    return {
-        'success': True,
-        'errorMessage': None
-    }
+    return parameter
 
 query = ObjectType('Query')
 
