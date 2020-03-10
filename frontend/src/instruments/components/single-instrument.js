@@ -2,6 +2,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useParams } from 'react-router';
 import { useQuery } from '@apollo/client';
+import { PageHeader } from 'antd';
 import { ChannelList } from '../../channels/components/channel-list';
 
 const INSTRUMENT = gql`
@@ -26,7 +27,9 @@ export function SingleInstrument() {
 
     return (
         <>
-            <h2>Channels</h2>
+            <PageHeader
+                title={instrumentAddress}
+            />
             <ChannelList channels={data.instrument.channels} />
         </>
     );

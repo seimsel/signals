@@ -1,8 +1,8 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client';
-import { useParams } from 'react-router';
-import { Link } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router';
+import { PageHeader } from 'antd';
 import { ParameterList } from '../../parameters/components/parameter-list';
 
 const CHANNEL = gql`
@@ -19,6 +19,7 @@ const CHANNEL = gql`
 `;
 
 export function SingleChannel() {
+    const history = useHistory()
     const { instrumentAddress, channelName } = useParams();
     const { data, loading } = useQuery(CHANNEL, {
         variables: {
@@ -31,7 +32,10 @@ export function SingleChannel() {
     
     return (
         <>
-            <h2>{ channelName }</h2>
+            <PageHeader
+                title={channelName}
+                onBack={() => history.push(`/instruments/${instrumentAddress}`)}
+            />
             <ParameterList parameters={data.instrument.channel.parameters} />
         </>
     );

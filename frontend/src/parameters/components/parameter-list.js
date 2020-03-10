@@ -1,22 +1,24 @@
 import React from 'react';
-import { useParams } from 'react-router';
-import { Link } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router';
+import { List } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
 
 export function ParameterList({ parameters }) {
+    const history = useHistory();
     const { instrumentAddress, channelName } = useParams();
 
     return (
-        <ul>
-            {
-                parameters.map(parameter => (
-                    <Link key={parameter.name}to={`/instruments/${instrumentAddress}/channels/${channelName}/parameters/${parameter.name}`}>
-                        <li>
-                            { parameter.name }
-                        </li>
-                    </Link>
-                ))
-            }
-            <Link key='back' to={`/instruments/${instrumentAddress}`}><li>Back to Instrument</li></Link>
-        </ul>
+        <List
+            dataSource={parameters}
+            renderItem={parameter => (
+                <List.Item
+                    extra={<RightOutlined />}
+                    key={parameter.name}
+                    onClick={() => history.push(`/instruments/${instrumentAddress}/channels/${channelName}/parameters/${parameter.name}`)}
+                >
+                    { parameter.name }
+                </List.Item>
+            )}
+        />
     );
 }

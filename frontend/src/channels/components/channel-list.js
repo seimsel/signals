@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useHistory } from 'react-router';
-import { Link } from 'react-router-dom';
 import { List } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
 
 export function ChannelList({ channels }) {
     const history = useHistory();
@@ -12,6 +12,7 @@ export function ChannelList({ channels }) {
             dataSource={channels}
             renderItem={channel => (
                 <List.Item
+                    extra={<RightOutlined />}
                     key={channel.name}
                     onClick={() => history.push(`/instruments/${instrumentAddress}/channels/${channel.name}`)}
                 >

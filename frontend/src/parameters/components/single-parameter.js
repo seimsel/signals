@@ -1,8 +1,8 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/client';
-import { useParams } from 'react-router';
-import { Link } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router';
+import { PageHeader, InputNumber, Select } from 'antd';
 
 const PARAMETER = gql`
     query Parameter($instrumentAddress: String!, $channelName: String!, $parameterName: String!) {
@@ -46,7 +46,7 @@ function Editor({ parameter, update }) {
     switch (parameter.__typename) {
         case 'IntegerParameter':
             return (
-                <input
+                <InputNumber
                     defaultValue={parameter.value}
                     onKeyPress={({ key, target: { value }}) => {
                         if (key === 'Enter') {
@@ -62,7 +62,7 @@ function Editor({ parameter, update }) {
 
         case 'FloatParameter':
             return (
-                <input
+                <InputNumber
                     defaultValue={parameter.value}
                     onKeyPress={({ key, target: { value }}) => {
                         if (key === 'Enter') {
@@ -78,8 +78,9 @@ function Editor({ parameter, update }) {
 
         case 'SelectParameter':
             return (
-                <select defaultValue={parameter.value}
-                    onChange={({ target: { value }}) => update({
+                <Select
+                    defaultValue={parameter.value}
+                    onChange={value => update({
                         variables: {
                             value
                         }
@@ -87,10 +88,14 @@ function Editor({ parameter, update }) {
                 >
                     {
                         parameter.options.map(option => (
-                            <option>{ option }</option>
+                            <Select.Option
+                                key={option}
+                            >
+                                { option }
+                            </Select.Option>
                         ))
                     }
-                </select>
+                </Select>
             )
     
         default:
@@ -99,6 +104,7 @@ function Editor({ parameter, update }) {
 }
 
 export function SingleParameter() {
+    const history = useHistory();
     const { instrumentAddress, channelName, parameterName } = useParams();
     const { data, loading } = useQuery(PARAMETER, {
         variables: {
@@ -119,9 +125,11 @@ export function SingleParameter() {
 
     return (
         <>
-            <h2>{ parameterName }</h2>
+            <PageHeader
+                title={parameterName}
+                onBack={() => history.push(`/instruments/${instrumentAddress}/channels/${channelName}`)}
+            />
             <Editor parameter={data.instrument.channel.parameter} update={update} />
-            <Link to={`/instruments/${instrumentAddress}/channels/${channelName}`}>{`Back to ${channelName}`}</Link>
         </>
     );
 }
