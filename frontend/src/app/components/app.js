@@ -5,6 +5,7 @@ import { Layout } from 'antd';
 import { ApiProvider } from '../../api/components/api-provider';
 import { SingleInstrument } from '../../instruments/components/single-instrument';
 import { SingleChannel } from '../../channels/components/single-channel';
+import { AddChannel } from '../../channels/components/add-channel';
 import { Figure } from '../../figure/components/figure';
 
 export function App() {
@@ -14,6 +15,7 @@ export function App() {
                 <Layout style={{height:"100vh"}}>
                     <Layout.Sider>
                         <Switch>
+                            <Route path='/instruments/:instrumentAddress/channels/add' component={AddChannel} />
                             <Route path='/instruments/:instrumentAddress/channels/:channelName' component={SingleChannel} />
                             <Route path='/instruments/:instrumentAddress' component={SingleInstrument} />
                         </Switch>

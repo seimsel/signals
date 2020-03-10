@@ -2,8 +2,8 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client';
 import { useParams, useHistory } from 'react-router';
-import { List } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
+import { List, Button, Row, Col } from 'antd';
+import { RightOutlined, PlusOutlined } from '@ant-design/icons';
 
 const CHANNELS = gql`
     query Channels($instrumentAddress: String!) {
@@ -32,6 +32,20 @@ export function ChannelList() {
         <List
             loading={loading}
             dataSource={channels}
+            footer={
+                <Row
+                    justify='center'
+                >
+                    <Col>
+                        <Button
+                            icon={<PlusOutlined />}
+                            onClick={() => history.push(`/instruments/${instrumentAddress}/channels/add`)}
+                        >
+                            Add Channel
+                        </Button>
+                    </Col>
+                </Row>
+            }
             renderItem={channel => (
                 <List.Item
                     extra={<RightOutlined />}

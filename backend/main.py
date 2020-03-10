@@ -74,9 +74,12 @@ instrument = ObjectType('Instrument')
 
 @instrument.field('channel')
 def channel_resolver(instrument, info, name):
-    instrument = State.instruments[instrument.address]
     channel = instrument.get_channel_by_name(name)
     return channel
+
+@instrument.field('availableChannels')
+def available_channel_resolver(instrument, info):
+    return instrument.available_channels
 
 channel = ObjectType('Channel')
 

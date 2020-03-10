@@ -25,6 +25,7 @@ type Instrument {
     address: String!
     channels: [Channel]
     channel(name: String!): Channel
+    availableChannels: [ChannelType]
 }
 
 type Channel {
@@ -32,6 +33,11 @@ type Channel {
     name: String!
     parameters: [Parameter]
     parameter(name: String!): Parameter
+}
+
+type ChannelType {
+    id: String!
+    name: String!
 }
 
 interface Parameter {
