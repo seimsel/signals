@@ -1,8 +1,32 @@
 import React from 'react';
-import { useParams } from 'react-router';
 import gql from 'graphql-tag';
-import { useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
+import { useParams } from 'react-router';
 import { List, InputNumber, Select } from 'antd';
+
+const PARAMETERS = gql`
+    query Parameters($instrumentAddress: String!, $channelName: String!) {
+        instrument(address: $instrumentAddress) {
+            id
+            channel(name: $channelName) {
+                id
+                name
+                parameters {
+                    id
+                    name
+                    value
+                    ... on IntegerParameter {
+                        lowerLimit
+                        upperLimit
+                    }
+                    ... on SelectParameter {
+                        options
+                    }
+                }
+            }
+        }
+    }
+`;
 
 const UPDATE_PARAMETER = gql`
     mutation UpdateParameter(
@@ -95,11 +119,20 @@ function Editor({ instrumentAddress, channelName, parameter }) {
     }
 }
 
-export function ParameterList({ parameters, ...props }) {
+export function ParameterList() {
     const { instrumentAddress, channelName } = useParams();
+    const { data, loading } = useQuery(PARAMETERS, {
+        variables: {
+            instrumentAddress: instrumentAddress.replace(/_/g, '.'),
+            channelName
+        }
+    });
+
+    const parameters = data ? data.instrument.channel.parameters : [];
 
     return (
         <List
+            loading={loading}
             itemLayout='vertical'
             dataSource={parameters}
             renderItem={parameter => (
@@ -116,7 +149,6 @@ export function ParameterList({ parameters, ...props }) {
                     />
                 </List.Item>
             )}
-            {...props}
         />
     );
 }

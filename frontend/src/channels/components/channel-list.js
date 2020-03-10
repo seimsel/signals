@@ -1,14 +1,36 @@
 import React from 'react';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/client';
 import { useParams, useHistory } from 'react-router';
 import { List } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
 
-export function ChannelList({ channels, ...props }) {
+const CHANNELS = gql`
+    query Channels($instrumentAddress: String!) {
+        instrument(address: $instrumentAddress) {
+            id
+            channels {
+                id
+                name
+            }
+        }
+    }
+`;
+
+export function ChannelList() {
     const history = useHistory();
     const { instrumentAddress } = useParams();
+    const { data, loading } = useQuery(CHANNELS, {
+        variables: {
+            instrumentAddress: instrumentAddress.replace(/_/g, '.')
+        }
+    });
+
+    const channels = data ? data.instrument.channels : [];
 
     return (
         <List
+            loading={loading}
             dataSource={channels}
             renderItem={channel => (
                 <List.Item
@@ -22,7 +44,6 @@ export function ChannelList({ channels, ...props }) {
                     />
                 </List.Item>
             )}
-            {...props}
         />
     );
 }
