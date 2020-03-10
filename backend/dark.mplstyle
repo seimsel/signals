@@ -1,9 +1,9 @@
 lines.linewidth: 1.0
-axes.facecolor: 1e1e1e
+axes.facecolor: 1f1f1f
 axes.linewidth: 0
 axes.grid: True
 axes.prop_cycle: cycler('color', ['f7c548', 'c3423f', '5bc0eb', '9bc53d'])
-grid.color: 333333
+grid.color: 303030
 figure.constrained_layout.use: True
 figure.facecolor: 1e1e1e
 xtick.bottom: False

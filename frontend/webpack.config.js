@@ -2,7 +2,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const package = require('./package.json');
-const { dark } = require('./theme');
+// const { dark } = require('./theme');
+const dark = require('antd/dist/dark-theme');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 

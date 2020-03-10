@@ -48,14 +48,15 @@ function Editor({ parameter, update }) {
             return (
                 <InputNumber
                     defaultValue={parameter.value}
-                    onKeyPress={({ key, target: { value }}) => {
-                        if (key === 'Enter') {
-                            update({
-                                variables: {
-                                    value: parseInt(value)
-                                }
-                            })
+                    onChange={value => {
+                        if (value === '') {
+                            return;
                         }
+                        update({
+                            variables: {
+                                value: parseInt(value)
+                            }
+                        })
                     }}
                 />
             )
@@ -64,14 +65,15 @@ function Editor({ parameter, update }) {
             return (
                 <InputNumber
                     defaultValue={parameter.value}
-                    onKeyPress={({ key, target: { value }}) => {
-                        if (key === 'Enter') {
-                            update({
-                                variables: {
-                                    value: parseFloat(value)
-                                }
-                            })
+                    onChange={value => {
+                        if (value === '') {
+                            return;
                         }
+                        update({
+                            variables: {
+                                value: parseFloat(value)
+                            }
+                        })
                     }}
                 />
             )

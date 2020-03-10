@@ -33,6 +33,10 @@ export function Figure() {
     });
 
     return (
-        <div className='figure' dangerouslySetInnerHTML={{ __html: figure }} ref={container} />
+        <div
+            style={{ width: '100%', height: '100%' }}
+            dangerouslySetInnerHTML={{ __html: figure }}
+            ref={container}
+        />
     );
 }

@@ -12,8 +12,8 @@ export function App() {
     return (
         <ApiProvider>
             <Router>
-                <Layout>
-                    <Layout.Sider >
+                <Layout style={{height:"100vh"}}>
+                    <Layout.Sider>
                         <Switch>
                             <Route path='/instruments/:instrumentAddress/channels/:channelName/parameters/:parameterName' component={SingleParameter} />
                             <Route path='/instruments/:instrumentAddress/channels/:channelName' component={SingleChannel} />
