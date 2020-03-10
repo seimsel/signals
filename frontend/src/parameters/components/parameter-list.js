@@ -16,7 +16,9 @@ export function ParameterList({ parameters, ...props }) {
                     key={parameter.name}
                     onClick={() => history.push(`/instruments/${instrumentAddress}/channels/${channelName}/parameters/${parameter.name}`)}
                 >
-                    { parameter.name }
+                    <List.Item.Meta
+                        title={parameter.name}
+                    />
                 </List.Item>
             )}
             {...props}

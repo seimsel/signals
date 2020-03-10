@@ -14,9 +14,12 @@ export function ChannelList({ channels, ...props }) {
                 <List.Item
                     extra={<RightOutlined />}
                     key={channel.name}
+                    title={channel.name}
                     onClick={() => history.push(`/instruments/${instrumentAddress}/channels/${channel.name}`)}
                 >
-                    { channel.name }
+                    <List.Item.Meta
+                        title={channel.name}
+                    />
                 </List.Item>
             )}
             {...props}
