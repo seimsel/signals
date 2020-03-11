@@ -2,7 +2,6 @@ class Channel:
     def __init__(self, name):
         self.id = id(self)
         self.name = name
-        self.active = False
 
         self.parameters = []
 

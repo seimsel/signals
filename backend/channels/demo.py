@@ -11,12 +11,12 @@ functions = {
 }
 
 class DemoChannel(Channel):
-    def __init__(self, name, amplitude, function, frequency):
+    def __init__(self, name):
         super().__init__(name)
 
-        self.function = SelectParameter('Function', function, functions.keys())
-        self.amplitude = FloatParameter('Amplitude', amplitude)
-        self.frequency = FloatParameter('Frequency', frequency)
+        self.function = SelectParameter('Function', 'sine', functions.keys())
+        self.amplitude = FloatParameter('Amplitude', 1)
+        self.frequency = FloatParameter('Frequency', 1000)
 
         self.parameters = [
             self.function,

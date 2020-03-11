@@ -9,6 +9,11 @@ type Mutation {
         parameterName: String!,
         value: Value!
     ): Parameter
+
+    createChannel(
+        instrumentAddress: String!,
+        channelTypeName: String!
+    ): Channel
 }
 
 type Subscription {

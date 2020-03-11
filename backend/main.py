@@ -28,11 +28,6 @@ async def waveform_generator(obj, info, instrumentAddress):
 
     while True:
         for channel in instrument.channels:
-            if not channel.active:
-                if channel.name in lines:
-                    del lines[channel.name]
-                    continue
-
             if not channel.name in lines:
                 lines[channel.name] = figure.gca().plot(instrument.t, channel.y)[0]
             else:
@@ -62,6 +57,18 @@ def update_parameter(mutation, info, instrumentAddress, channelName, parameterNa
     parameter.value = value
 
     return parameter
+
+@mutation.field('createChannel')
+def update_parameter(mutation, info, instrumentAddress, channelTypeName):
+    instrument = State.instruments[sub(r'_', '.', instrumentAddress)]
+    channel_number = len(instrument.channels)
+    channel_type = instrument.get_channel_type_by_name(channelTypeName)
+    channel = channel_type(f'{channelTypeName}{channel_number}')
+    instrument.add_channel(channel)
+
+    print(channel)
+
+    return channel
 
 query = ObjectType('Query')
 

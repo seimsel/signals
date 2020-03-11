@@ -3,11 +3,11 @@ from parameters import IntegerParameter
 from channel import Channel
 
 class MovingAverageChannel(Channel):
-    def __init__(self, name, source, n):
+    def __init__(self, name):
         super().__init__(name)
         
-        self.source = source
-        self.n = IntegerParameter('n', n)
+        self.source = None
+        self.n = IntegerParameter('n', 16)
         
         self.parameters = [
             self.n
