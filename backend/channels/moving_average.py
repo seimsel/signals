@@ -3,8 +3,8 @@ from parameters import IntegerParameter, SourceParameter
 from channel import Channel
 
 class MovingAverageChannel(Channel):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__()
         
         self.source = SourceParameter('Source', self)
         self.n = IntegerParameter('n', 16)
@@ -16,12 +16,13 @@ class MovingAverageChannel(Channel):
 
     @property
     def y(self):
-        if not self.source.value:
-            return zeros(self.scope.sample_depth)
-
         source = self.scope.get_channel_by_name(self.source.value)
+        t, y = source.data
+        self.start_time = source.start_time
+        self.end_time = source.end_time
+        self.sample_depth = source.sample_depth
 
-        return convolve(source.y, ones(self.n.value), 'same') / self.n.value
+        return convolve(y, ones(self.n.value), 'same') / self.n.value
 
     def get_parameter_by_name(self, name):
         return next(filter(lambda parameter: parameter.name == name, self.parameters))

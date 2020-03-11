@@ -1,35 +1,22 @@
+import vxi11
 import struct
 import numpy as np
 from enum import Enum
-from vxi11 import Instrument
 from scope import Scope
 from channel import Channel
 from channels.moving_average import MovingAverageChannel
 from parameters import SelectParameter
 
 class LeCroyChannel(Channel):
-    def __init__(self, name):
-        super().__init__(name)
-        self.source = SelectParameter('Source', 'D0', [
-            'C1',
-            'C2',
-            'C3',
-            'C4'
-        ])
-
-        self.parameters = [
-            self.source
-        ]
-
     @property
     def y(self):
-        if not self.scope.instrument:
-            self.scope.instrument = Instrument(self.scope.address)
-            self.scope.instrument.write('COMM_ORDER LO')
-            self.scope.instrument.write('COMM_FORMAT OFF,BYTE,BIN')
+        if not self.scope.interface:
+            self.scope.interface = vxi11.Instrument(self.scope.address)
+            self.scope.interface.write('COMM_ORDER LO')
+            self.scope.interface.write('COMM_FORMAT OFF,BYTE,BIN')
 
-        self.scope.instrument.write(f'{self.source.value}:WAVEFORM? ALL')
-        data_with_header = self.scope.instrument.read_raw()
+        self.scope.interface.write(f'{self.name}:WAVEFORM? ALL')
+        data_with_header = self.scope.interface.read_raw()
         data_offset = data_with_header.find(b'WAVEDESC')
         data = data_with_header[data_offset:-1]
 
@@ -40,10 +27,23 @@ class LeCroyChannel(Channel):
             dtype=np.int8
         )
 
-        self.scope.sample_frequency = 100e3
-        self.scope.sample_depth = len(y)
+        self.start_time = 0
+        self.end_time = 1
+        self.sample_depth = len(y)
 
         return y
+
+class C1(LeCroyChannel):
+    pass
+
+class C2(LeCroyChannel):
+    pass
+
+class C3(LeCroyChannel):
+    pass
+
+class C4(LeCroyChannel):
+    pass
 
 class LeCroyCommType(Enum):
     BYTE = 0
@@ -153,10 +153,12 @@ class LeCroyScope(Scope):
     def __init__(self, address):
         super().__init__(address)
 
-        self._sample_depth = None
-        self.instrument = None
+        self.interface = None
 
         self.channel_types = [
-            LeCroyChannel,
+            C1,
+            C2,
+            C3,
+            C4,
             MovingAverageChannel
         ]

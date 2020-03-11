@@ -7,26 +7,14 @@ class Scope:
         self.channels = []
         self.channel_types = []
 
-        self._t = None
-        self._t_needs_refresh = True
-
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-
-        if name in ['sample_frequency', 'sample_depth']:
-            self._t_needs_refresh = True
-
-    @property
-    def t(self):
-        if self._t_needs_refresh:
-            self._t = linspace(0,
-                self.sample_depth/self.sample_frequency,
-                self.sample_depth)
-        
-        return self._t
-
     def add_channel(self, channel):
         channel.scope = self
+
+        channel_number = sum(type(ch) == type(channel) for ch in self.channels)
+
+        if channel_number:
+            channel.name = f'{channel.name}{channel_number}'
+
         self.channels.append(channel)
 
     def get_channel_by_name(self, name):

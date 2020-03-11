@@ -72,12 +72,15 @@ async def waveform_generator(obj, info, instrumentAddress):
 
     while True:
         for channel in instrument.channels:
-            y = channel.y
-            t = instrument.t
-            
+            t, y = channel.data
+
+            if y is None or t is None:
+                continue
+
             if not channel.name in lines:
                 lines[channel.name] = figure.gca().plot(t, y)[0]
             else:
+                lines[channel.name].set_xdata(t)
                 lines[channel.name].set_ydata(y)
 
         buffer = BytesIO()
@@ -111,9 +114,8 @@ def create_instrument(mutation, info, address, instrumentTypeName):
 @mutation.field('createChannel')
 def create_channel(mutation, info, instrumentAddress, channelTypeName):
     instrument = State.get_instrument_by_address(sub(r'_', '.', instrumentAddress))
-    channel_number = len(instrument.channels)
     channel_type = instrument.get_channel_type_by_name(channelTypeName)
-    channel = channel_type(f'{channelTypeName}{channel_number}')
+    channel = channel_type()
     instrument.add_channel(channel)
     return channel
 
