@@ -14,8 +14,7 @@ class LeCroyChannel(Channel):
             'C1',
             'C2',
             'C3',
-            'C4',
-            'D0'
+            'C4'
         ])
 
         self.parameters = [
