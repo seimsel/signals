@@ -16,13 +16,27 @@ subscription = SubscriptionType()
 style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
 class State:
-    instruments = {
-        'scope1.demo': DemoScope('scope1.demo')
-    }
+    instruments = []
+
+    instrument_types = [
+        DemoScope
+    ]
+
+    @classmethod
+    def get_instrument_by_address(cls, address):
+        return next(filter(
+            lambda instrument: instrument.address == address,
+            cls.instruments))
+
+    @classmethod
+    def get_instrument_type_by_name(cls, name):
+        return next(filter(
+            lambda instrument_type: instrument_type.__name__ == name,
+            cls.instrument_types))
 
 @subscription.source('waveform')
 async def waveform_generator(obj, info, instrumentAddress):
-    instrument = State.instruments[instrumentAddress]
+    instrument = State.get_instrument_by_address(instrumentAddress)
     figure = Figure()
     lines = {}
 
@@ -49,30 +63,55 @@ def waveform_resolver(waveform, info, instrumentAddress):
 
 mutation = MutationType()
 
-@mutation.field('updateParameter')
-def update_parameter(mutation, info, instrumentAddress, channelName, parameterName, value):
-    instrument = State.instruments[sub(r'_', '.', instrumentAddress)]
-    channel = instrument.get_channel_by_name(channelName)
-    parameter = channel.get_parameter_by_name(parameterName)
-    parameter.value = value
+@mutation.field('createInstrument')
+def create_instrument(mutation, info, address, instrumentTypeName):
+    instrument_type = State.get_instrument_type_by_name(instrumentTypeName)
+    instrument_number = len(State.instruments)
 
-    return parameter
+    if not address:
+        address = f'{instrumentTypeName}{instrument_number}'
+
+    instrument = instrument_type(address)
+    State.instruments.append(instrument)
+    return instrument
 
 @mutation.field('createChannel')
 def create_channel(mutation, info, instrumentAddress, channelTypeName):
-    instrument = State.instruments[sub(r'_', '.', instrumentAddress)]
+    instrument = State.get_instrument_by_address(sub(r'_', '.', instrumentAddress))
     channel_number = len(instrument.channels)
     channel_type = instrument.get_channel_type_by_name(channelTypeName)
     channel = channel_type(f'{channelTypeName}{channel_number}')
     instrument.add_channel(channel)
     return channel
 
+@mutation.field('updateParameter')
+def update_parameter(mutation, info, instrumentAddress, channelName, parameterName, value):
+    instrument = State.get_instrument_by_address(sub(r'_', '.', instrumentAddress))
+    channel = instrument.get_channel_by_name(channelName)
+    parameter = channel.get_parameter_by_name(parameterName)
+    parameter.value = value
+
+    return parameter
+
 query = ObjectType('Query')
+
+@query.field('instruments')
+def instruments_resolver(query, info):
+    return State.instruments
 
 @query.field('instrument')
 def instrument_resolver(query, info, address):
-    instrument = State.instruments[address]
+    instrument = State.get_instrument_by_address(address)
     return instrument
+
+@query.field('instrumentTypes')
+def instrument_types_resolver(query, info):
+    return map(
+        lambda instrument_type: {
+            'id': id(instrument_type),
+            'name': instrument_type.__name__
+        },
+        State.instrument_types)
 
 instrument = ObjectType('Instrument')
 

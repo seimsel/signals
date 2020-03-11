@@ -1,19 +1,26 @@
 type Query {
+    instruments: [Instrument]
     instrument(address: String!): Instrument
+    instrumentTypes: [InstrumentType]
 }
 
 type Mutation {
+    createInstrument(
+        address: String,
+        instrumentTypeName: String!
+    ): Instrument
+    
+    createChannel(
+        instrumentAddress: String!,
+        channelTypeName: String!
+    ): Channel
+
     updateParameter(
         instrumentAddress: String!,
         channelName: String!,
         parameterName: String!,
         value: Value!
     ): Parameter
-
-    createChannel(
-        instrumentAddress: String!,
-        channelTypeName: String!
-    ): Channel
 }
 
 type Subscription {
@@ -31,6 +38,11 @@ type Instrument {
     channels: [Channel]
     channel(name: String!): Channel
     channelTypes: [ChannelType]
+}
+
+type InstrumentType {
+    id: String!
+    name: String!
 }
 
 type Channel {
