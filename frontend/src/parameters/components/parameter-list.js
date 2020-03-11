@@ -22,6 +22,9 @@ const PARAMETERS = gql`
                     ... on SelectParameter {
                         options
                     }
+                    ... on SourceParameter {
+                        options
+                    }
                 }
             }
         }
@@ -93,6 +96,7 @@ function Editor({ instrumentAddress, channelName, parameter }) {
             )
 
         case 'SelectParameter':
+        case 'SourceParameter':
             return (
                 <Select
                     defaultValue={parameter.value}

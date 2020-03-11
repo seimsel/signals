@@ -74,4 +74,11 @@ type SelectParameter implements Parameter {
     options: [String]
 }
 
+type SourceParameter implements Parameter {
+    id: String!
+    name: String!
+    value: Value
+    options: [String]
+}
+
 scalar Value
