@@ -2,6 +2,49 @@ import struct
 import numpy as np
 from enum import Enum
 from vxi11 import Instrument
+from scope import Scope
+from channel import Channel
+from channels.moving_average import MovingAverageChannel
+from parameters import SelectParameter
+
+class LeCroyChannel(Channel):
+    def __init__(self, name):
+        super().__init__(name)
+        self.source = SelectParameter('Source', 'D0', [
+            'C1',
+            'C2',
+            'C3',
+            'C4',
+            'D0'
+        ])
+
+        self.parameters = [
+            self.source
+        ]
+
+    @property
+    def y(self):
+        if not self.scope.instrument:
+            self.scope.instrument = Instrument(self.scope.address)
+            self.scope.instrument.write('COMM_ORDER LO')
+            self.scope.instrument.write('COMM_FORMAT OFF,BYTE,BIN')
+
+        self.scope.instrument.write(f'{self.source.value}:WAVEFORM? ALL')
+        data_with_header = self.scope.instrument.read_raw()
+        data_offset = data_with_header.find(b'WAVEDESC')
+        data = data_with_header[data_offset:-1]
+
+        wave_desc = LeCroyWaveDesc(data[LeCroyWaveDesc.DESC_START:LeCroyWaveDesc.DESC_END])
+
+        y = np.frombuffer(
+            data[LeCroyWaveDesc.DESC_END+1:LeCroyWaveDesc.DESC_END+wave_desc.wave_array_1-1],
+            dtype=np.int8
+        )
+
+        self.scope.sample_frequency = 100e3
+        self.scope.sample_depth = len(y)
+
+        return y
 
 class LeCroyCommType(Enum):
     BYTE = 0
@@ -107,23 +150,14 @@ class LeCroyWaveDesc:
         self.trigger_time = str(descriptor_items[36:42])
         self.acq_duration = float(descriptor_items[42])
 
-class LeCroyScope(Instrument):
+class LeCroyScope(Scope):
     def __init__(self, address):
         super().__init__(address)
-        self.write('COMM_ORDER LO')
-        self.write('COMM_FORMAT OFF,BYTE,BIN')
 
-    def read(self):
-        self.write('C1:WAVEFORM? ALL')
-        data_with_header = self.read_raw()
-        data_offset = data_with_header.find(b'WAVEDESC')
-        data = data_with_header[data_offset:-1]
+        self._sample_depth = None
+        self.instrument = None
 
-        wave_desc = LeCroyWaveDesc(data[LeCroyWaveDesc.DESC_START:LeCroyWaveDesc.DESC_END])
-
-        wave_array_1 = np.frombuffer(
-            data[LeCroyWaveDesc.DESC_END+1:LeCroyWaveDesc.DESC_END+wave_desc.wave_array_1-1],
-            dtype=np.int8
-        )
-
-        return wave_desc, wave_array_1
+        self.channel_types = [
+            LeCroyChannel,
+            MovingAverageChannel
+        ]

@@ -1,15 +1,18 @@
+import struct
 from io import BytesIO
 from re import sub
 from pathlib import Path
 from ariadne import load_schema_from_path, make_executable_schema, ObjectType, MutationType, SubscriptionType, InterfaceType
 from ariadne.asgi import GraphQL
 from starlette.middleware.cors import CORSMiddleware
+from zeroconf import ServiceBrowser, Zeroconf
 from matplotlib.figure import Figure
 from matplotlib.pyplot import style
 from numpy.random import rand
 from numpy import linspace, frombuffer
 
 from drivers.demo_scope import DemoScope
+from drivers.lecroy_scope import LeCroyScope
 
 subscription = SubscriptionType()
 
@@ -34,6 +37,33 @@ class State:
             lambda instrument_type: instrument_type.__name__ == name,
             cls.instrument_types))
 
+class ZeroconfListener:
+    @classmethod
+    def remove_service(cls, zeroconf, zeroconf_type, name):
+        try:
+            info = zeroconf.get_service_info(zeroconf_type, name)
+            address = '.'.join(map(str, struct.unpack('4B', info.addresses[0])))
+            State.instruments = list(filter(
+                lambda instrument: instrument.address != address,
+                State.instruments))
+        except:
+            print(f'Device {name} could not be removed!')
+
+    @classmethod
+    def add_service(cls, zeroconf, zeroconf_type, name):
+        try:
+            info = zeroconf.get_service_info(zeroconf_type, name)
+            address = '.'.join(map(str, struct.unpack('4B', info.addresses[0])))
+            props = info.properties
+            
+            if props[b'Manufacturer'].decode('utf-8') == 'LECROY':
+                State.instruments.append(LeCroyScope(address))
+        except:
+            print(f'Device {name} could not be added!')
+
+zeroconfListener = ZeroconfListener()
+ServiceBrowser(Zeroconf(), '_lxi._tcp.local.', zeroconfListener)
+
 @subscription.source('waveform')
 async def waveform_generator(obj, info, instrumentAddress):
     instrument = State.get_instrument_by_address(instrumentAddress)
@@ -42,10 +72,13 @@ async def waveform_generator(obj, info, instrumentAddress):
 
     while True:
         for channel in instrument.channels:
+            y = channel.y
+            t = instrument.t
+            
             if not channel.name in lines:
-                lines[channel.name] = figure.gca().plot(instrument.t, channel.y)[0]
+                lines[channel.name] = figure.gca().plot(t, y)[0]
             else:
-                lines[channel.name].set_ydata(channel.y)
+                lines[channel.name].set_ydata(y)
 
         buffer = BytesIO()
         figure.savefig(buffer, format='svg')

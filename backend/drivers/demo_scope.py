@@ -14,7 +14,3 @@ class DemoScope(Scope):
             DemoChannel,
             MovingAverageChannel
         ]
-
-        for channel in self.channels:
-            channel.active = True
-
