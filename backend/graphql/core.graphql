@@ -48,13 +48,13 @@ type ChannelType {
 interface Parameter {
     id: String!
     name: String!
-    value: Value!
+    value: Value
 }
 
 type IntegerParameter implements Parameter {
     id: String!
     name: String!
-    value: Value!
+    value: Value
     lowerLimit: Int
     upperLimit: Int
 }
@@ -62,7 +62,7 @@ type IntegerParameter implements Parameter {
 type FloatParameter implements Parameter {
     id: String!
     name: String!
-    value: Value!
+    value: Value
     lowerLimit: Float
     upperLimit: Float
 }
@@ -70,7 +70,7 @@ type FloatParameter implements Parameter {
 type SelectParameter implements Parameter {
     id: String!
     name: String!
-    value: Value!
+    value: Value
     options: [String]
 }
 

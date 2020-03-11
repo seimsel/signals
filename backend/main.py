@@ -59,15 +59,12 @@ def update_parameter(mutation, info, instrumentAddress, channelName, parameterNa
     return parameter
 
 @mutation.field('createChannel')
-def update_parameter(mutation, info, instrumentAddress, channelTypeName):
+def create_channel(mutation, info, instrumentAddress, channelTypeName):
     instrument = State.instruments[sub(r'_', '.', instrumentAddress)]
     channel_number = len(instrument.channels)
     channel_type = instrument.get_channel_type_by_name(channelTypeName)
     channel = channel_type(f'{channelTypeName}{channel_number}')
     instrument.add_channel(channel)
-
-    print(channel)
-
     return channel
 
 query = ObjectType('Query')
