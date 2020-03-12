@@ -43,19 +43,17 @@ export function InstrumentTypeList() {
                 cachedData = cache.readQuery({
                     query: INSTRUMENTS
                 });
-            } catch {
+            } catch(e) {
                 return;
             }
 
             cache.writeQuery({
                 query: INSTRUMENTS,
                 data: {
-                    instrument: {
-                        channels: [
-                            ...cachedData.instrument.channels,
-                            createInstrument
-                        ]
-                    }
+                    instruments: [
+                        ...cachedData.instruments,
+                        createInstrument
+                    ]
                 }
             })
         }
