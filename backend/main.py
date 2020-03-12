@@ -102,11 +102,15 @@ mutation = MutationType()
 @mutation.field('createInstrument')
 def create_instrument(mutation, info, address, instrumentTypeName):
     instrument_type = State.get_instrument_type_by_name(instrumentTypeName)
-    instrument_number = len(State.instruments)
 
     if not address:
-        address = f'{instrumentTypeName}{instrument_number}'
+        instrument_number = sum(type(inst) == instrument_type for inst in State.instruments)
 
+        address = instrumentTypeName
+
+        if instrument_number:
+            address += str(instrument_number)
+        
     instrument = instrument_type(address)
     State.instruments.append(instrument)
     return instrument
