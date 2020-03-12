@@ -21,6 +21,15 @@ type Mutation {
         parameterName: String!,
         value: Value!
     ): Parameter
+
+    deleteInstrument(
+        address: String!
+    ): Instrument
+
+    deleteChannel(
+        instrumentAddress: String!,
+        channelName: String!
+    ): Channel
 }
 
 type Subscription {

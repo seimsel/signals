@@ -132,6 +132,27 @@ def update_parameter(mutation, info, instrumentAddress, channelName, parameterNa
 
     return parameter
 
+@mutation.field('deleteInstrument')
+def delete_instrument(mutation, info, address):
+    instrument = State.get_instrument_by_address(sub(r'_', '.', address))
+    State.instruments = list(filter(
+        lambda inst: inst.address != address,
+        State.instruments
+    ))
+
+    return instrument
+
+@mutation.field('deleteChannel')
+def delete_channel(mutation, info, instrumentAddress, channelName):
+    instrument = State.get_instrument_by_address(sub(r'_', '.', instrumentAddress))
+    channel = instrument.get_channel_by_name(channelName)
+    instrument.channels = list(filter(
+        lambda ch: ch.name != channelName,
+        instrument.channels
+    ))
+
+    return channel
+
 query = ObjectType('Query')
 
 @query.field('instruments')
