@@ -20,6 +20,18 @@ const DELETE_CHANNEL = gql`
     }
 `;
 
+const CHANNELS = gql`
+    query Channels($instrumentAddress: String!) {
+        instrument(address: $instrumentAddress) {
+            id
+            channels {
+                id
+                name
+            }
+        }
+    }
+`;
+
 export function SingleChannel() {
     const history = useHistory()
     const { instrumentAddress, channelName } = useParams();
@@ -27,6 +39,34 @@ export function SingleChannel() {
         variables: {
             instrumentAddress: instrumentAddress.replace(/_/g, '.'),
             channelName
+        },
+        update: (cache, { data: { deleteChannel } }) => {
+            let cachedData = null;
+            try {
+                cachedData = cache.readQuery({
+                    query: CHANNELS,
+                    variables: {
+                        instrumentAddress: instrumentAddress.replace(/_/g, '.')
+                    }
+                });
+            } catch {
+                return;
+            }
+
+            cache.writeQuery({
+                query: CHANNELS,
+                variables: {
+                    instrumentAddress: instrumentAddress.replace(/_/g, '.')
+                },
+                data: {
+                    instrument: {
+                        ...cachedData.instrument,
+                        channels: cachedData.instrument.channels.filter(
+                            channel => channel.id != deleteChannel.id
+                        )
+                    }
+                }
+            })
         }
     });
 

@@ -14,15 +14,42 @@ const DELETE_INSTRUMENT = gql`
     }
 `;
 
+const INSTRUMENTS = gql`
+    query Instruments {
+        instruments {
+            id
+            address
+        }
+    }
+`;
+
 export function SingleInstrument() {
     const history = useHistory();
     const { instrumentAddress } = useParams();
     const [ deleteInstrument ] = useMutation(DELETE_INSTRUMENT, {
         variables: {
             address: instrumentAddress.replace(/_/g, '.')
+        },
+        update: (cache, { data: { deleteInstrument } }) => {
+            let cachedData = null;
+            try {
+                cachedData = cache.readQuery({
+                    query: INSTRUMENTS
+                });
+            } catch {
+                return;
+            }
+
+            cache.writeQuery({
+                query: INSTRUMENTS,
+                data: {
+                    instruments: cachedData.instruments.filter(
+                        instrument => instrument.id != deleteInstrument.id
+                    )
+                }
+            })
         }
     });
-
     return (
         <>
             <PageHeader
