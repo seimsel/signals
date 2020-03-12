@@ -1,4 +1,3 @@
-import vxi11
 import struct
 import numpy as np
 from enum import Enum
@@ -6,6 +5,11 @@ from scope import Scope
 from channel import Channel
 from channels.moving_average import MovingAverageChannel
 from parameters import SelectParameter
+
+try:
+    import vxi11
+except:
+    print('vxi11 not installed or not available')
 
 class LeCroyChannel(Channel):
     @property
