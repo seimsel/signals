@@ -1,7 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/client';
-import { useParams, useHistory } from 'react-router';
+import { useParams } from 'react-router';
 import { List, Button, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -42,7 +42,6 @@ const CHANNELS = gql`
 `;
 
 export function ChannelTypeList() {
-    const history = useHistory();
     const { instrumentAddress } = useParams();
     const { data, loading } = useQuery(CHANNEL_TYPES, {
         variables: {
@@ -73,6 +72,7 @@ export function ChannelTypeList() {
                 },
                 data: {
                     instrument: {
+                        ...cachedData.instrument,
                         channels: [
                             ...cachedData.instrument.channels,
                             createChannel
