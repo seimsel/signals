@@ -10,6 +10,7 @@ from matplotlib.figure import Figure
 from matplotlib.pyplot import style
 from numpy.random import rand
 from numpy import linspace, frombuffer
+from asyncio import sleep
 
 from drivers.demo_scope import DemoScope
 from drivers.lecroy_scope import LeCroyScope
@@ -71,6 +72,10 @@ async def waveform_generator(obj, info, instrumentAddress):
     lines = {}
 
     while True:
+        if len(instrument.channels) == 0:
+            await sleep(0.1)
+            continue
+        
         for channel in instrument.channels:
             t, y = channel.data
 
