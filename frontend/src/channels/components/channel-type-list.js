@@ -1,8 +1,8 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/client';
-import { useParams } from 'react-router';
-import { List, Button, Row, Col } from 'antd';
+import { useParams, useHistory } from 'react-router';
+import { List } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 const CHANNEL_TYPES = gql`
@@ -42,16 +42,18 @@ const CHANNELS = gql`
 `;
 
 export function ChannelTypeList() {
+    const history = useHistory();
     const { instrumentAddress } = useParams();
     const { data, loading } = useQuery(CHANNEL_TYPES, {
         variables: {
             instrumentAddress: instrumentAddress.replace(/_/g, '.')
         }
     });
-    const [ createChannel ] = useMutation(CREATE_CHANNEL, {
+    const [ createChannel, { loading: creating } ] = useMutation(CREATE_CHANNEL, {
         variables: {
             instrumentAddress: instrumentAddress.replace(/_/g, '.')
         },
+        onCompleted: () => history.push(`/instruments/${instrumentAddress}`),
         update: (cache, { data: { createChannel } }) => {
             let cachedData = null;
             try {
@@ -87,7 +89,7 @@ export function ChannelTypeList() {
 
     return (
         <List
-            loading={loading}
+            loading={loading || creating}
             dataSource={channelTypes}
             renderItem={channelType => (
                 <List.Item

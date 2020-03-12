@@ -1,5 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
+import { useHistory } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client';
 import { List } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -35,8 +36,10 @@ const INSTRUMENTS = gql`
 `;
 
 export function InstrumentTypeList() {
+    const history = useHistory();
     const { data, loading } = useQuery(INSTRUMENT_TYPES);
-    const [ createInstrument ] = useMutation(CREATE_INSTRUMENT, {
+    const [ createInstrument, { loading: creating } ] = useMutation(CREATE_INSTRUMENT, {
+        onCompleted: ({ createInstrument: { address }}) => history.push(`/instruments/${address}`),
         update: (cache, { data: { createInstrument } }) => {
             let cachedData = null;
             try {
@@ -63,7 +66,7 @@ export function InstrumentTypeList() {
 
     return (
         <List
-            loading={loading}
+            loading={loading || creating}
             dataSource={instrumentTypes}
             renderItem={instrumentType => (
                 <List.Item

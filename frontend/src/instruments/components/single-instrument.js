@@ -26,10 +26,11 @@ const INSTRUMENTS = gql`
 export function SingleInstrument() {
     const history = useHistory();
     const { instrumentAddress } = useParams();
-    const [ deleteInstrument ] = useMutation(DELETE_INSTRUMENT, {
+    const [ deleteInstrument, { loading: deleting } ] = useMutation(DELETE_INSTRUMENT, {
         variables: {
             address: instrumentAddress.replace(/_/g, '.')
         },
+        onCompleted: () => history.push('/'),
         update: (cache, { data: { deleteInstrument } }) => {
             let cachedData = null;
             try {
@@ -72,6 +73,7 @@ export function SingleInstrument() {
                         <Button
                             type='danger'
                             icon={<DeleteOutlined />}
+                            loading={deleting}
                         >
                             {`Remove ${instrumentAddress}`}
                         </Button>

@@ -35,11 +35,12 @@ const CHANNELS = gql`
 export function SingleChannel() {
     const history = useHistory()
     const { instrumentAddress, channelName } = useParams();
-    const [ deleteChannel ] = useMutation(DELETE_CHANNEL, {
+    const [ deleteChannel, { loading:deleting } ] = useMutation(DELETE_CHANNEL, {
         variables: {
             instrumentAddress: instrumentAddress.replace(/_/g, '.'),
             channelName
         },
+        onCompleted: () => history.push(`/instruments/${instrumentAddress}`),
         update: (cache, { data: { deleteChannel } }) => {
             let cachedData = null;
             try {
@@ -84,6 +85,7 @@ export function SingleChannel() {
                     <Button
                         type='danger'
                         icon={<DeleteOutlined />}
+                        loading={deleting}
                         onClick={() => {
                             deleteChannel();
                         }}
