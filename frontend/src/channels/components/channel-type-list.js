@@ -93,6 +93,7 @@ export function ChannelTypeList() {
             dataSource={channelTypes}
             renderItem={channelType => (
                 <List.Item
+                    className='clickable'
                     extra={<PlusOutlined />}
                     key={channelType.name}
                     title={channelType.name}

@@ -48,6 +48,7 @@ export function ChannelList() {
             }
             renderItem={channel => (
                 <List.Item
+                    className='clickable'
                     extra={<RightOutlined />}
                     key={channel.name}
                     title={channel.name}

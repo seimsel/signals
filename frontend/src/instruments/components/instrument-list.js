@@ -40,6 +40,7 @@ export function InstrumentList() {
             }
             renderItem={instrument => (
                 <List.Item
+                    className='clickable'
                     extra={<RightOutlined />}
                     key={instrument.address}
                     title={instrument.address}

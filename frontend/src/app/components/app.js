@@ -15,7 +15,11 @@ export function App() {
         <ApiProvider>
             <Router>
                 <Layout style={{height:"100vh"}}>
-                    <Layout.Sider>
+                    <Layout.Sider
+                        width={300}
+                        collapsible
+                        collapsedWidth={0}
+                    >
                         <Switch>
                             <Route exact path='/' component={Welcome} />
                             <Route path='/instruments/add' component={AddInstrument} />

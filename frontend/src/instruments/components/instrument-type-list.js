@@ -70,6 +70,7 @@ export function InstrumentTypeList() {
             dataSource={instrumentTypes}
             renderItem={instrumentType => (
                 <List.Item
+                    className='clickable'
                     extra={<PlusOutlined />}
                     key={instrumentType.name}
                     title={instrumentType.name}
