@@ -2,6 +2,7 @@ from numpy import linspace, pi, sin
 from numpy.random import rand
 from scipy.signal import square
 from channels.moving_average import MovingAverageChannel
+from channels.digitize import DigitizeChannel
 from scope import Scope
 from channel import Channel
 from parameters import FloatParameter, SelectParameter, IntegerParameter
@@ -53,5 +54,6 @@ class DemoScope(Scope):
 
         self.channel_types = [
             DemoChannel,
-            MovingAverageChannel
+            MovingAverageChannel,
+            DigitizeChannel
         ]

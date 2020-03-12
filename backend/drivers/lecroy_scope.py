@@ -4,6 +4,7 @@ from enum import Enum
 from scope import Scope
 from channel import Channel
 from channels.moving_average import MovingAverageChannel
+from channels.digitize import DigitizeChannel
 from parameters import SelectParameter
 
 try:
@@ -164,5 +165,6 @@ class LeCroyScope(Scope):
             C2,
             C3,
             C4,
-            MovingAverageChannel
+            MovingAverageChannel,
+            DigitizeChannel
         ]

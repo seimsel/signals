@@ -30,7 +30,8 @@ class Channel:
         try:
             y = self.y # y needs to be accessed first, because it may change t
             t = self.t
-        except:
+        except Exception as e:
+            print(e)
             y = None
             t = None
 
