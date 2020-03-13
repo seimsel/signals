@@ -19,13 +19,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build image
-        run: docker build . --file Dockerfile --tag image
+      - name: Build backend image
+        run: docker build . --tag backend
+        working-directory: ./backend
 
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USER_NAME }} --password-stdin
 
-      - name: Push image
+      - name: Push backend image
         run: |
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
@@ -36,5 +37,5 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
 
-          docker tag image $IMAGE_NAME:$VERSION
+          docker tag backend $IMAGE_NAME:$VERSION
           docker push $IMAGE_NAME:$VERSION
