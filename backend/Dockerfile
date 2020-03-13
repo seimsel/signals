@@ -6,4 +6,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
 
-CMD ["gunicorn", "main:app", "-k", "uvicorn.workers.UvicornWorker", "--host", "0.0.0.0"]
+CMD ["gunicorn", "main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0"]
