@@ -23,7 +23,8 @@ class State:
     instruments = []
 
     instrument_types = [
-        DemoScope
+        DemoScope,
+        LeCroyScope
     ]
 
     @classmethod
