@@ -6,3 +6,4 @@ zeroconf==0.24.5
 numpy==1.18.1
 scipy== 1.4.1
 matplotlib==3.2.0
+vxi11==0.9
