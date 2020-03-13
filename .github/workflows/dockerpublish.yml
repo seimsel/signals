@@ -37,5 +37,5 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
 
-          docker tag backend $IMAGE_NAME:$VERSION
-          docker push $IMAGE_NAME:$VERSION
+          docker tag backend $BACKEND_IMAGE_NAME:$VERSION
+          docker push $BACKEND_IMAGE_NAME:$VERSION
