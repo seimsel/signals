@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const { DefinePlugin } = require('webpack');
 const package = require('./package.json');
 const dark = require('antd/dist/dark-theme');
 const themeOverrides = require('./theme-overrides');
@@ -69,6 +70,10 @@ module.exports = {
     },
 
     plugins: [
+        new DefinePlugin({
+            'process.env.BACKEND_HTTP_URL': JSON.stringify(process.env.BACKEND_HTTP_URL),
+            'process.env.BACKEND_WS_URL': JSON.stringify(process.env.BACKEND_WS_URL)
+        }),
         new HtmlWebpackPlugin({
             title: `${titleCase(package.name)} ${package.version}`,
             template: './src/index.html'

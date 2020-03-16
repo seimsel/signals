@@ -4,7 +4,6 @@
   "description": "",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "watch": "cross-env NODE_ENV=production webpack --watch",
     "dev": "cross-env NODE_ENV=development webpack-dev-server"
   },
   "repository": {
