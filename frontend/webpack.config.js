@@ -61,8 +61,10 @@ module.exports = {
                 }, {
                     loader: "less-loader",
                     options: {
-                        modifyVars: Object.assign(dark, themeOverrides),
-                        javascriptEnabled: true
+                        lessOptions: {
+                            modifyVars: Object.assign(dark, themeOverrides),
+                            javascriptEnabled: true
+                        }
                     }
                 }]
             }

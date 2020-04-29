@@ -1,4 +1,4 @@
-# Pope - Python Scope
+# signals - Signal Processing Toolkit
 The idea is to make post-processing of measurements on scopes by different vendors easier and more interactive.
 
 ## State
@@ -8,12 +8,12 @@ Highly Experimental - Is not very useful yet.
 
 ### Download source
 ```bash
-    git clone https://github.com/seimsel/pope.git
+    git clone https://github.com/seimsel/signals.git
 ```
 
 ### Run backend
 ```bash 
-    cd pope/backend
+    cd signals/backend
     pip install -r requirements.txt # requires python3
     uvicorn --reload --port 8000 main:app
 ```
@@ -21,7 +21,7 @@ Highly Experimental - Is not very useful yet.
 ### Run frontend
 In a seperate terminal window:
 ```bash
-    cd pope/frontend
+    cd signals/frontend
     npm install
 
     export BACKEND_HTTP_URL=http://localhost:8000

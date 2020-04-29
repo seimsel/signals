@@ -9,8 +9,8 @@ on:
       - v*
 
 env:
-  FRONTEND_IMAGE_NAME: pope-ui
-  BACKEND_IMAGE_NAME: pope-server
+  FRONTEND_IMAGE_NAME: signals-ui
+  BACKEND_IMAGE_NAME: signals-server
 
 jobs:
   push:
