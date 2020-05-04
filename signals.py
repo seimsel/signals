@@ -1,6 +1,6 @@
 import sys
 
-from numpy import linspace, sin, pi
+from numpy import linspace, sin, pi, float16
 
 import PyQt5.Qt as Qt
 from PyQt5.QtGui import QGuiApplication, QColor
@@ -15,7 +15,7 @@ class Signal(QQuickItem):
         self.x_range = [0, 1]
         self.y_range = [-1, 1]
 
-        self.x = linspace(0, 1, self.n)
+        self.x = linspace(0, 1, self.n, dtype=float16)
         self.y = sin(2*pi*10*self.x)
 
         self.setFlag(QQuickItem.ItemHasContents, True)
@@ -28,17 +28,15 @@ class Signal(QQuickItem):
     def updatePaintNode(self, oldNode, updatePaintNodeData):
         node = oldNode
 
-        if not node:
+        if node == None:
             node = QSGGeometryNode()
             node.setGeometry(self.geometry)
             node.setMaterial(self.material)
 
-        points = self.geometry.vertexDataAsPoint2D()
+            points = self.geometry.vertexDataAsPoint2D()
 
-        for i, point in enumerate(points):
-            point.set(
-                self.width()*self.x[i]/(self.x_range[1] - self.x_range[0]),
-                self.height()/2 - self.height()*self.y[i]/(self.y_range[1] - self.y_range[0]))
+            for i, point in enumerate(points):
+                point.set(self.x[i], -self.y[i])
 
         return node
 
