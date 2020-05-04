@@ -1,5 +1,6 @@
 import struct
 from io import BytesIO
+from base64 import b64encode
 from re import sub
 from pathlib import Path
 from ariadne import load_schema_from_path, make_executable_schema, ObjectType, MutationType, SubscriptionType, InterfaceType
@@ -90,13 +91,13 @@ async def waveform_generator(obj, info, instrumentAddress):
                 lines[channel.name].set_ydata(y)
 
         buffer = BytesIO()
-        figure.savefig(buffer, format='svg')
+        figure.savefig(buffer, format='png')
         buffer.seek(0)
         image = buffer.read()
         buffer.close()
 
         yield  {
-            'figure': image.decode('utf-8')
+            'figure': b64encode(image).decode('utf-8')
         }
 
 @subscription.field('waveform')

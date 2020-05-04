@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from 'react';
+import React, { useRef, useLayoutEffect, useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useParams } from 'react-router';
 import { useSubscription } from '@apollo/client';
@@ -18,25 +18,19 @@ export function Figure() {
             instrumentAddress: instrumentAddress.replace(/_/g, '.')
         }
     });
-    const container = useRef();
+
+    const url = useRef();
 
     const figure = data ? data.waveform.figure : '';
 
-    useLayoutEffect(() => {
-        if (!(container.current && container.current.children[0])) {
-            return;
-        }
-        
-        container.current.children[0].setAttribute('height', '100%');
-        container.current.children[0].setAttribute('width', '100%');
-        container.current.children[0].setAttribute('preserveAspectRatio', 'none');
-    });
+    useEffect(() => {
+        URL.createObjectURL(atob(figure));
+    }, [figure]);
 
     return (
-        <div
+        <img
             style={{ width: '100%', height: '100%' }}
-            dangerouslySetInnerHTML={{ __html: figure }}
-            ref={container}
+            src={url.current}
         />
     );
 }
