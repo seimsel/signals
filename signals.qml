@@ -14,6 +14,8 @@ Window {
         property double yOrigin: parent.height/2
 
         anchors.fill: parent
+
+        scrollGestureEnabled: false
         onWheel: {
             xScale += wheel.angleDelta.y/1200
             yScale += wheel.angleDelta.y/1200
@@ -21,15 +23,34 @@ Window {
             yOrigin = wheel.y
         }
 
-        Signal {
-            id: renderer
+        PinchArea {
             anchors.fill: parent
 
-            transform: [
-                Scale { xScale: renderer.width; yScale: renderer.height/2 },
-                Translate { y: renderer.height/2 },
-                Scale { origin.x: mouseArea.xOrigin; origin.y: mouseArea.yOrigin; xScale: mouseArea.xScale; yScale: mouseArea.yScale }
-            ]
+            property double xScale: 1.0
+            property double yScale: 1.0
+
+            onPinchStarted: {
+                xScale = mouseArea.xScale
+                yScale = mouseArea.yScale
+            }
+            
+            onPinchUpdated: {
+                mouseArea.xScale = xScale * pinch.scale
+                mouseArea.yScale = yScale * pinch.scale
+                mouseArea.xOrigin = pinch.center.x
+                mouseArea.yOrigin = pinch.center.y
+            }
+
+            Signal {
+                id: renderer
+                anchors.fill: parent
+
+                transform: [
+                    Scale { xScale: renderer.width; yScale: renderer.height/2 },
+                    Translate { y: renderer.height/2 },
+                    Scale { origin.x: mouseArea.xOrigin; origin.y: mouseArea.yOrigin; xScale: mouseArea.xScale; yScale: mouseArea.yScale }
+                ]
+            }
         }
     }
 }
