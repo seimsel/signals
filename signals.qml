@@ -12,15 +12,22 @@ Window {
         property double yScale: 1.0
         property double xOrigin: parent.width/2
         property double yOrigin: parent.height/2
+        property double xPosition: 0.0
+        property double yPosition: 0.0
 
         anchors.fill: parent
 
-        scrollGestureEnabled: false
         onWheel: {
-            xScale += wheel.angleDelta.y/1200
-            yScale += wheel.angleDelta.y/1200
-            xOrigin = wheel.x
-            yOrigin = wheel.y
+            if (wheel.modifiers & Qt.ControlModifier) {
+                xScale += wheel.angleDelta.y/1200
+                yScale += wheel.angleDelta.y/1200
+                xOrigin = wheel.x
+                yOrigin = wheel.y
+                return;
+            }
+
+            xPosition += wheel.angleDelta.x
+            yPosition += wheel.angleDelta.y
         }
 
         PinchArea {
@@ -48,7 +55,8 @@ Window {
                 transform: [
                     Scale { xScale: renderer.width; yScale: renderer.height/2 },
                     Translate { y: renderer.height/2 },
-                    Scale { origin.x: mouseArea.xOrigin; origin.y: mouseArea.yOrigin; xScale: mouseArea.xScale; yScale: mouseArea.yScale }
+                    Scale { origin.x: mouseArea.xOrigin; origin.y: mouseArea.yOrigin; xScale: mouseArea.xScale; yScale: mouseArea.yScale },
+                    Translate { x: mouseArea.xPosition; y: mouseArea.yPosition }
                 ]
             }
         }
