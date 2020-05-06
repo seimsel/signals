@@ -18,7 +18,7 @@ Window {
                 const previousXScale = zoom.xScale
                 const previousYScale = zoom.yScale
 
-                zoom.xScale += wheel.angleDelta.y/1200
+                zoom.xScale += wheel.angleDelta.x/1200
                 zoom.yScale += wheel.angleDelta.y/1200
 
                 position.x -= (wheel.x - position.x)*(zoom.xScale/previousXScale) - (wheel.x - position.x)
