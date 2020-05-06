@@ -13,6 +13,36 @@ Window {
 
         anchors.fill: parent
 
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+        property bool dragging: false
+
+        property double previousXPosition: 0.0
+        property double previousYPosition: 0.0
+
+        onPressed: {
+            if (mouse.button === Qt.RightButton) {
+                previousXPosition = mouse.x
+                previousYPosition = mouse.y
+                dragging = true
+            }
+        }
+
+        onReleased: {
+            if (mouse.button === Qt.RightButton) {
+                dragging = false
+            }
+        }
+
+        onPositionChanged: {
+            if (dragging) {
+                position.x += mouse.x - previousXPosition
+                position.y += mouse.y - previousYPosition
+                previousXPosition = mouse.x
+                previousYPosition = mouse.y
+            }
+        }
+
         onWheel: {
             if (wheel.modifiers & Qt.ControlModifier) {
                 const previousXScale = zoom.xScale
