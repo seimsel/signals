@@ -15,27 +15,79 @@ Window {
 
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-        property bool dragging: false
+        property bool panning: false
+        property bool zooming: false
 
+        property double storedXPosition: 0.0
+        property double storedYPosition: 0.0
         property double previousXPosition: 0.0
         property double previousYPosition: 0.0
 
+        Rectangle {
+            id: selection
+
+            border.color: 'black'
+            border.width: 2
+
+            visible: false
+        }
+
+        onZoomingChanged: {
+            selection.visible = zooming
+        }
+
         onPressed: {
+            if (mouse.button === Qt.LeftButton) {
+                storedXPosition = mouse.x
+                storedYPosition = mouse.y
+                zooming = true
+            }
+
             if (mouse.button === Qt.RightButton) {
                 previousXPosition = mouse.x
                 previousYPosition = mouse.y
-                dragging = true
+                panning = true
             }
         }
 
         onReleased: {
+            if (mouse.button === Qt.LeftButton) {
+                const previousXScale = zoom.xScale
+                const previousYScale = zoom.yScale
+
+                zoom.xScale *= mouseArea.width/selection.width
+                zoom.yScale *= mouseArea.height/selection.height
+
+                position.x -= (mouse.x - selection.width/2 - position.x)*(zoom.xScale/previousXScale) - (mouse.x - selection.width/2 - position.x)
+                position.y -= (mouse.y - selection.height/2 - position.y)*(zoom.yScale/previousYScale) - (mouse.y - selection.height/2 - position.y)
+                
+                zooming = false
+            }
+
             if (mouse.button === Qt.RightButton) {
-                dragging = false
+                panning = false
             }
         }
 
         onPositionChanged: {
-            if (dragging) {
+            if (zooming) {
+                selection.width = Math.abs(mouse.x - storedXPosition)
+                selection.height = Math.abs(mouse.y - storedYPosition)
+
+                if (mouse.x > storedXPosition) {
+                    selection.x = storedXPosition
+                } else {
+                    selection.x = storedXPosition - selection.width
+                }
+
+                if (mouse.y > storedYPosition) {
+                    selection.y = storedYPosition
+                } else {
+                    selection.y = storedYPosition - selection.height
+                }
+            }
+
+            if (panning) {
                 position.x += mouse.x - previousXPosition
                 position.y += mouse.y - previousYPosition
                 previousXPosition = mouse.x
@@ -71,6 +123,7 @@ Window {
 
             MultiPointTouchArea {
                 anchors.fill: parent
+                mouseEnabled: false
                 maximumTouchPoints: 2
                 minimumTouchPoints: 2
 

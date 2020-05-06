@@ -23,7 +23,7 @@ class Signal(QQuickItem):
         self.geometry.setDrawingMode(QSGGeometry.DrawLineStrip)
         self.geometry.setLineWidth(2)
         self.material = QSGFlatColorMaterial()
-        self.material.setColor(QColor(255, 0, 0))
+        self.material.setColor(QColor(0, 0, 0))
 
     def updatePaintNode(self, oldNode, updatePaintNodeData):
         node = oldNode
@@ -42,8 +42,6 @@ class Signal(QQuickItem):
 
 if __name__ == "__main__":
     app = QGuiApplication(sys.argv)
-
     qmlRegisterType(Signal, 'Signals', 0, 1, 'Signal')
-
     engine = QQmlApplicationEngine('signals.qml')
     exit(app.exec())
