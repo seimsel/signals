@@ -36,6 +36,32 @@ Window {
             property double storedXScale: 1.0
             property double storedYScale: 1.0
 
+            property bool zoomX: false
+            property bool zoomY: false
+
+            MultiPointTouchArea {
+                anchors.fill: parent
+                maximumTouchPoints: 2
+                minimumTouchPoints: 2
+
+                onPressed: {
+                    if (touchPoints.length === 2) {
+                        const xyDifference = Math.abs(touchPoints[0].x - touchPoints[1].x) - Math.abs(touchPoints[0].y - touchPoints[1].y)
+
+                        if (xyDifference > 50)  {
+                            parent.zoomX = true
+                            parent.zoomY = false
+                        } else if (xyDifference < -50) {
+                            parent.zoomX = false
+                            parent.zoomY = true
+                        } else {
+                            parent.zoomX = true
+                            parent.zoomY = true    
+                        }
+                    }
+                }
+            }
+
             onPinchStarted: {
                 storedXScale = zoom.xScale
                 storedYScale = zoom.yScale
@@ -45,11 +71,17 @@ Window {
                 const previousXScale = zoom.xScale
                 const previousYScale = zoom.yScale
 
-                zoom.xScale = storedXScale * pinch.scale
-                zoom.yScale = storedYScale * pinch.scale
+                if (zoomX) {
+                    zoom.xScale = storedXScale * pinch.scale
+                }
+                
+                if (zoomY) {
+                    zoom.yScale = storedYScale * pinch.scale
+                }
 
                 position.x -= (pinch.center.x - position.x)*(zoom.xScale/previousXScale) - (pinch.center.x - position.x)
                 position.y -= (pinch.center.y - position.y)*(zoom.yScale/previousYScale) - (pinch.center.y - position.y)
+
             }
 
             Signal {
