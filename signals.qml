@@ -55,13 +55,19 @@ Window {
                 const previousXScale = zoom.xScale
                 const previousYScale = zoom.yScale
 
+                zooming = false
+
+                console.log(selection.width)
+
+                if (selection.width < 10 || selection.height < 10) {
+                    return;
+                }
+
                 zoom.xScale *= mouseArea.width/selection.width
                 zoom.yScale *= mouseArea.height/selection.height
 
                 position.x -= (mouse.x - selection.width/2 - position.x)*(zoom.xScale/previousXScale) - (mouse.x - selection.width/2 - position.x)
                 position.y -= (mouse.y - selection.height/2 - position.y)*(zoom.yScale/previousYScale) - (mouse.y - selection.height/2 - position.y)
-                
-                zooming = false
             }
 
             if (mouse.button === Qt.RightButton) {
