@@ -32,14 +32,21 @@ Window {
             visible: false
         }
 
+        Keys.onEscapePressed: {
+            zooming = false
+        }
+
         onZoomingChanged: {
             selection.visible = zooming
+            mouseArea.focus = zooming
         }
 
         onPressed: {
             if (mouse.button === Qt.LeftButton) {
                 storedXPosition = mouse.x
                 storedYPosition = mouse.y
+                selection.width = 0
+                selection.height = 0
                 zooming = true
             }
 
@@ -51,13 +58,11 @@ Window {
         }
 
         onReleased: {
-            if (mouse.button === Qt.LeftButton) {
+            if (mouse.button === Qt.LeftButton && zooming) {
                 const previousXScale = zoom.xScale
                 const previousYScale = zoom.yScale
 
                 zooming = false
-
-                console.log(selection.width)
 
                 if (selection.width < 10 || selection.height < 10) {
                     return;
