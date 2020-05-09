@@ -181,6 +181,7 @@ Window {
             Signal {
                 id: renderer
                 anchors.fill: parent
+                source: 'demo://scope_1'
 
                 transform: [
                     Scale { xScale: renderer.width; yScale: renderer.height/2 },
