@@ -13,15 +13,17 @@ class DemoScopePlugin(DataSourcePlugin):
 
         self._noise_generator = default_rng()
 
-        self._t = linspace(0, 1, 1000)
-        self._y = empty(1000)
+        self._n = 10000
+        self._t = linspace(0, 1, self._n)
+        self._y = empty(len(self._t))
 
     def _refresh(self):
         self._y = sin(2*pi*10*self._t) + self._noise_generator.normal(0.0, 0.1, len(self._t))
         self.y_changed.emit(self._y)
 
     def start(self):
-        self._timer.start(100)
+        self._timer.start(10)
+        self.n_changed.emit(self._n)
         self.t_changed.emit(self._t)
         self.y_changed.emit(self._y)
 

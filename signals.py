@@ -20,11 +20,10 @@ class Signal(QQuickItem):
             DemoScopePlugin(self)
         ]
 
-        self.n = int(1e3)
-
         self.x_range = [0, 1]
         self.y_range = [-1, 1]
 
+        self.n = 0
         self.t = None
         self.y = None
 
@@ -45,15 +44,22 @@ class Signal(QQuickItem):
     def source(self, url):
         for plugin in self.data_source_plugins:
             if url.scheme() == plugin.scheme:
+                plugin.n_changed.connect(self.onNChanged)
                 plugin.t_changed.connect(self.onTChanged)
                 plugin.y_changed.connect(self.onYChanged)
                 plugin.start()
             else:
                 plugin.stop()
+                plugin.n_changed.disconnect(self.onNChanged)
                 plugin.t_changed.disconnect(self.onTChanged)
                 plugin.y_changed.disconnect(self.onYChanged)
 
         self._source = url
+
+    def onNChanged(self, n):
+        self.n = n
+        self.dirty = True
+        self.update()
 
     def onTChanged(self, t):
         self.x = t
@@ -74,12 +80,14 @@ class Signal(QQuickItem):
                 node.setGeometry(self.geometry)
                 node.setMaterial(self.material)
 
+            self.geometry.allocate(self.n)
             points = self.geometry.vertexDataAsPoint2D()
 
-            for i, point in enumerate(points):
-                point.set(self.x[i], -self.y[i])
+            if points:
+                for i, point in enumerate(points):
+                    point.set(self.x[i], -self.y[i])
 
-            node.markDirty(QSGNode.DirtyGeometry)
+                node.markDirty(QSGNode.DirtyGeometry)
 
             self.dirty = False
 
