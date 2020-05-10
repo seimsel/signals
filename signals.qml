@@ -42,18 +42,24 @@ Window {
         }
 
         onPressed: {
-            if (mouse.button === Qt.LeftButton) {
+            if (
+                mouse.button === Qt.LeftButton
+                && mouse.modifiers & Qt.ControlModifier
+            ) {
+                previousXPosition = mouse.x
+                previousYPosition = mouse.y
+                panning = true
+            } else if (mouse.button === Qt.LeftButton) {
                 storedXPosition = mouse.x
                 storedYPosition = mouse.y
                 selection.width = 0
                 selection.height = 0
                 zooming = true
-            }
-
-            if (mouse.button === Qt.RightButton) {
-                previousXPosition = mouse.x
-                previousYPosition = mouse.y
-                panning = true
+            } else if (mouse.button === Qt.RightButton) {
+                position.x = 0.0
+                position.y = 0.0
+                zoom.xScale = 1.0
+                zoom.yScale = 1.0
             }
         }
 
@@ -75,7 +81,7 @@ Window {
                 position.y -= (mouse.y - selection.height/2 - position.y)*(zoom.yScale/previousYScale) - (mouse.y - selection.height/2 - position.y)
             }
 
-            if (mouse.button === Qt.RightButton) {
+            if (mouse.button === Qt.RightButton && panning) {
                 panning = false
             }
         }
