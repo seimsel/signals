@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QTimer
 from numpy import linspace, empty, pi, sin
-from numpy.random import rand
+from numpy.random import default_rng
 from data_source_plugin import DataSourcePlugin
 
 class DemoScopePlugin(DataSourcePlugin):
@@ -11,11 +11,13 @@ class DemoScopePlugin(DataSourcePlugin):
         self._timer = QTimer(parent)
         self._timer.timeout.connect(self._refresh)
 
+        self._noise_generator = default_rng()
+
         self._t = linspace(0, 1, 1000)
         self._y = empty(1000)
 
     def _refresh(self):
-        self._y = sin(2*pi*10*self._t) + 0.1*rand(1000)
+        self._y = sin(2*pi*10*self._t) + self._noise_generator.normal(0.0, 0.1, len(self._t))
         self.y_changed.emit(self._y)
 
     def start(self):
