@@ -6,7 +6,7 @@ import PyQt5.Qt as Qt
 from PyQt5.QtCore import pyqtProperty, QUrl
 from PyQt5.QtGui import QGuiApplication, QColor
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
-from PyQt5.QtQuick import QQuickItem, QSGGeometryNode, QSGGeometry, QSGFlatColorMaterial
+from PyQt5.QtQuick import QQuickItem, QSGNode, QSGGeometryNode, QSGGeometry, QSGFlatColorMaterial
 
 from plugins.demo_scope_plugin import DemoScopePlugin
 
@@ -25,8 +25,10 @@ class Signal(QQuickItem):
         self.x_range = [0, 1]
         self.y_range = [-1, 1]
 
-        self.x = linspace(0, 1, self.n, dtype=float16)
-        self.y = sin(2*pi*10*self.x)
+        self.t = None
+        self.y = None
+
+        self.dirty = True
 
         self.setFlag(QQuickItem.ItemHasContents, True)
         self.geometry = QSGGeometry(QSGGeometry.defaultAttributes_Point2D(), self.n)
@@ -53,24 +55,33 @@ class Signal(QQuickItem):
 
         self._source = url
 
-    def onTChanged(self):
-        print('t')
+    def onTChanged(self, t):
+        self.x = t
+        self.dirty = True
+        self.update()
 
-    def onYChanged(self):
-        print('y')
+    def onYChanged(self, y):
+        self.y = y
+        self.dirty = True
+        self.update()
 
     def updatePaintNode(self, oldNode, updatePaintNodeData):
         node = oldNode
 
-        if node == None:
-            node = QSGGeometryNode()
-            node.setGeometry(self.geometry)
-            node.setMaterial(self.material)
+        if node == None or self.dirty:
+            if node == None:
+                node = QSGGeometryNode()
+                node.setGeometry(self.geometry)
+                node.setMaterial(self.material)
 
             points = self.geometry.vertexDataAsPoint2D()
 
             for i, point in enumerate(points):
                 point.set(self.x[i], -self.y[i])
+
+            node.markDirty(QSGNode.DirtyGeometry)
+
+            self.dirty = False
 
         return node        
 

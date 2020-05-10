@@ -1,8 +1,10 @@
 from PyQt5.QtCore import QObject, pyqtSignal, QUrl
+from numpy import ndarray
 
 class DataSourcePlugin(QObject):
-    t_changed = pyqtSignal()
-    y_changed = pyqtSignal()
+    n_changed = pyqtSignal(int)
+    t_changed = pyqtSignal(ndarray)
+    y_changed = pyqtSignal(ndarray)
     scheme = None
 
     def __init__(self, parent):
