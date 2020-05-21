@@ -16,7 +16,7 @@ ApplicationWindow {
             Action {
                 text: qsTr('&Open...')
                 onTriggered: {
-                    fileDialog.visible = true;
+                    fileDialog.open()
                 }
             }
         }
