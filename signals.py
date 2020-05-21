@@ -12,7 +12,7 @@ class Controller(QObject):
 
     @pyqtSlot(QUrl)
     def open(self, url):
-        data = genfromtxt(url.toLocalFile(), delimiter=',')
+        data = genfromtxt(url.toLocalFile(), delimiter=',').T
         axis = self.canvas.figure.add_subplot('111')
         axis.plot(data[0], *data[1:])
         self.canvas.draw()
