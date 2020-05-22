@@ -1,37 +1,58 @@
 from sys import argv
 
-from PyQt5.QtCore import QObject, QUrl, pyqtSlot
-from PyQt5.QtGui import QGuiApplication
-from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
-
-from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
+from PyQt5.QtCore import QObject
+from PyQt5.QtWidgets import QMainWindow, QAction, QMenu, QApplication, QWidget, QFileDialog
 
 from numpy import genfromtxt
+from matplotlib import use
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
-class Controller(QObject):
+class SignalsWindow(QMainWindow):
+    def __init__(self, view):
+        super().__init__()
+        self.view = view
 
-    @pyqtSlot(QUrl)
-    def open(self, url):
-        data = genfromtxt(url.toLocalFile(), delimiter=',').T
-        axis = self.canvas.figure.add_subplot('111')
-        axis.plot(data[0], *data[1:])
-        self.canvas.draw()
+        fileMenu = self.menuBar().addMenu('&File')
+        openAction = fileMenu.addAction('&Open...')
+        openAction.triggered.connect(self.open)
 
-    @pyqtSlot(FigureCanvasQtQuickAgg)
-    def setCanvas(self, canvas):
-        self.canvas = canvas
+        self.figure = Figure()
+        self.axis = self.figure.add_subplot('111')
 
-if __name__ == "__main__":
-    app = QGuiApplication(argv)
-    engine = QQmlApplicationEngine()
+        self.figureCanvas = FigureCanvas(self.figure)
 
-    qmlRegisterType(FigureCanvasQtQuickAgg, 'Matplotlib', 0, 1, 'FigureCanvas')
+        self.setCentralWidget(self.figureCanvas)
 
-    controller = Controller()
+    def open(self):
+        fileName, _ = QFileDialog.getOpenFileName(self)
 
-    context = engine.rootContext()
-    context.setContextProperty('controller', controller)
+        data = genfromtxt(fileName, delimiter=',').T
+        self.axis.plot(data[0], *data[1:])
+        self.figureCanvas.draw()
 
-    engine.load('signals.qml')
+class SignalsView(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.windows = [
+            SignalsWindow(self)
+        ]
+
+    def show(self):
+        for window in self.windows:
+            window.show()
+
+def main():
+    use('Qt5Agg')
+
+    app = QApplication(argv)
+    view = SignalsView()
+
+    view.show()
 
     exit(app.exec())
+
+
+if __name__ == '__main__':
+    main()
