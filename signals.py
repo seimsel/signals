@@ -6,7 +6,13 @@ from PyQt5.QtWidgets import QMainWindow, QAction, QMenu, QApplication, QWidget, 
 from numpy import genfromtxt
 from matplotlib import use
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg as FigureCanvas,
+    NavigationToolbar2QT as NavigationToolbar)
+
+class SignalsToolbar(NavigationToolbar):
+    toolitems = [t for t in NavigationToolbar.toolitems if
+                 t[0] in ('Home', 'Back', 'Forward', 'Pan', 'Zoom')]
 
 class Model(QObject):
     pass
@@ -65,6 +71,9 @@ class SignalsWindow(QMainWindow):
         self.axis = self.figure.add_subplot('111')
 
         self.figureCanvas = FigureCanvas(self.figure)
+
+        toolBar = SignalsToolbar(self.figureCanvas, self)
+        self.addToolBar(toolBar)
 
         self.setCentralWidget(self.figureCanvas)
         self.modelChanged.connect(self.onModelChanged)
