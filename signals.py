@@ -2,7 +2,7 @@ from sys import argv
 
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QObject, pyqtProperty, pyqtSignal, QUrl, QAbstractItemModel, QModelIndex
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QMainWindow, QAction, QMenu, QDockWidget, QApplication, QWidget, QFileDialog
+from PyQt5.QtWidgets import QAbstractItemView, QTreeWidget, QTreeWidgetItem, QMainWindow, QAction, QMenu, QDockWidget, QApplication, QWidget, QFileDialog
 
 from numpy import genfromtxt
 from matplotlib import use
@@ -64,8 +64,6 @@ class FileMeasurement(Measurement):
         for i, y in enumerate(data[1:]):
             self.addChild(Signal(t, y, f'Signal {i}'))
 
-        self.addChild(AdditionSignal(self.takeChildren(), 'Addition Maan'))
-
 class SignalsApplication(QApplication):
     def __init__(self):
         super().__init__(argv)
@@ -109,8 +107,12 @@ class SignalsWindow(QMainWindow):
         openAction = fileMenu.addAction('&Open...')
         openAction.triggered.connect(self.open)
 
+        editMenu = self.menuBar().addMenu('&Edit')
+        addMenu = editMenu.addMenu('&Add')
+        addAdditionSignalAction = addMenu.addAction('&Addition')
+        addAdditionSignalAction.triggered.connect(self.addAdditionSignal)
+
         self.figure = Figure()
-        self.axis = self.figure.add_subplot('111')
 
         self.figureCanvas = FigureCanvas(self.figure)
 
@@ -121,6 +123,7 @@ class SignalsWindow(QMainWindow):
 
         self.treeView = QTreeWidget()
         self.treeView.setHeaderHidden(True)
+        self.treeView.setSelectionMode(QAbstractItemView.ExtendedSelection)
         dockWidget = QDockWidget('Signals')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dockWidget)
         dockWidget.setWidget(self.treeView)
@@ -130,6 +133,21 @@ class SignalsWindow(QMainWindow):
     def open(self):
         fileName, _ = QFileDialog.getOpenFileName(self)
         self.app.open(self, fileName)
+
+    def addAdditionSignal(self):
+        selectedItems = self.treeView.selectedItems()
+
+        root = selectedItems[0].parent()
+        for item in selectedItems:
+            parent = item.parent()
+            parent.removeChild(item)
+
+            if root != parent:
+                root = self.measurement
+
+        additionSignal = AdditionSignal(selectedItems, 'Addition')
+        root.addChild(additionSignal)
+        self.measurementChanged.emit()
     
     @pyqtProperty(Measurement, notify=measurementChanged)
     def measurement(self):
@@ -141,8 +159,12 @@ class SignalsWindow(QMainWindow):
         self.measurementChanged.emit()
 
     def onMeasurementChanged(self):
+        self.figure.clear()
+        
         if not self.measurement:
             return
+
+        self.axis = self.figure.add_subplot('111')
 
         for signal in self.measurement.signals():
             self.axis.plot(signal.t, signal.y)
