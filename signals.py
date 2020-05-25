@@ -1,4 +1,5 @@
 from sys import argv
+from pathlib import Path
 
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QObject, pyqtProperty, pyqtSignal, QUrl, QAbstractItemModel, QModelIndex
@@ -6,10 +7,13 @@ from PyQt5.QtWidgets import QAbstractItemView, QTreeWidget, QTreeWidgetItem, QMa
 
 from numpy import genfromtxt
 from matplotlib import use
+from matplotlib.pyplot import style
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
+
+style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
 class SignalsToolbar(NavigationToolbar):
     toolitems = [t for t in NavigationToolbar.toolitems if
