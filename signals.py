@@ -22,18 +22,35 @@ class Signal(QTreeWidgetItem):
         self.y = y
         self.name = name
 
+class AdditionSignal(Signal):
+    def __init__(self, children, name):
+        y = 0
+
+        for child in children:
+            y += child.y
+
+        super().__init__(children[0].t, y, name)
+        self.addChildren(children)
+
 class Measurement(QTreeWidgetItem):
     def __init__(self, url):
         super().__init__([url.fileName()])
         self.url = url
 
-    def signals(self):
-        signals = []
+    def signals(self, item=None):
+        if not item:
+            item = self
 
-        for i in range(0, self.childCount()):
-            signals.append(self.child(i))
+        count = item.childCount()
 
-        return signals
+        items = []
+
+        for i in range(0, count):
+            child = item.child(i)
+            items.append(child)
+            items += self.signals(child)
+
+        return items
 
 class FileMeasurement(Measurement):
     scheme = 'file://'
@@ -46,6 +63,8 @@ class FileMeasurement(Measurement):
 
         for i, y in enumerate(data[1:]):
             self.addChild(Signal(t, y, f'Signal {i}'))
+
+        self.addChild(AdditionSignal(self.takeChildren(), 'Addition Maan'))
 
 class SignalsApplication(QApplication):
     def __init__(self):
