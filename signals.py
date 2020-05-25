@@ -15,28 +15,37 @@ class SignalsToolbar(NavigationToolbar):
     toolitems = [t for t in NavigationToolbar.toolitems if
                  t[0] in ('Home', 'Back', 'Forward', 'Pan', 'Zoom')]
 
-class Signal():
+class Signal(QTreeWidgetItem):
     def __init__(self, t, y, name):
+        super().__init__([name])
         self.t = t
         self.y = y
         self.name = name
 
-class Measurement():
-    pass
+class Measurement(QTreeWidgetItem):
+    def __init__(self, url):
+        super().__init__([url.fileName()])
+        self.url = url
+
+    def signals(self):
+        signals = []
+
+        for i in range(0, self.childCount()):
+            signals.append(self.child(i))
+
+        return signals
 
 class FileMeasurement(Measurement):
     scheme = 'file://'
 
     def __init__(self, url):
-        self.url = url
+        super().__init__(url)
         data = genfromtxt(self.url.toLocalFile(), delimiter=',').T
-
-        self.signals = []
 
         t = data[0]
 
         for i, y in enumerate(data[1:]):
-            self.signals.append(Signal(t, y, f'Signal {i}'))
+            self.addChild(Signal(t, y, f'Signal {i}'))
 
 class SignalsApplication(QApplication):
     def __init__(self):
@@ -92,6 +101,7 @@ class SignalsWindow(QMainWindow):
         self.setCentralWidget(self.figureCanvas)
 
         self.treeView = QTreeWidget()
+        self.treeView.setHeaderHidden(True)
         dockWidget = QDockWidget('Signals')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dockWidget)
         dockWidget.setWidget(self.treeView)
@@ -115,13 +125,10 @@ class SignalsWindow(QMainWindow):
         if not self.measurement:
             return
 
-        root = QTreeWidgetItem([self.measurement.url.fileName()])
-
-        for signal in self.measurement.signals:
+        for signal in self.measurement.signals():
             self.axis.plot(signal.t, signal.y)
-            root.addChild(QTreeWidgetItem([signal.name]))
 
-        self.treeView.addTopLevelItem(root)
+        self.treeView.addTopLevelItem(self.measurement)
 
         self.figureCanvas.draw()
 
