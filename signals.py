@@ -1,5 +1,6 @@
 from sys import argv
 from pathlib import Path
+from functools import partial
 
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QObject, pyqtProperty, pyqtSignal, QUrl, QAbstractItemModel, QModelIndex
@@ -27,16 +28,62 @@ class AdditionSignal(Signal):
     category = 'Basic Math'
 
     def __init__(self, children, name):
-        y = 0
+        t = children[0].t
+        y = children[0].y
 
-        for child in children:
+        for child in children[1:]:
             y += child.y
 
-        super().__init__(children[0].t, y, name)
+        super().__init__(t, y, name)
+        self.addChildren(children)
+
+class SubstractionSignal(Signal):
+    name = 'Substraction'
+    category = 'Basic Math'
+
+    def __init__(self, children, name):
+        t = children[0].t
+        y = children[0].y
+
+        for child in children[1:]:
+            y -= child.y
+
+        super().__init__(t, y, name)
+        self.addChildren(children)
+
+class MultiplicationSignal(Signal):
+    name = 'Multiplication'
+    category = 'Basic Math'
+
+    def __init__(self, children, name):
+        t = children[0].t
+        y = children[0].y
+
+        for child in children[1:]:
+            y *= child.y
+
+        super().__init__(t, y, name)
+        self.addChildren(children)
+
+class DivisionSignal(Signal):
+    name = 'Division'
+    category = 'Basic Math'
+
+    def __init__(self, children, name):
+        t = children[0].t
+        y = children[0].y
+
+        for child in children[1:]:
+            y /= child.y
+
+        super().__init__(t, y, name)
         self.addChildren(children)
 
 SignalTypes = [
-    AdditionSignal
+    AdditionSignal,
+    SubstractionSignal,
+    MultiplicationSignal,
+    DivisionSignal
 ]
 
 class SignalsToolbar(NavigationToolbar):
@@ -133,7 +180,7 @@ class SignalsWindow(QMainWindow):
                 self.categoryMenus[category] = menu
             
             action = menu.addAction(signalType.name)
-            action.triggered.connect(lambda: self.addSignal(signalType))
+            action.triggered.connect(partial(self.addSignal, signalType))
 
         self.figure = Figure()
 
