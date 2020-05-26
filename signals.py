@@ -6,7 +6,7 @@ from PyQt5.Qt import Qt
 from PyQt5.QtCore import QObject, pyqtProperty, pyqtSignal, QUrl, QAbstractItemModel, QModelIndex
 from PyQt5.QtWidgets import QAbstractItemView, QTreeWidget, QTreeWidgetItem, QMainWindow, QAction, QMenu, QDockWidget, QApplication, QWidget, QFileDialog
 
-from numpy import genfromtxt
+from numpy import genfromtxt, copy
 from matplotlib import use
 from matplotlib.pyplot import style
 from matplotlib.figure import Figure
@@ -29,7 +29,7 @@ class AdditionSignal(Signal):
 
     def __init__(self, children, name):
         t = children[0].t
-        y = children[0].y
+        y = copy(children[0].y)
 
         for child in children[1:]:
             y += child.y
@@ -43,7 +43,7 @@ class SubstractionSignal(Signal):
 
     def __init__(self, children, name):
         t = children[0].t
-        y = children[0].y
+        y = copy(children[0].y)
 
         for child in children[1:]:
             y -= child.y
@@ -57,7 +57,7 @@ class MultiplicationSignal(Signal):
 
     def __init__(self, children, name):
         t = children[0].t
-        y = children[0].y
+        y = copy(children[0].y)
 
         for child in children[1:]:
             y *= child.y
