@@ -15,10 +15,6 @@ from matplotlib.backends.backend_qt5agg import (
 
 style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
-class SignalsToolbar(NavigationToolbar):
-    toolitems = [t for t in NavigationToolbar.toolitems if
-                 t[0] in ('Home', 'Back', 'Forward', 'Pan', 'Zoom')]
-
 class Signal(QTreeWidgetItem):
     def __init__(self, t, y, name):
         super().__init__([name])
@@ -27,6 +23,9 @@ class Signal(QTreeWidgetItem):
         self.name = name
 
 class AdditionSignal(Signal):
+    name = 'Addition'
+    category = 'Basic Math'
+
     def __init__(self, children, name):
         y = 0
 
@@ -35,6 +34,14 @@ class AdditionSignal(Signal):
 
         super().__init__(children[0].t, y, name)
         self.addChildren(children)
+
+SignalTypes = [
+    AdditionSignal
+]
+
+class SignalsToolbar(NavigationToolbar):
+    toolitems = [t for t in NavigationToolbar.toolitems if
+                 t[0] in ('Home', 'Back', 'Forward', 'Pan', 'Zoom')]
 
 class Measurement(QTreeWidgetItem):
     def __init__(self, url):
@@ -113,8 +120,20 @@ class SignalsWindow(QMainWindow):
 
         editMenu = self.menuBar().addMenu('&Edit')
         addMenu = editMenu.addMenu('&Add')
-        addAdditionSignalAction = addMenu.addAction('&Addition')
-        addAdditionSignalAction.triggered.connect(self.addAdditionSignal)
+
+        self.categoryMenus = {}
+
+        for signalType in SignalTypes:
+            category = signalType.category
+
+            menu = self.categoryMenus.get(category, None)
+
+            if not menu:
+                menu = addMenu.addMenu(category)
+                self.categoryMenus[category] = menu
+            
+            action = menu.addAction(signalType.name)
+            action.triggered.connect(lambda: self.addSignal(signalType))
 
         self.figure = Figure()
 
@@ -138,7 +157,7 @@ class SignalsWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self)
         self.app.open(self, fileName)
 
-    def addAdditionSignal(self):
+    def addSignal(self, signalType):
         selectedItems = self.treeView.selectedItems()
 
         root = selectedItems[0].parent()
@@ -149,8 +168,8 @@ class SignalsWindow(QMainWindow):
             if root != parent:
                 root = self.measurement
 
-        additionSignal = AdditionSignal(selectedItems, 'Addition')
-        root.addChild(additionSignal)
+        signal = signalType(selectedItems, 'Signal')
+        root.addChild(signal)
         self.measurementChanged.emit()
     
     @pyqtProperty(Measurement, notify=measurementChanged)
