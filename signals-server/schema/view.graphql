@@ -1,0 +1,8 @@
+type View implements Node {
+    id: ID!
+    parent: Node
+    children: [Node]
+    childCount: Int!
+
+    measurements: [Measurement]
+}

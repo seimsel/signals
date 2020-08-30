@@ -1,0 +1,9 @@
+type Channel implements Node {
+    id: ID!
+    parent: Node
+    children: [Node]
+    childCount: Int!
+
+    measurement: [Measurement]
+    channels: [Channel]
+}

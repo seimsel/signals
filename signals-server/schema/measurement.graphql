@@ -1,0 +1,9 @@
+type Measurement implements Node {
+    id: ID!
+    parent: Node
+    children: [Node]
+    childCount: Int!
+
+    view: View
+    channels: [Channel]
+}
