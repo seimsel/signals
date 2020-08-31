@@ -1,9 +1,9 @@
 from .node import Node
 
 class Measurement(Node):
-    @property
-    def view(self):
-        return self.parent
+    def __init__(self, url):
+        super().__init__()
+        self.url = url
 
     @property
     def channels(self):

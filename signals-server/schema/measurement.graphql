@@ -4,6 +4,7 @@ type Measurement implements Node {
     children: [Node]
     childCount: Int!
 
-    view: View
+    url: String!
+
     channels: [Channel]
 }
