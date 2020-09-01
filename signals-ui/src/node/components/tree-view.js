@@ -1,9 +1,20 @@
 import React from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery, useApolloClient } from '@apollo/client';
 import { Tree } from 'antd';
 import treeViewQuery from '../queries/tree-view.gql';
+import childrenQuery from '../queries/children.gql';
+
+async function loadData(node, client) {
+    return await client.query({
+        query: childrenQuery,
+        variables: {
+            nodeId: node.key
+        }
+    });
+}
 
 export function TreeView() {
+    const client = useApolloClient();
     const { data, loading } = useQuery(treeViewQuery);
 
     let treeData = [];
@@ -23,6 +34,7 @@ export function TreeView() {
     return (
         <Tree
             treeData={ treeData }
+            loadData={ node => loadData(node, client) }
         />
     );
 }

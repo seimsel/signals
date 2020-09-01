@@ -12,6 +12,7 @@ from starlette.middleware.cors import CORSMiddleware
 from uuid import uuid4
 import sys
 import json
+import os
 
 from .measurement import Measurement
 from .channel import Channel
@@ -38,16 +39,30 @@ def resolve_measurement(obj, info):
             'measurement': measurement
         }
 
+        print(session['id'])
+
     return sessions[session['id']]['measurement']
+
+@query.field('node')
+def resolve_node(obj, info, nodeId):
+    session = info.context['request'].session
+
+    print(session['id'])
+
+    measurement = sessions[session['id']]['measurement']
+
+    return measurement.nodes[nodeId]
 
 type_defs = load_schema_from_path('schema')
 schema = make_executable_schema(type_defs, query)
-app = CORSMiddleware(
-    SessionMiddleware(
-            GraphQL(schema, debug=True),
-            secret_key='SECRET'
+app = SessionMiddleware(
+    CORSMiddleware(
+        GraphQL(schema, debug=True),
+        allow_origins=['https://'+os.environ.get('UI_HOST')],
+        allow_methods=['*'],
+        allow_headers=['*'],
+        allow_credentials=True
     ),
-    allow_origins=['*'],
-    allow_methods=['*'],
-    allow_headers=['*']
+    secret_key='SECRET',
+    https_only=True
 )

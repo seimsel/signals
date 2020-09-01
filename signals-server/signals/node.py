@@ -1,11 +1,16 @@
 from .api_object import ApiObject
 
 class Node(ApiObject):
-    def __init__(self):
+    def __init__(self, isRoot=False):
         super().__init__()
 
+        self.isRoot = isRoot
+        self.root = None
         self.parent = None
         self._children = []
+
+        if self.isRoot:
+            self.nodes = {}
 
     @property
     def children(self):
@@ -17,4 +22,9 @@ class Node(ApiObject):
 
     def appendChild(self, node):
         node.parent = self
+
+        if self.isRoot:
+            self.nodes[node.id] = node
+            node.root = self
+
         self._children.append(node)

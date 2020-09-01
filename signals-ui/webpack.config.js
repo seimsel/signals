@@ -77,8 +77,7 @@ module.exports = {
 
     plugins: [
         new DefinePlugin({
-            'process.env.BACKEND_HTTP_URL': JSON.stringify(process.env.BACKEND_HTTP_URL),
-            'process.env.BACKEND_WS_URL': JSON.stringify(process.env.BACKEND_WS_URL)
+            'process.env.SERVER_HOST': JSON.stringify(process.env.SERVER_HOST)
         }),
         new HtmlWebpackPlugin({
             title: `${titleCase(package.name)} ${package.version}`,
@@ -91,6 +90,8 @@ module.exports = {
 
     devServer: {
         historyApiFallback: true,
-        hot: true
+        hot: true,
+        host: '0.0.0.0',
+        disableHostCheck: true
     }
 };

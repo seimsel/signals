@@ -1,0 +1,9 @@
+query Children($nodeId: ID!) {
+    node(nodeId: $nodeId) {
+        id
+        children {
+            id
+            childCount
+        }
+    }
+}
