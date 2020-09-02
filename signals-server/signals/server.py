@@ -34,11 +34,6 @@ def resolve_measurement(obj, info):
 
     if not 'measurement' in sessions[session['id']]:
         measurement = Measurement('file://test.csv')
-        channel = Channel()
-        subchannel = Channel()
-
-        measurement.appendChannel(channel)
-        channel.appendChannel(subchannel)
 
         sessions[session['id']] = {
             'measurement': measurement
