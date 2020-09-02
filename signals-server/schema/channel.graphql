@@ -1,5 +1,6 @@
 type Channel implements Node {
     id: ID!
+    name: String!
     parent: Node
     children: [Node]
     childCount: Int!

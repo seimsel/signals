@@ -1,6 +1,8 @@
 from .api_object import ApiObject
 from ariadne import InterfaceType
 
+from functools import reduce
+
 node_type = InterfaceType('Node')
 
 @node_type.type_resolver
@@ -13,13 +15,24 @@ class Node(ApiObject):
 
         self.null = None
         self.isRoot = isRoot
-        self.root = None
+        self._root = None
         self.parent = None
         self._children = []
 
         if self.isRoot:
             self.nodes = {}
             self.nodes[self.id] = self
+
+    @property
+    def root(self):
+        return self._root
+
+    @root.setter
+    def root(self, node):
+        self._root = node
+
+        count = len(list(filter(lambda obj: type(obj) == type(self), self.root.nodes.values())))
+        self.name = f'{type(self).__name__} {count + 1}'
 
     def is_type_of():
         return type(self)

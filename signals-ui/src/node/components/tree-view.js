@@ -28,13 +28,11 @@ export function TreeView() {
     
     let treeData = [];
 
-    console.log('render');
-
     if (!loading) {
         const { measurement } = data;
         treeData = [
             map_tree(data.measurement, node => ({
-                title: node.id,
+                title: node.name,
                 key: node.id,
                 isLeaf: node.childCount === 0
             }))

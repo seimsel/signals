@@ -1,8 +1,10 @@
 query Children($nodeId: ID!) {
     node(nodeId: $nodeId) {
         id
+        name
         children {
             id
+            name
             childCount
             children: null
         }
