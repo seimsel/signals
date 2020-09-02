@@ -25,6 +25,7 @@ def where(file_name):
 
 @contextmanager
 def process(*args, **kwargs):
+    # https://gist.github.com/jizhilong/6687481#gistcomment-3057122
     proc = Popen(*args, **kwargs)
     try:
         yield proc

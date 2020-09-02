@@ -3,6 +3,7 @@ type Measurement implements Node {
     parent: Node
     children: [Node]
     childCount: Int!
+    null: String
 
     url: String!
 

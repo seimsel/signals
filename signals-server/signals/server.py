@@ -14,6 +14,7 @@ import sys
 import json
 import os
 
+from .node import node_type
 from .measurement import Measurement
 from .channel import Channel
 
@@ -28,6 +29,10 @@ def resolve_measurement(obj, info):
     if not 'id' in session:
         session['id'] = str(uuid4())
 
+    if not session['id'] in sessions:
+        sessions[session['id']] = {}
+
+    if not 'measurement' in sessions[session['id']]:
         measurement = Measurement('file://test.csv')
         channel = Channel()
         subchannel = Channel()
@@ -39,22 +44,18 @@ def resolve_measurement(obj, info):
             'measurement': measurement
         }
 
-        print(session['id'])
-
     return sessions[session['id']]['measurement']
 
 @query.field('node')
 def resolve_node(obj, info, nodeId):
     session = info.context['request'].session
 
-    print(session['id'])
-
     measurement = sessions[session['id']]['measurement']
 
     return measurement.nodes[nodeId]
 
 type_defs = load_schema_from_path('schema')
-schema = make_executable_schema(type_defs, query)
+schema = make_executable_schema(type_defs, query, node_type)
 app = SessionMiddleware(
     CORSMiddleware(
         GraphQL(schema, debug=True),
@@ -63,6 +64,5 @@ app = SessionMiddleware(
         allow_headers=['*'],
         allow_credentials=True
     ),
-    secret_key='SECRET',
-    https_only=True
+    secret_key='SECRET'
 )

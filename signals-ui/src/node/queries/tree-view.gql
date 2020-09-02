@@ -1,7 +1,7 @@
 query TreeViewQuery {
     measurement {
         id
-        url
         childCount
+        children: null
     }
 }

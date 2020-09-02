@@ -4,6 +4,7 @@ query Children($nodeId: ID!) {
         children {
             id
             childCount
+            children: null
         }
     }
 }

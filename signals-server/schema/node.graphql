@@ -3,4 +3,5 @@ interface Node {
     parent: Node
     children: [Node]
     childCount: Int!
+    null: String
 }
