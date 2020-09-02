@@ -16,6 +16,11 @@ function titleCase(str) {
     );
 }
 
+function getPort(url) {
+    const urlObj = new URL(url);
+    return urlObj.port || 8080;
+}
+
 module.exports = {
     mode: isDevelopment ? 'development' : 'production',
     entry: './src/index.js',
@@ -77,7 +82,8 @@ module.exports = {
 
     plugins: [
         new DefinePlugin({
-            'process.env.SERVER_HOST': JSON.stringify(process.env.SERVER_HOST)
+            'process.env.SERVER_HTTP_URL': JSON.stringify(process.env.SERVER_HTTP_URL),
+            'process.env.SERVER_WS_URL': JSON.stringify(process.env.SERVER_WS_URL)
         }),
         new HtmlWebpackPlugin({
             title: `${titleCase(package.name)} ${package.version}`,
@@ -91,7 +97,6 @@ module.exports = {
     devServer: {
         historyApiFallback: true,
         hot: true,
-        host: '0.0.0.0',
-        disableHostCheck: true
+        port: getPort(process.env.UI_HTTP_URL)
     }
 };

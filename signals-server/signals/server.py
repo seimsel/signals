@@ -58,7 +58,7 @@ schema = make_executable_schema(type_defs, query)
 app = SessionMiddleware(
     CORSMiddleware(
         GraphQL(schema, debug=True),
-        allow_origins=['https://'+os.environ.get('UI_HOST')],
+        allow_origins=[os.environ.get('UI_HTTP_URL')],
         allow_methods=['*'],
         allow_headers=['*'],
         allow_credentials=True

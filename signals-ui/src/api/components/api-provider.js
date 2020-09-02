@@ -5,12 +5,12 @@ import { onError } from 'apollo-link-error';
 import { getMainDefinition } from 'apollo-utilities';
 
 const httpLink = new HttpLink({
-    uri: `https://${process.env.SERVER_HOST}/graphql/`,
+    uri: `${process.env.SERVER_HTTP_URL}/graphql/`,
     credentials: 'include'
 });
 
 const wsLink = new WebSocketLink({
-    uri: `wss://${process.env.SERVER_HOST}/graphql/`,
+    uri: `${process.env.SERVER_WS_URL}/graphql/`,
     options: {
         reconnect: true
     }

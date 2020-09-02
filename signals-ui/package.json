@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "User interface for signals-server",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server"
+    "build": "env-cmd webpack",
+    "dev": "env-cmd webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -23,8 +23,8 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.2.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-import": "^1.13.0",
-    "cross-env": "^7.0.2",
     "css-loader": "^3.5.3",
+    "env-cmd": "^10.1.0",
     "html-webpack-plugin": "^4.2.1",
     "less": "^3.11.1",
     "less-loader": "^6.0.0",
