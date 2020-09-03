@@ -31,6 +31,8 @@ from .node import node_type
 from .measurement import Measurement
 from .channel import Channel
 
+DPI = 96
+
 style.use(str(Path(__file__).with_name('dark.mplstyle')))
 
 query = QueryType()
@@ -72,7 +74,14 @@ def resolve_node(obj, info, nodeId):
 def figure(request):
     session = request.session
     measurement = sessions[session['id']]['measurement']
-    figure = Figure()
+
+    width = int(request.query_params['width'])
+    height = int(request.query_params['height'])
+
+    figure = Figure(
+        figsize=(width/DPI, height/DPI),
+        dpi=DPI
+    )
 
     for channel in measurement.channels:
         x = channel.x
@@ -80,7 +89,7 @@ def figure(request):
 
         figure.gca().plot(x, y)
         buffer = BytesIO()
-        figure.savefig(buffer, format='png')
+        figure.savefig(buffer, format='png', dpi=DPI)
         buffer.seek(0)
         image = buffer.read()
         buffer.close()
