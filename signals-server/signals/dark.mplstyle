@@ -8,6 +8,8 @@ figure.constrained_layout.use: True
 figure.facecolor: 1e1e1e
 xtick.bottom: False
 ytick.left: False
+xtick.labelbottom: False
+ytick.labelleft: False
 figure.frameon: False
 figure.constrained_layout.h_pad: 0
 figure.constrained_layout.w_pad: 0
