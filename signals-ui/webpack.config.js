@@ -73,7 +73,7 @@ module.exports = {
                 }]
             },
             {
-                test: /\.(gql)$/,
+                test: /\.(graphql)$/,
                 exclude: /node_modules/,
                 loader: 'graphql-tag/loader',
             },
@@ -89,9 +89,7 @@ module.exports = {
             title: `${titleCase(package.name)} ${package.version}`,
             template: './src/index.html'
         }),
-        isDevelopment && new ReactRefreshWebpackPlugin({
-            disableRefreshCheck: true
-        })
+        isDevelopment && new ReactRefreshWebpackPlugin()
     ].filter(Boolean),
 
     devServer: {

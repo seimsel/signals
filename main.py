@@ -35,15 +35,27 @@ def process(*args, **kwargs):
         proc.terminate()
 
 def main():
-    with process([
-        where('uvicorn'), 'signals.server:app',
-        '--reload',
-        '--env-file', '.env'
-    ], cwd='./signals-server') as api_server:
+    with process(
+        [ where('npm'), 'run', 'dev' ],
+        cwd='./signals-ui',
+        env={
+            'NODE_ENV': 'development',
+            'UI_HTTP_URL': 'http://localhost:8080',
+            'SERVER_HTTP_URL': 'http://localhost:8000',
+            'SERVER_WS_URL': 'ws://localhost:8000'
+        }.update(os.environ.copy())
+    ):
 
-        with process([
-            where('npm'), 'run', 'dev'
-        ], cwd='./signals-ui') as ui_server:
+        with process(
+            [
+                where('uvicorn'), 'signals.server:app',
+                '--reload'
+            ],
+            cwd='./signals-server',
+            env={
+                'UI_HTTP_URL': 'http://localhost:8080'
+            }.update(os.environ.copy())
+        ):
 
             sys.excepthook = cef.ExceptHook
             cef.Initialize()

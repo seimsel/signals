@@ -1,8 +1,8 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
 import { Tree } from 'antd';
-import treeViewQuery from '../queries/tree-view.gql';
-import childrenQuery from '../queries/children.gql';
+import treeViewQuery from '../queries/tree-view.graphql';
+import childrenQuery from '../queries/children.graphql';
 
 function map_tree(node, func) {
     const mapped_node = func(node);
