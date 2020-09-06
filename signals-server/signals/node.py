@@ -30,9 +30,6 @@ class Node(ApiObject):
     def root(self, node):
         self._root = node
 
-        count = len(list(filter(lambda obj: type(obj) == type(self), self.root.nodes.values())))
-        self.name = f'{type(self).__name__} {count + 1}'
-
     def is_type_of():
         return type(self)
 
@@ -52,6 +49,11 @@ class Node(ApiObject):
         else:
             node.root = node.parents[0].root
 
-        node.root.nodes[node.id] = node
+        node.root.appendNode(node)
 
         self._children.append(node)
+
+    def appendNode(self, node):
+        self.nodes[node.id] = node
+        count = len(list(filter(lambda obj: type(obj) == type(node), self.nodes.values())))
+        node.name = f'{type(self).__name__} {count}'
