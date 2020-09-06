@@ -62,7 +62,7 @@ def figure(request):
         dpi=DPI
     )
 
-    for signal in measurement.signals:
+    for signal in measurement.children:
         t = signal.t
         y = signal.y
 

@@ -5,7 +5,7 @@ query Measurement {
                 id
                 name
 
-                signals {
+                children {
                     id
                     name
                 }

@@ -6,6 +6,4 @@ type Measurement implements Node {
     childCount: Int!
 
     url: String!
-
-    signals: [Signal]
 }

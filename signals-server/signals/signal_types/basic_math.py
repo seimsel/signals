@@ -1,4 +1,5 @@
 from numpy import copy
+from ..signal import Signal
 
 class AdditionSignal(Signal):
     name = 'Addition'

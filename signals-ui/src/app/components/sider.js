@@ -13,7 +13,7 @@ export function Sider() {
         );
     }
 
-    const { name, signals } = data.session.windows[0].measurements[0];
+    const { name, children } = data.session.windows[0].measurements[0];
 
     return (
         <>
@@ -23,7 +23,7 @@ export function Sider() {
                 { name }
             </Typography.Title>
             <SignalList
-                signals={ signals }
+                signals={ children }
             />
         </>
     );

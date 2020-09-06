@@ -4,6 +4,4 @@ type Signal implements Node {
     parents: [Node]
     children: [Node]
     childCount: Int!
-
-    signals: [Signal]
 }

@@ -5,7 +5,7 @@ node_type = InterfaceType('Node')
 
 @node_type.type_resolver
 def resolve_node_type(obj, *_):
-    return type(obj).__name__
+    return obj.type
 
 class Node(ApiObject):
     def __init__(self):
