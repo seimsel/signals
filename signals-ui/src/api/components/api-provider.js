@@ -55,8 +55,7 @@ const client = new ApolloClient({
                 'Measurement',
                 'Channel'
             ]
-        },
-        dataIdFromObject: object => object.id || null
+        }
     })
 });
 

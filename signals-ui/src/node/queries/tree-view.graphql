@@ -1,8 +1,10 @@
 query TreeViewQuery {
-    measurement {
+    nodes {
         id
         name
         childCount
-        children: null
+        parents {
+            id
+        }
     }
 }

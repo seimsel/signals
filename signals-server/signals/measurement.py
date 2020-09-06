@@ -34,7 +34,7 @@ class Measurement(Node):
 
     @property
     def channels(self):
-        return self.children
+        return list(self.nodes.values())
 
     def appendChannel(self, channel):
         channel.measurement = self

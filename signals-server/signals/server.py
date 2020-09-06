@@ -52,6 +52,9 @@ async def resolve_session(obj, info):
 
     if not 'measurement' in sessions[session['id']]:
         measurement = Measurement('file://test.csv')
+        channel = Channel(None, None)
+        measurement.channels[0].appendChild(channel)
+        measurement.channels[1].appendChild(channel)
 
         sessions[session['id']] = {
             'measurement': measurement
@@ -64,12 +67,12 @@ async def resolve_measurement(obj, info):
     session = info.context['request'].session
     return sessions[session['id']]['measurement']
 
-@query.field('node')
-def resolve_node(obj, info, nodeId):
+@query.field('nodes')
+def resolve_nodes(obj, info):
     session = info.context['request'].session
     measurement = sessions[session['id']]['measurement']
 
-    return measurement.nodes[nodeId]
+    return measurement.nodes.values()
 
 def figure(request):
     session = request.session

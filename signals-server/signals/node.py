@@ -16,12 +16,11 @@ class Node(ApiObject):
         self.null = None
         self.isRoot = isRoot
         self._root = None
-        self.parent = None
+        self.parents = []
         self._children = []
 
         if self.isRoot:
             self.nodes = {}
-            self.nodes[self.id] = self
 
     @property
     def root(self):
@@ -46,12 +45,12 @@ class Node(ApiObject):
         return len(self._children)
 
     def appendChild(self, node):
-        node.parent = self
+        node.parents.append(self)
 
         if self.isRoot:
             node.root = self
         else:
-            node.root = node.parent.root
+            node.root = node.parents[0].root
 
         node.root.nodes[node.id] = node
 

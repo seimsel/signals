@@ -1,5 +1,5 @@
 type Query {
     session: Session
     measurement: Measurement
-    node(nodeId: ID!): Node
+    nodes: [Node]
 }

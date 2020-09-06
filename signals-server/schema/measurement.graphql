@@ -1,10 +1,9 @@
 type Measurement implements Node {
     id: ID!
     name: String!
-    parent: Node
+    parents: [Node]
     children: [Node]
     childCount: Int!
-    null: String
 
     url: String!
 
