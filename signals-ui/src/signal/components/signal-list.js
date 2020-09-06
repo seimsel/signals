@@ -1,11 +1,11 @@
 import React from 'react';
 import { List } from 'antd';
 
-export function ChannelList({ channels }) {
+export function SignalList({ signals }) {
     return (
         <List>
         {
-            channels.map(({ name }) => (
+            signals.map(({ name }) => (
                 <List.Item>
                     { name }
                 </List.Item>

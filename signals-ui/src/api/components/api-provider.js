@@ -53,7 +53,7 @@ const client = new ApolloClient({
             'Node': [
                 'View',
                 'Measurement',
-                'Channel'
+                'Signal'
             ]
         }
     })

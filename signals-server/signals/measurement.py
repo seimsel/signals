@@ -1,5 +1,5 @@
 from .node import Node
-from .channel import Channel
+from .signal import Signal
 
 from numpy import genfromtxt, arange
 
@@ -21,7 +21,7 @@ class Measurement(Node):
                 raise Exception(f'Invalid url: {self.url}')
 
             for data in genfromtxt(self.path.resolve(), delimiter=',').T:
-                self.appendChannel(Channel(arange(0, len(data)), data))
+                self.appendSignal(Signal(arange(0, len(data)), data))
         else:
             raise NotImplementedError(f'The scheme: {self.parsed_url.scheme} is not supported.')
 
@@ -33,9 +33,9 @@ class Measurement(Node):
         return self.url
 
     @property
-    def channels(self):
+    def signals(self):
         return list(self.nodes.values())
 
-    def appendChannel(self, channel):
-        channel.measurement = self
-        self.appendChild(channel)
+    def appendSignal(self, signal):
+        signal.measurement = self
+        self.appendChild(signal)

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Skeleton } from 'antd';
 import { useQuery } from '@apollo/client';
-import { ChannelList } from '../../channel/components/channel-list';
+import { SignalList } from '../../signal/components/signal-list';
 import measurementQuery from '../queries/measurement.graphql';
 
 export function Sider() {
@@ -13,7 +13,7 @@ export function Sider() {
         );
     }
 
-    const { name, channels } = data.measurement;
+    const { name, signals } = data.measurement;
 
     return (
         <>
@@ -22,8 +22,8 @@ export function Sider() {
             >
                 { name }
             </Typography.Title>
-            <ChannelList
-                channels={ channels }
+            <SignalList
+                signals={ signals }
             />
         </>
     );

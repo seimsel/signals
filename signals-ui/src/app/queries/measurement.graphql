@@ -3,7 +3,7 @@ query Measurement {
         id
         name
 
-        channels {
+        signals {
             id
             name
         }

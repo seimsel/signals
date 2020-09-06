@@ -7,5 +7,5 @@ type Measurement implements Node {
 
     url: String!
 
-    channels: [Channel]
+    signals: [Signal]
 }

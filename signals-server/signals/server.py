@@ -29,7 +29,7 @@ import os
 
 from .node import node_type
 from .measurement import Measurement
-from .channel import Channel
+from .signal import Signal
 
 DPI = 96
 
@@ -52,9 +52,9 @@ async def resolve_session(obj, info):
 
     if not 'measurement' in sessions[session['id']]:
         measurement = Measurement('file://test.csv')
-        channel = Channel(None, None)
-        measurement.channels[0].appendChild(channel)
-        measurement.channels[1].appendChild(channel)
+        signal = Signal(None, None)
+        measurement.signals[0].appendChild(signal)
+        measurement.signals[1].appendChild(signal)
 
         sessions[session['id']] = {
             'measurement': measurement
@@ -86,9 +86,9 @@ def figure(request):
         dpi=DPI
     )
 
-    for channel in measurement.channels:
-        x = channel.x
-        y = channel.y
+    for signal in measurement.signals:
+        x = signal.x
+        y = signal.y
 
         figure.gca().plot(x, y)
         buffer = BytesIO()

@@ -1,15 +1,15 @@
 from .node import Node
 
-class Channel(Node):
+class Signal(Node):
     def __init__(self, x, y):
         super().__init__()
         self.x = x
         self.y = y
 
     @property
-    def channels(self):
+    def signals(self):
         return self.children
 
-    def appendChannel(self, channel):
-        channel.measurement = self.measurement
-        self.appendChild(channel)
+    def appendSignal(self, signal):
+        signal.measurement = self.measurement
+        self.appendChild(signal)

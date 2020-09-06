@@ -1,4 +1,4 @@
-type Channel implements Node {
+type Signal implements Node {
     id: ID!
     name: String!
     parents: [Node]
@@ -6,5 +6,5 @@ type Channel implements Node {
     childCount: Int!
 
     measurement: [Measurement]
-    channels: [Channel]
+    signals: [Signal]
 }
