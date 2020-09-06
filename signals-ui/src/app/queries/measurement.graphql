@@ -1,11 +1,16 @@
 query Measurement {
-    measurement {
-        id
-        name
+    session {
+        windows {
+            measurements {
+                id
+                name
 
-        signals {
-            id
-            name
+                signals {
+                    id
+                    name
+                }
+            }
         }
     }
+
 }

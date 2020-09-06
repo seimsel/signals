@@ -13,7 +13,7 @@ export function Sider() {
         );
     }
 
-    const { name, signals } = data.measurement;
+    const { name, signals } = data.session.windows[0].measurements[0];
 
     return (
         <>

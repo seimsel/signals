@@ -14,20 +14,16 @@ from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
-from asyncio import sleep
-
 from matplotlib.pyplot import style
 from matplotlib.figure import Figure
 
 from uuid import uuid4
 from pathlib import Path
 from io import BytesIO
-from base64 import b64encode
-import sys
-import json
 import os
 
 from .node import node_type
+from .session import Session
 from .measurement import Measurement
 from .signal import Signal
 
@@ -44,39 +40,19 @@ sessions = {}
 async def resolve_session(obj, info):
     session = info.context['request'].session
 
-    if not 'id' in session:
-        session['id'] = str(uuid4())
+    session_id = session.get('id', '')
+    session_object = sessions.get(session_id, Session())
 
-    if not session['id'] in sessions:
-        sessions[session['id']] = {}
+    if not session_id:
+        session['id'] = session_object.id
+    
+    sessions[session_id] = session_object
 
-    if not 'measurement' in sessions[session['id']]:
-        measurement = Measurement('file://test.csv')
-        signal = Signal(None, None)
-        measurement.signals[0].appendChild(signal)
-        measurement.signals[1].appendChild(signal)
-
-        sessions[session['id']] = {
-            'measurement': measurement
-        }
-
-    return session
-
-@query.field('measurement')
-async def resolve_measurement(obj, info):
-    session = info.context['request'].session
-    return sessions[session['id']]['measurement']
-
-@query.field('nodes')
-def resolve_nodes(obj, info):
-    session = info.context['request'].session
-    measurement = sessions[session['id']]['measurement']
-
-    return measurement.nodes.values()
+    return session_object
 
 def figure(request):
     session = request.session
-    measurement = sessions[session['id']]['measurement']
+    measurement = sessions[session['id']].windows[0].measurements[0]
 
     width = int(request.query_params['width'])
     height = int(request.query_params['height'])
@@ -87,10 +63,10 @@ def figure(request):
     )
 
     for signal in measurement.signals:
-        x = signal.x
+        t = signal.t
         y = signal.y
 
-        figure.gca().plot(x, y)
+        figure.gca().plot(t, y)
         buffer = BytesIO()
         figure.savefig(buffer, format='png', dpi=DPI)
         buffer.seek(0)

@@ -1,9 +1,9 @@
-type Signal implements Node {
+type Window implements Node {
     id: ID!
     name: String!
     parents: [Node]
     children: [Node]
     childCount: Int!
 
-    signals: [Signal]
+    measurements: [Measurement]
 }

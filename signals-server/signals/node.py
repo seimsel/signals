@@ -1,7 +1,5 @@
-from .api_object import ApiObject
 from ariadne import InterfaceType
-
-from functools import reduce
+from .api_object import ApiObject
 
 node_type = InterfaceType('Node')
 
@@ -10,50 +8,32 @@ def resolve_node_type(obj, *_):
     return type(obj).__name__
 
 class Node(ApiObject):
-    def __init__(self, isRoot=False):
+    def __init__(self):
         super().__init__()
-
-        self.null = None
-        self.isRoot = isRoot
-        self._root = None
-        self.parents = []
         self._children = []
-
-        if self.isRoot:
-            self.nodes = {}
-
-    @property
-    def root(self):
-        return self._root
-
-    @root.setter
-    def root(self, node):
-        self._root = node
-
-    def is_type_of():
-        return type(self)
 
     @property
     def children(self):
         return self._children
-
+    
     @property
-    def childCount(self):
+    def child_count(self):
         return len(self._children)
 
-    def appendChild(self, node):
-        node.parents.append(self)
+    def add_child(self, child):
+        self._children.append(child)
 
-        if self.isRoot:
-            node.root = self
-        else:
-            node.root = node.parents[0].root
+    def add_children(self, children):
+        self._children.extend(children)
 
-        node.root.appendNode(node)
+    @property
+    def nodes(self):
+        count = self.child_count
 
-        self._children.append(node)
+        items = []
 
-    def appendNode(self, node):
-        self.nodes[node.id] = node
-        count = len(list(filter(lambda obj: type(obj) == type(node), self.nodes.values())))
-        node.name = f'{type(self).__name__} {count}'
+        for child in self.children:
+            items.append(child)
+            items += child.nodes
+        
+        return items
