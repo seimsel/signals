@@ -1,0 +1,20 @@
+query Measurements {
+    session {
+        id
+        windows {
+            id
+            measurements {
+                id
+                name
+
+                children {
+                    id
+                    name
+                    children {
+                        id
+                    }
+                }
+            }
+        }
+    }
+}

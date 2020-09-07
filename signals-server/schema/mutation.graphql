@@ -1,3 +1,13 @@
 type Mutation {
-    nothing_here_yet: String
+    openFiles(urls: [String]!, windowId: ID!): OpenFilesResponse
+}
+
+type OpenFilesResponse {
+    windows: [Window]
+    errors: [OpenFileError]
+}
+
+type OpenFileError {
+    fileId: ID!
+    error: String
 }

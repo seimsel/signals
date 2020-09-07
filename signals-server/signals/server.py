@@ -50,12 +50,20 @@ async def resolve_session(obj, info):
 
     return session_object
 
+@mutation.field('openFiles')
+async def resolve_open_files(obj, info, urls, windowId):
+    print(urls)
+    return {
+        'windows': [],
+        'errors': []
+    }
+
 def figure(request):
     session = request.session
-    measurement = sessions[session['id']].windows[0].measurements[0]
-
     width = int(request.query_params['width'])
     height = int(request.query_params['height'])
+    measurementId = request.query_params['measurementId']
+    measurement = sessions[session['id']].measurement_with_id(measurementId)
 
     figure = Figure(
         figsize=(width/DPI, height/DPI),

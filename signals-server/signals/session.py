@@ -16,3 +16,11 @@ class Session(ApiObject):
         self.windows = [
             initial_window
         ]
+
+    def measurement_with_id(self, measurement_id):
+        measurement = None
+
+        for window in self.windows:
+            for measurement in window.measurements:
+                if measurement.id == measurement_id:
+                    return measurement

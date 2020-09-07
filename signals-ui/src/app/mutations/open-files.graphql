@@ -1,6 +1,5 @@
-query Measurement {
-    session {
-        id
+mutation OpenFiles($urls: [String]!, $windowId: ID!) {
+    openFiles(urls: $urls, windowId: $windowId) {
         windows {
             id
             measurements {
@@ -17,5 +16,4 @@ query Measurement {
             }
         }
     }
-
 }

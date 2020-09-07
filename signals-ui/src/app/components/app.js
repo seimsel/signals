@@ -6,10 +6,10 @@ import { ApiProvider } from '../../api/components/api-provider';
 import { Menubar } from './menubar';
 import { Sider } from './sider';
 import { Content } from './content';
-import sessionQuery from '../queries/session.graphql';
+import measurementsQuery from '../queries/measurements.graphql';
 
 function Main() {
-    const { loading } = useQuery(sessionQuery);
+    const { data, loading } = useQuery(measurementsQuery);
 
     return (
         <Spin
@@ -29,7 +29,7 @@ function Main() {
                 <Layout.Header
                     style={{ padding: 0 }}
                 >
-                    { loading ? null : <Menubar /> }
+                    { loading ? null : <Menubar window={ data.session.windows[0] } /> }
                 </Layout.Header>
                 <Layout>
                     <Layout.Sider
@@ -37,10 +37,10 @@ function Main() {
                         collapsible
                         collapsedWidth={0}
                     >
-                        { loading ? null : <Sider /> }
+                        { loading ? null : <Sider measurement={ data.session.windows[0].measurements[0] } /> }
                     </Layout.Sider>
                     <Layout.Content>
-                        { loading ? null : <Content /> }
+                        { loading ? null : <Content measurement={ data.session.windows[0].measurements[0] } /> }
                     </Layout.Content>
                 </Layout>
             </Layout>
@@ -49,8 +49,6 @@ function Main() {
 }
 
 export function App() {
-
-
     return (
         <ApiProvider>
             <Main />

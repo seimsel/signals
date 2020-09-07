@@ -1,9 +1,14 @@
 import React, { useRef } from 'react';
 import { useSize } from '../../common/hooks/use-size';
 
-export function Figure() {
+export function Figure({ measurementId }) {
     const imgRef = useRef();
     const { width, height } = useSize(imgRef, 100);
+    const queryParams = Object.entries({
+        width,
+        height,
+        measurementId
+    }).map(([key, value]) => `${key}=${value}`).join('&');
 
     return (
         <img
@@ -12,7 +17,7 @@ export function Figure() {
                 width: '100%',
                 height: '100%'
             }}
-            src={ `${process.env.SERVER_HTTP_URL}/figure?width=${width}&height=${height}` }
+            src={ `${process.env.SERVER_HTTP_URL}/figure?${queryParams}` }
         />
     );
 }

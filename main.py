@@ -9,8 +9,6 @@ import os
 import signal
 import platform
 
-load_dotenv('./signals-ui/.env')
-
 def where(file_name):
     # inspired by http://nedbatchelder.com/code/utilities/wh.py
     # see also: http://stackoverflow.com/questions/11210104/
@@ -42,8 +40,11 @@ def main():
             'NODE_ENV': 'development',
             'UI_HTTP_URL': 'http://localhost:8080',
             'SERVER_HTTP_URL': 'http://localhost:8000',
-            'SERVER_WS_URL': 'ws://localhost:8000'
-        }.update(os.environ.copy())
+            'SERVER_WS_URL': 'ws://localhost:8000',
+            'SYSTEMROOT': os.environ['SYSTEMROOT'],
+            'APPDATA': os.environ['APPDATA'],
+            'PATH': os.environ['PATH']
+        }
     ):
 
         with process(
@@ -53,13 +54,16 @@ def main():
             ],
             cwd='./signals-server',
             env={
-                'UI_HTTP_URL': 'http://localhost:8080'
-            }.update(os.environ.copy())
+                'UI_HTTP_URL': 'http://localhost:8080',
+                'SYSTEMROOT': os.environ['SYSTEMROOT'],
+                'SYSTEMDRIVE': os.environ.get('SYSTEMDRIVE'),
+                'HOME': os.environ.get('USERPROFILE', os.environ.get('HOME'))
+            }
         ):
 
             sys.excepthook = cef.ExceptHook
             cef.Initialize()
-            cef.CreateBrowserSync(url=os.environ.get('UI_HTTP_URL'))
+            cef.CreateBrowserSync(url='http://localhost:8080')
             cef.MessageLoop()
             cef.Shutdown()
 
