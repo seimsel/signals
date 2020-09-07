@@ -10,7 +10,12 @@ def resolve_node_type(obj, *_):
 class Node(ApiObject):
     def __init__(self):
         super().__init__()
+        self._parents = []
         self._children = []
+
+    @property
+    def parents(self):
+        return self._parents
 
     @property
     def children(self):
@@ -21,6 +26,7 @@ class Node(ApiObject):
         return len(self._children)
 
     def add_child(self, child):
+        child._parents.append(self)
         self._children.append(child)
 
     def add_children(self, children):

@@ -1,6 +1,8 @@
 query Measurement {
     session {
+        id
         windows {
+            id
             measurements {
                 id
                 name
@@ -8,6 +10,9 @@ query Measurement {
                 children {
                     id
                     name
+                    children {
+                        id
+                    }
                 }
             }
         }

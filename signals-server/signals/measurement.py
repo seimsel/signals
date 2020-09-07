@@ -7,4 +7,3 @@ class Measurement(Node):
         self.url = url
         self.parsed_url = urlparse(self.url)
         super().__init__()
-
