@@ -1,6 +1,7 @@
 from cefpython3 import cefpython as cef
 
 from tkinter import Frame
+from tkinter.filedialog import askopenfilenames
 
 class BrowserFrame(Frame):
     def __init__(self, root):

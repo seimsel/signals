@@ -1,4 +1,5 @@
 from cefpython3 import cefpython as cef
+
 from threading import Thread
 
 import ctypes
@@ -41,6 +42,15 @@ class Application(Thread):
                 browser.NotifyMoveOrResizeStarted()
 
             window.bind('<Configure>', on_configure)
+
+            def open_file_dialog(callback):
+                callback.Call([
+                    'hello'
+                ])
+
+            bindings = cef.JavascriptBindings()
+            bindings.SetFunction('openFileDialog', open_file_dialog)
+            browser.SetJavascriptBindings(bindings)
 
         cef.MessageLoop()
         cef.Shutdown()

@@ -16,22 +16,7 @@ export function Menubar({ window }) {
             >
                 <Menu.Item
                     onClick={() => {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-
-                        input.onchange = event => {
-                            console.log(event);
-                            openFiles({
-                                variables: {
-                                    urls: [
-                                        JSON.stringify(event)
-                                    ],
-                                    windowId: window.id
-                                }
-                            });
-                        }
-
-                        input.click();
+                        openFileDialog(files => console.log(files));
                     }}
                 >
                     Open file...
