@@ -43,13 +43,19 @@ class Application(Thread):
 
             window.bind('<Configure>', on_configure)
 
-            def open_file_dialog(callback):
-                callback.Call([
-                    'hello'
-                ])
+            def askopenfilenames(callback):
+                def func():
+                    filenames = window.askopenfilenames()
+                    callback.Call(filenames)
+
+                cef.PostTask(
+                    thread=cef.TID_FILE,
+                    func=func
+                )
+                
 
             bindings = cef.JavascriptBindings()
-            bindings.SetFunction('openFileDialog', open_file_dialog)
+            bindings.SetFunction('askopenfilenames', askopenfilenames)
             browser.SetJavascriptBindings(bindings)
 
         cef.MessageLoop()

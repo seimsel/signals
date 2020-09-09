@@ -16,7 +16,7 @@ export function Menubar({ window }) {
             >
                 <Menu.Item
                     onClick={() => {
-                        openFileDialog(files => console.log(files));
+                        askopenfilenames(files => console.log(files));
                     }}
                 >
                     Open file...
