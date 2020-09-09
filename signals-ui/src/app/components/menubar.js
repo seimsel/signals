@@ -16,7 +16,12 @@ export function Menubar({ window }) {
             >
                 <Menu.Item
                     onClick={() => {
-                        askopenfilenames(files => console.log(files));
+                        askopenfilenames(files => openFiles({
+                            variables: {
+                                urls: files.map(file => `file://${encodeURI(file)}`),
+                                windowId: window.id
+                            }
+                        }));
                     }}
                 >
                     Open file...
