@@ -1,0 +1,19 @@
+mutation OpenFiles($urls: [String]!, $windowId: ID!) {
+    openFiles(urls: $urls, windowId: $windowId) {
+        windows {
+            id
+            measurements {
+                id
+                name
+
+                children {
+                    id
+                    name
+                    children {
+                        id
+                    }
+                }
+            }
+        }
+    }
+}

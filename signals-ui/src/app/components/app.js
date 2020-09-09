@@ -1,0 +1,57 @@
+import React from 'react';
+import { Layout, Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { useQuery } from '@apollo/client';
+import { ApiProvider } from '../../api/components/api-provider';
+import { Menubar } from './menubar';
+import { Sider } from './sider';
+import { Content } from './content';
+import measurementsQuery from '../queries/measurements.graphql';
+
+function Main() {
+    const { data, loading } = useQuery(measurementsQuery);
+
+    return (
+        <Spin
+            indicator={
+                <LoadingOutlined
+                    style={{
+                        fontSize: '10em'
+                    }}
+                    spin
+                />
+            }
+            spinning={ loading }
+        >
+            <Layout
+                style={{ height:"100vh" }}
+            >
+                <Layout.Header
+                    style={{ padding: 0 }}
+                >
+                    { loading ? null : <Menubar window={ data.session.windows[0] } /> }
+                </Layout.Header>
+                <Layout>
+                    <Layout.Sider
+                        width={300}
+                        collapsible
+                        collapsedWidth={0}
+                    >
+                        { loading ? null : <Sider measurement={ data.session.windows[0].measurements[0] } /> }
+                    </Layout.Sider>
+                    <Layout.Content>
+                        { loading ? null : <Content measurement={ data.session.windows[0].measurements[0] } /> }
+                    </Layout.Content>
+                </Layout>
+            </Layout>
+        </Spin>
+    );
+}
+
+export function App() {
+    return (
+        <ApiProvider>
+            <Main />
+        </ApiProvider>
+    );
+}

@@ -4,3 +4,7 @@ __pycache__
 npm-debug.log*
 .vscode
 dist
+.env
+blob_storage
+webrtc_event_logs
+error.log

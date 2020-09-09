@@ -1,0 +1,13 @@
+type Mutation {
+    openFiles(urls: [String]!, windowId: ID!): OpenFilesResponse
+}
+
+type OpenFilesResponse {
+    windows: [Window]
+    errors: [OpenFileError]
+}
+
+type OpenFileError {
+    fileId: ID!
+    error: String
+}

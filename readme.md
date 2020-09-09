@@ -9,22 +9,20 @@ Highly Experimental - Is not very useful yet.
 ### Download source
 ```bash
     git clone https://github.com/seimsel/signals.git
+    cd signals
 ```
 
-### Run backend
+### Install requirements
 ```bash 
-    cd signals/backend
-    pip install -r requirements.txt # requires python3
-    uvicorn --reload --port 8000 main:app
+    pip install -r requirements.txt
+    cd signals-server
+    pip install -r requirements.txt
+    cd ../signals-ui
+    npm i
+    cd ..
 ```
 
-### Run frontend
-In a seperate terminal window:
+### Run
 ```bash
-    cd signals/frontend
-    npm install
-
-    export BACKEND_HTTP_URL=http://localhost:8000
-    export BACKEND_WS_URL=ws://localhost:8000
-    npm run dev
+    python main.py --development
 ```

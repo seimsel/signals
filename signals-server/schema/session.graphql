@@ -1,0 +1,4 @@
+type Session {
+    id: ID!
+    windows: [Window]
+}

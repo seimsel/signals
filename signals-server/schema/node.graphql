@@ -1,0 +1,7 @@
+interface Node {
+    id: ID!
+    name: String!
+    parents: [Node]
+    children: [Node]
+    childCount: Int!
+}

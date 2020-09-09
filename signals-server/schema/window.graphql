@@ -1,0 +1,9 @@
+type Window implements Node {
+    id: ID!
+    name: String!
+    parents: [Node]
+    children: [Node]
+    childCount: Int!
+
+    measurements: [Measurement]
+}
