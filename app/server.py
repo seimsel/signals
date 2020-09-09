@@ -1,8 +1,6 @@
 from .external_application import ExternalApplication
 from .utils.where import where
 
-import os
-
 class Server(ExternalApplication):
     def __init__(
         self,
@@ -20,14 +18,13 @@ class Server(ExternalApplication):
                 '--reload'
             ])
 
+        env = {
+            'UI_HTTP_URL': ui_http_url,
+            'DEVELOPEMENT': 'true'
+        }
+
         super().__init__(
             cmd,
             cwd='./signals-server',
-            env={
-                'UI_HTTP_URL': ui_http_url,
-                'SYSTEMROOT': os.environ['SYSTEMROOT'],
-                'SYSTEMDRIVE': os.environ.get('SYSTEMDRIVE'),
-                'HOME': os.environ.get('USERPROFILE', os.environ.get('HOME')),
-                'DEVELOPEMENT': 'true'
-            }
+            env=env
         )
