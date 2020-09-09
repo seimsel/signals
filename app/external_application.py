@@ -19,4 +19,4 @@ class ExternalApplication:
     def __exit__(self, *args, **kwargs):
         for child in Process(self.process.pid).children(recursive=True):
             child.terminate()
-            self.process.terminate()
+        self.process.terminate()
