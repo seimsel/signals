@@ -57,7 +57,8 @@ module.exports = {
                 ]
             },
             {
-                test: /\.less$/,
+                test: /.less$/,
+                exclude: /src/,
                 use: [{
                     loader: "style-loader"
                 }, {
@@ -70,6 +71,17 @@ module.exports = {
                             javascriptEnabled: true
                         }
                     }
+                }]
+            },
+            {
+                test: /\.less$/,
+                exclude: /node_modules/,
+                use: [{
+                    loader: "style-loader"
+                }, {
+                    loader: "css-loader"
+                }, {
+                    loader: "less-loader"
                 }]
             },
             {

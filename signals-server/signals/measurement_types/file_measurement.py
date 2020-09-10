@@ -1,5 +1,5 @@
 from numpy import genfromtxt
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 from pathlib import Path
 
 from ..measurement import Measurement
@@ -11,10 +11,8 @@ class FileMeasurement(Measurement):
     def __init__(self, url):
         super().__init__(url)
 
-        if self.parsed_url.path:
-            self.path = Path(self.parsed_url.path)
-        elif self.parsed_url.netloc:
-            self.path = Path(self.parsed_url.netloc)
+        if self.parsed_url.netloc:
+            self.path = Path(unquote(self.parsed_url.netloc))
         else:
             raise Exception(f'Invalid url: {self.url}')
 

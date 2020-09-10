@@ -17,6 +17,13 @@ class Session(ApiObject):
             initial_window
         ]
 
+    def window_with_id(self, window_id):
+        window = None
+
+        for window in self.windows:
+            if window.id == window_id:
+                return window
+
     def measurement_with_id(self, measurement_id):
         measurement = None
 

@@ -18,7 +18,7 @@ export function Menubar({ window }) {
                     onClick={() => {
                         askopenfilenames(files => openFiles({
                             variables: {
-                                urls: files.map(file => `file://${encodeURI(file)}`),
+                                urls: files.map(file => `file://${encodeURIComponent(file)}`),
                                 windowId: window.id
                             }
                         }));

@@ -9,16 +9,9 @@ export function Sider({ measurement, loading }) {
         );
     }
 
-    const { name, children } = measurement;
+    const { children } = measurement;
 
     return (
-        <>
-            <Typography.Title
-                level={2}
-            >
-                { name }
-            </Typography.Title>
-            <SignalTree signals={ children } />
-        </>
+        <SignalTree signals={ children } />
     );
 }

@@ -25,6 +25,7 @@ import os
 from .node import node_type
 from .session import Session
 from .measurement import Measurement
+from .measurement_types.file_measurement import FileMeasurement
 from .signal import Signal
 
 DPI = 96
@@ -52,9 +53,17 @@ async def resolve_session(obj, info):
 
 @mutation.field('openFiles')
 async def resolve_open_files(obj, info, urls, windowId):
-    print(urls)
+    session = info.context['request'].session
+
+    window = sessions[session['id']].window_with_id(windowId)
+    
+    for url in urls:
+        window.add_measurement(FileMeasurement(url))
+
     return {
-        'windows': [],
+        'windows': [
+            window
+        ],
         'errors': []
     }
 
