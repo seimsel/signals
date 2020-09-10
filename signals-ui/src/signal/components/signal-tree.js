@@ -24,7 +24,6 @@ function get_children(parent, nodes) {
 
 export function SignalTree({ signals }) {
     const tree = create_tree(signals);
-    console.log(tree)
 
     return (
         <Tree 

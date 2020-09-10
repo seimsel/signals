@@ -9,10 +9,6 @@ class Session(ApiObject):
         super().__init__()
         initial_window = Window()
 
-        measurement = FileMeasurement('file://test.csv')
-        measurement.add_child(AdditionSignal([measurement.children[0], measurement.children[1]], 'Addition Maan'))
-        initial_window.add_measurement(measurement)
-
         self.windows = [
             initial_window
         ]

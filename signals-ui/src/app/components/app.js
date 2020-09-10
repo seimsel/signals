@@ -36,7 +36,7 @@ function Main() {
                     className='full-height'
                 >
                 {
-                    loading ? null :
+                    loading || data.session.windows[0].measurements.length === 0 ? null :
                     data.session.windows[0].measurements.map(measurement => (
                         <Tabs.TabPane
                             tab={ measurement.name }
