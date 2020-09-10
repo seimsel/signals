@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDebounce } from './use-debounce';
 
-export function useSize(imgRef, debounce=0) {
+export function useSize(elementRef, debounce=0) {
     const [size, setSize] = useState({
         width: undefined,
         height: undefined
@@ -11,17 +11,21 @@ export function useSize(imgRef, debounce=0) {
 
     function onResize() {
         setSize({
-            width: imgRef.current.offsetWidth,
-            height: imgRef.current.offsetHeight,
+            width: elementRef.current.offsetWidth,
+            height: elementRef.current.offsetHeight,
         });
     }
 
     useEffect(() => {
-        const resizeListener = window.addEventListener('resize', onResize);
+        const resizeObserver = new ResizeObserver(entries => {
+            onResize();
+        });
         onResize();
 
+        resizeObserver.observe(elementRef.current);
+
         return () => {
-            window.removeEventListener('resize', resizeListener);
+            resizeObserver.disconnect();
         }
     }, []);
   
