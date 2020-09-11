@@ -67,6 +67,19 @@ async def resolve_open_files(obj, info, urls, windowId):
         'errors': []
     }
 
+@mutation.field('closeMeasurement')
+async def resolve_close_measurement(obj, info, measurementId, windowId):
+    session = info.context['request'].session
+
+    window = sessions[session['id']].window_with_id(windowId)
+    
+    window.remove_measurement(measurementId)
+
+    return {
+        'window': window,
+        'error': None
+    }
+
 def figure(request):
     session = request.session
     width = int(request.query_params['width'])

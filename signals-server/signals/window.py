@@ -11,3 +11,6 @@ class Window(Node):
 
     def add_measurement(self, measurement):
         self.add_child(measurement)
+
+    def remove_measurement(self, measurementId):
+        self.remove_child(measurementId)

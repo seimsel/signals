@@ -1,13 +1,19 @@
 type Mutation {
     openFiles(urls: [String]!, windowId: ID!): OpenFilesResponse
+    closeMeasurement(measurementId: ID!, windowId: ID!): CloseMeasurementResponse
+}
+
+type CloseMeasurementResponse {
+    window: Window
+    error: MeasurementError
 }
 
 type OpenFilesResponse {
     windows: [Window]
-    errors: [OpenFileError]
+    errors: [MeasurementError]
 }
 
-type OpenFileError {
-    fileId: ID!
+type MeasurementError {
+    measurementId: ID!
     error: String
 }

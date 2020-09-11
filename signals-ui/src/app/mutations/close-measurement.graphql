@@ -1,0 +1,19 @@
+mutation CloseMeasurement($measurementId: ID!, $windowId: ID!) {
+    closeMeasurement(measurementId: $measurementId, windowId: $windowId) {
+        window {
+            id
+            measurements {
+                id
+                name
+
+                children {
+                    id
+                    name
+                    children {
+                        id
+                    }
+                }
+            }
+        }
+    }
+}

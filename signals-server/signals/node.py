@@ -30,7 +30,11 @@ class Node(ApiObject):
         self._children.append(child)
 
     def add_children(self, children):
-        self._children.extend(children)
+        for child in children:
+            self.add_child(child)
+
+    def remove_child(self, childId):
+        self._children = [child for child in self._children if not child.id == childId]
 
     @property
     def nodes(self):

@@ -1,15 +1,17 @@
 import React from 'react';
 import { Layout, Spin, Tabs } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import { ApiProvider } from '../../api/components/api-provider';
 import { Menubar } from './menubar';
 import { Sider } from './sider';
 import { Content } from './content';
 import measurementsQuery from '../queries/measurements.graphql';
+import closeMeasurementMutation from '../mutations/close-measurement.graphql'
 
 function Main() {
     const { data, loading } = useQuery(measurementsQuery);
+    const [ closeMeasurement ] = useMutation(closeMeasurementMutation);
 
     return (
         <Spin
@@ -32,8 +34,25 @@ function Main() {
                     { loading ? null : <Menubar window={ data.session.windows[0] } /> }
                 </Layout.Header>
                 <Tabs
-                    type='card'
+                    type='editable-card'
                     className='full-height'
+                    onEdit={ (targetKey, action) => {
+                        switch (action) {
+                            case 'remove':
+                                closeMeasurement({
+                                    variables: {
+                                        measurementId: targetKey,
+                                        windowId: data.session.windows[0].id
+                                    }
+                                });
+                                return;
+                            
+                            case 'add':
+                            default:
+                                return;
+                        }
+                    }}
+                    hideAdd
                 >
                 {
                     loading || data.session.windows[0].measurements.length === 0 ? null :
