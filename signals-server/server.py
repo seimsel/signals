@@ -17,16 +17,20 @@ from starlette.middleware.cors import CORSMiddleware
 from matplotlib.pyplot import style
 from matplotlib.figure import Figure
 
+import uvicorn
+
 from uuid import uuid4
 from pathlib import Path
 from io import BytesIO
 import os
 
-from .node import node_type
-from .session import Session
-from .measurement import Measurement
-from .measurement_types.file_measurement import FileMeasurement
-from .signal import Signal
+from signals.node import node_type
+from signals.session import Session
+from signals.measurement import Measurement
+from signals.measurement_types.file_measurement import FileMeasurement
+from signals.signal import Signal
+
+development = os.environ.get('DEVELOPMENT', 'false') == 'true'
 
 DPI = 96
 
@@ -105,7 +109,7 @@ def figure(request):
 
     return Response(image, media_type='image/png')
 
-type_defs = load_schema_from_path('schema')
+type_defs = load_schema_from_path(str(Path(__file__).with_name('schema')))
 schema = make_executable_schema(type_defs, query, mutation, node_type)
 
 routes = [
@@ -135,3 +139,10 @@ app = Starlette(
 app.mount('/graphql', 
     GraphQL(schema, debug=True),
 )
+
+if __name__ == "__main__":
+    uvicorn.run(
+        'server:app',
+        reload=development,
+        port=int(os.environ.get('SERVER_PORT', 8000))
+    )
