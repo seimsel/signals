@@ -1,16 +1,13 @@
-from .browser_frame import BrowserFrame
+from .browser_window import BrowserWindow
+from PyQt5.QtCore import QObject
 
-from threading import Thread
-from tkinter import Tk
-
-class View(Thread):
+class View(QObject):
     def __init__(self):
         super().__init__()
 
-    def run(self):
-        self.root = Tk()
-        
         self.windows = [
-            BrowserFrame(self.root)
+            BrowserWindow()
         ]
-        self.root.mainloop()
+
+        for window in self.windows:
+            window.show()

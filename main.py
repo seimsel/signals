@@ -3,7 +3,8 @@ from app.server import Server
 from app.view import View
 from app.application import Application
 
-from cefpython3 import cefpython as cef
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 import sys
 
@@ -12,26 +13,15 @@ from contextlib import nullcontext
 from time import sleep
 
 def main(args):
-    sys.excepthook = cef.ExceptHook
     development = args.development
     server = Server(development=development)
     devserver = DevServer() if development else nullcontext()
 
     with server:
         with devserver:
+            application = Application()
             view = View()
-            view.start()
-
-            application = Application(view)
             application.start()
-
-            while application.is_alive() and view.is_alive():
-                try:
-                    sleep(0.5)
-                except KeyboardInterrupt:
-                    view.root.quit()
-                    view.root.update()
-                    break
 
 if __name__ == '__main__':
     parser = ArgumentParser()

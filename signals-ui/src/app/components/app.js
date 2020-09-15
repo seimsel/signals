@@ -8,6 +8,7 @@ import { Sider } from './sider';
 import { Content } from './content';
 import measurementsQuery from '../queries/measurements.graphql';
 import closeMeasurementMutation from '../mutations/close-measurement.graphql'
+import { QtProvider } from '../../qt/components/qt-provider';
 
 function Main() {
     const { data, loading } = useQuery(measurementsQuery);
@@ -84,8 +85,10 @@ function Main() {
 
 export function App() {
     return (
-        <ApiProvider>
-            <Main />
-        </ApiProvider>
+        <QtProvider>
+            <ApiProvider>
+                <Main />
+            </ApiProvider>
+        </QtProvider>
     );
 }
