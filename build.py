@@ -31,8 +31,6 @@ class BuildProcess(RobustInstallerProcess):
             f.sourceDir = './signals-app'
             f.entryPointPy = 'app.py'
         elif key == SERVER_CONFIG_KEY:
-            PyInstHook('bundle_ui')
-
             f.productName = 'Signals Server'
             f.description = 'Server for the Signals Signal Processing Toolkit'
             f.binaryName = 'signals-server'
