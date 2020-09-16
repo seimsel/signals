@@ -15,7 +15,9 @@ class Server(ExternalApplication):
                 where('python'), str(Path(__file__).parent.parent.with_name('signals-server')/'server.py')
             ]
         else:
-            cmd = []
+            cmd = [
+                './SignalsServer'
+            ]
 
         env = {
             'UI_HTTP_URL': ui_http_url,

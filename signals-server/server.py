@@ -34,7 +34,12 @@ development = os.environ.get('DEVELOPMENT', 'false') == 'true'
 
 DPI = 96
 
-style.use('dark.mplstyle')
+style_file = './styles/dark.mplstyle'
+
+if development:
+    style_file = str(Path(__file__).parent/style_file)
+
+style.use(style_file)
 
 query = QueryType()
 mutation = MutationType()
@@ -109,7 +114,12 @@ def figure(request):
 
     return Response(image, media_type='image/png')
 
-type_defs = load_schema_from_path('schema')
+schema_dir = './schema'
+
+if development:
+    schema_dir = str(Path(__file__).parent/schema_dir)
+
+type_defs = load_schema_from_path(schema_dir)
 schema = make_executable_schema(type_defs, query, mutation, node_type)
 
 routes = [

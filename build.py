@@ -42,11 +42,13 @@ class BuildProcess(RobustInstallerProcess):
             f.entryPointPy = 'server.py'
     
     def onPyInstConfig(self, key, cfg):
+        cfg.isOneFile = False
+
         if key == SERVER_CONFIG_KEY:
             cfg.dataFilePaths = [
-                '../signals-ui/dist',
-                './schema',
-                './dark.mplstyle'
+                '../signals-ui/dist;signals-ui',
+                './schema;schema',
+                './dark.mplstyle;dark.mplstyle'
             ]
 
     def onPackagesStaged(self, cfg, pkgs):
@@ -60,5 +62,4 @@ p = BuildProcess(
     isDesktopTarget=True
 )
 
-p.isTestingInstall = True
 p.run()
