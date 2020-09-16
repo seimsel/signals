@@ -48,7 +48,7 @@ class BuildProcess(RobustInstallerProcess):
             cfg.dataFilePaths = [
                 '../signals-ui/dist;signals-ui',
                 './schema;schema',
-                './dark.mplstyle;dark.mplstyle'
+                './styles/dark.mplstyle;styles'
             ]
 
     def onPackagesStaged(self, cfg, pkgs):
