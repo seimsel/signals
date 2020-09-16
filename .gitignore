@@ -9,3 +9,4 @@ blob_storage
 webrtc_event_logs
 error.log
 Signals.exe
+SignalsServer.exe

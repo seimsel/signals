@@ -6,11 +6,13 @@ from distbuilder import (
     PyInstHook
 )
 
+from pathlib import Path
+
 f = masterConfigFactory = ConfigFactory()
 f.productName = 'Signals'
 f.companyLegalName = 'Signals'
 f.version = (0,0,1,0)
-f.setupName = 'signals_setup'
+f.setupName = 'SignalsSetup'
 
 APP_CONFIG_KEY = 'app'
 SERVER_CONFIG_KEY = 'server'
@@ -25,7 +27,7 @@ class BuildProcess(RobustInstallerProcess):
         if key == APP_CONFIG_KEY:
             f.productName = 'Signals'
             f.description = 'Signal Processing Toolkit'
-            f.binaryName = 'signals'
+            f.binaryName = 'Signals'
             f.version = (0,0,1,0)
             f.isGui = True
             f.sourceDir = './signals-app'
@@ -33,11 +35,19 @@ class BuildProcess(RobustInstallerProcess):
         elif key == SERVER_CONFIG_KEY:
             f.productName = 'Signals Server'
             f.description = 'Server for the Signals Signal Processing Toolkit'
-            f.binaryName = 'signals-server'
+            f.binaryName = 'SignalsServer'
             f.version = (0,0,1,0)
             f.isGui = False
-            f.souceDir = './signals-server'
+            f.sourceDir = './signals-server'
             f.entryPointPy = 'server.py'
+    
+    def onPyInstConfig(self, key, cfg):
+        if key == SERVER_CONFIG_KEY:
+            cfg.dataFilePaths = [
+                '../signals-ui/dist',
+                './schema',
+                './dark.mplstyle'
+            ]
 
     def onPackagesStaged(self, cfg, pkgs):
         comboPkg = mergeQtIfwPackages(pkgs, APP_CONFIG_KEY, SERVER_CONFIG_KEY)
