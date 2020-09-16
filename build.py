@@ -6,7 +6,27 @@ from distbuilder import (
     PyInstHook
 )
 
-from pathlib import Path
+import subprocess
+import os
+
+exec(open('./signals-app/signals/config.py').read())
+
+config = get_config()
+
+env = {
+    'NODE_ENV': 'production',
+    'UI_HTTP_URL': config['ui_http_url'],
+    'SERVER_HTTP_URL': config['server_http_url'],
+    'SERVER_WS_URL': config['server_ws_url']
+}
+
+subprocess.run(
+    ['npm', 'run', 'build'],
+    shell=True,
+    check=True,
+    cwd='./signals-ui',
+    env=dict(os.environ, **env)
+)
 
 f = masterConfigFactory = ConfigFactory()
 f.productName = 'Signals'
@@ -46,7 +66,7 @@ class BuildProcess(RobustInstallerProcess):
 
         if key == SERVER_CONFIG_KEY:
             cfg.dataFilePaths = [
-                '../signals-ui/dist;signals-ui',
+                './static;static',
                 './schema;schema',
                 './styles/dark.mplstyle;styles'
             ]

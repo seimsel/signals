@@ -6,6 +6,10 @@ export function QtProvider({ children }) {
     const [python, setPython] = useState();
 
     useEffect(() => {
+        if (!qt) {
+            return;
+        }
+
         new QWebChannel(
             qt.webChannelTransport,
             channel => {

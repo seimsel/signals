@@ -3,7 +3,7 @@ node_modules
 __pycache__
 npm-debug.log*
 .vscode
-dist
+signals-server/static
 .env
 blob_storage
 webrtc_event_logs

@@ -27,7 +27,7 @@ module.exports = {
     devtool: isDevelopment && 'source-map',
 
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve('../signals-server/static'),
         filename: 'bundle.js',
         publicPath: '/'
     },

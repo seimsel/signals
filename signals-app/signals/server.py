@@ -27,5 +27,6 @@ class Server(ExternalApplication):
 
         super().__init__(
             cmd,
+            cwd='../signals-server',
             env=env
         )

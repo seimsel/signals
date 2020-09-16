@@ -8,7 +8,7 @@ from ariadne import (
 from ariadne.asgi import GraphQL
 
 from starlette.applications import Starlette
-from starlette.routing import Route
+from starlette.routing import Route, Mount
 from starlette.responses import Response
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -18,6 +18,9 @@ from matplotlib.pyplot import style
 from matplotlib.figure import Figure
 
 import uvicorn
+
+# This is necessary so pyinstaller includes the uvicorn.logging module
+import uvicorn.logging
 
 from uuid import uuid4
 from pathlib import Path
@@ -29,17 +32,13 @@ from signals.session import Session
 from signals.measurement import Measurement
 from signals.measurement_types.file_measurement import FileMeasurement
 from signals.signal import Signal
+from signals.spa_staticfiles import SpaStaticFiles
 
 development = os.environ.get('DEVELOPMENT', 'false') == 'true'
 
 DPI = 96
 
-style_file = './styles/dark.mplstyle'
-
-if development:
-    style_file = str(Path(__file__).parent/style_file)
-
-style.use(style_file)
+style.use('./styles/dark.mplstyle')
 
 query = QueryType()
 mutation = MutationType()
@@ -114,16 +113,19 @@ def figure(request):
 
     return Response(image, media_type='image/png')
 
-schema_dir = './schema'
-
-if development:
-    schema_dir = str(Path(__file__).parent/schema_dir)
-
-type_defs = load_schema_from_path(schema_dir)
+type_defs = load_schema_from_path('./schema')
 schema = make_executable_schema(type_defs, query, mutation, node_type)
 
 routes = [
-    Route('/figure', endpoint=figure)
+    Route('/figure', endpoint=figure),
+    Mount('/graphql', app=GraphQL(
+        schema,
+        debug=development
+    )),
+    Mount('/', app=SpaStaticFiles(
+        directory='./static',
+        html=True
+    ))
 ]
 
 middleware = [
@@ -146,11 +148,8 @@ app = Starlette(
     middleware=middleware
 )
 
-app.mount('/graphql', 
-    GraphQL(schema, debug=True),
-)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # This is necessary so pyinstaller includes the uvicorn.logging module
     uvicorn.run(
         'server:app',
         reload=development,

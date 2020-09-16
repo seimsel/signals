@@ -11,7 +11,7 @@ class DevServer(ExternalApplication):
     ):
         super().__init__(
             cmd=[ where('npm'), 'run', 'dev' ],
-            cwd=str(Path(__file__).parent.parent.with_name('signals-ui')),
+            cwd='../signals-ui',
             env={
                 'NODE_ENV': 'development',
                 'UI_HTTP_URL': ui_http_url,
