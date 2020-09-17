@@ -19,8 +19,17 @@ from matplotlib.figure import Figure
 
 import uvicorn
 
-# This is necessary so pyinstaller includes the uvicorn.logging module
+# This is necessary so pyinstaller includes these modules
 import uvicorn.logging
+import uvicorn.loops
+import uvicorn.loops.auto
+import uvicorn.protocols
+import uvicorn.protocols.http
+import uvicorn.protocols.http.auto
+import uvicorn.protocols.websockets
+import uvicorn.protocols.websockets.auto
+import uvicorn.lifespan
+import uvicorn.lifespan.on
 
 from uuid import uuid4
 from pathlib import Path
@@ -151,7 +160,7 @@ app = Starlette(
 if __name__ == '__main__':
     # This is necessary so pyinstaller includes the uvicorn.logging module
     uvicorn.run(
-        'server:app',
+        'server:app' if development else app,
         reload=development,
         port=int(os.environ.get('SERVER_PORT', 8000))
     )
