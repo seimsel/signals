@@ -9,6 +9,10 @@ export function Menubar({ window }) {
     const python = useContext(QtContext);
 
     useEffect(() => {
+        if (!python) {
+            return;
+        }
+
         python.fileNamesChanged.connect(fileNames => openFiles({
                 variables: {
                     urls: fileNames.map(fileName => `file://${encodeURIComponent(fileName)}`),
@@ -25,22 +29,18 @@ export function Menubar({ window }) {
             <Menu.SubMenu
                 title='File'
             >
-                <Menu.Item
-                    onClick={() => {
-                        console.error('hi');
-                        const files = python.getOpenFileNames();
-                        console.error(files);
-
-                        // files => openFiles({
-                        //     variables: {
-                        //         urls: files.map(file => `file://${encodeURIComponent(file)}`),
-                        //         windowId: window.id
-                        //     }
-                        // })
-                    }}
-                >
-                    Open file...
-                </Menu.Item>
+                {
+                    python ?
+                    <Menu.Item
+                        onClick={() => {
+                            python.getOpenFileNames();
+                        }}
+                    >
+                        Open file...
+                    </Menu.Item>
+                    :
+                    null
+                }
             </Menu.SubMenu>
         </Menu>
     );

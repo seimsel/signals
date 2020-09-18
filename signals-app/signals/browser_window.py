@@ -12,9 +12,9 @@ class Python(QObject):
         self.fileNamesChanged.emit(fileNames)
 
 class BrowserWindow(QWebEngineView):
-    def __init__(self):
+    def __init__(self, ui_http_url):
         super().__init__()
         channel = QWebChannel(self)
         channel.registerObject('python', Python(self))
         self.page().setWebChannel(channel)
-        self.load(QUrl('http://localhost:8080'))
+        self.load(QUrl(ui_http_url))

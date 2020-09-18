@@ -49,7 +49,7 @@ class BuildProcess(RobustInstallerProcess):
             f.description = 'Signal Processing Toolkit'
             f.binaryName = 'Signals'
             f.version = (0,0,1,0)
-            f.isGui = True
+            f.isGui = False
             f.sourceDir = './signals-app'
             f.entryPointPy = 'app.py'
         elif key == SERVER_CONFIG_KEY:

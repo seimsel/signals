@@ -1,6 +1,8 @@
 from .external_application import ExternalApplication
 from .utils.where import where
 from pathlib import Path
+import platform
+import os
 
 class Server(ExternalApplication):
     def __init__(
@@ -10,9 +12,13 @@ class Server(ExternalApplication):
         development
     ):
 
-        if development:
+        if development == 'true':
             cmd = [
                 where('python'), str(Path(__file__).parent.parent.with_name('signals-server')/'server.py')
+            ]
+        elif platform.system() == 'Windows':
+            cmd = [
+                'SignalsServer'
             ]
         else:
             cmd = [
@@ -27,6 +33,6 @@ class Server(ExternalApplication):
 
         super().__init__(
             cmd,
-            cwd='../signals-server',
+            cwd='../signals-server' if development == 'true' else None,
             env=env
         )
