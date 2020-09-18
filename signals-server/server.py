@@ -159,7 +159,7 @@ app = Starlette(
 
 if __name__ == '__main__':
     uvicorn.run(
-        'server:app',
+        'server:app' if development else app,
         reload=development,
         port=int(os.environ.get('SERVER_PORT', 8000))
     )
