@@ -13,13 +13,15 @@ export function Menubar({ window }) {
             return;
         }
 
-        python.fileNamesChanged.connect(fileNames => openFiles({
+        python.fileNamesChanged.connect(fileNames => {          
+            openFiles({
                 variables: {
                     urls: fileNames.map(fileName => `file://${encodeURIComponent(fileName)}`),
                     windowId: window.id
                 }
-            }));
-    }, []);
+            });
+        });
+    }, [python]);
 
     return (
         <Menu
