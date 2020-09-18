@@ -25,7 +25,7 @@ def main(args):
     with server:
         with devserver:
             application = Application()
-            view = View(config['ui_http_url'])
+            view = View(config['ui_http_url'], config['development'])
             application.start()
 
 if __name__ == '__main__':

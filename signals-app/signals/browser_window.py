@@ -3,6 +3,8 @@ from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QUrl
 
+import os
+
 class Python(QObject):
     fileNamesChanged = pyqtSignal(list)
 
@@ -12,7 +14,10 @@ class Python(QObject):
         self.fileNamesChanged.emit(fileNames)
 
 class BrowserWindow(QWebEngineView):
-    def __init__(self, ui_http_url):
+    def __init__(self, ui_http_url, development):
+        if development == 'true':
+            os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = '5000'
+
         super().__init__()
         channel = QWebChannel(self)
         channel.registerObject('python', Python(self))
