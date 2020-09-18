@@ -9,10 +9,11 @@ class Server(ExternalApplication):
         self,
         ui_http_url,
         server_port,
-        development
+        development,
+        bundle
     ):
 
-        if development == 'true':
+        if not bundle:
             cmd = [
                 where('python'), str(Path(__file__).parent.parent.with_name('signals-server')/'server.py')
             ]
@@ -28,11 +29,11 @@ class Server(ExternalApplication):
         env = {
             'UI_HTTP_URL': ui_http_url,
             'SERVER_PORT': server_port,
-            'DEVELOPMENT': development
+            'DEVELOPMENT': 'true' if not bundle and development else 'false'
         }
 
         super().__init__(
             cmd,
-            cwd='../signals-server' if development == 'true' else None,
+            cwd='../signals-server' if not bundle else None,
             env=env
         )

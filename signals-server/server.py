@@ -158,9 +158,8 @@ app = Starlette(
 )
 
 if __name__ == '__main__':
-    # This is necessary so pyinstaller includes the uvicorn.logging module
     uvicorn.run(
-        'server:app' if development else app,
+        'server:app',
         reload=development,
         port=int(os.environ.get('SERVER_PORT', 8000))
     )

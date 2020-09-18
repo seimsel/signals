@@ -15,7 +15,7 @@ class Python(QObject):
 
 class BrowserWindow(QWebEngineView):
     def __init__(self, ui_http_url, development):
-        if development == 'true':
+        if development:
             os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = '5000'
 
         super().__init__()
