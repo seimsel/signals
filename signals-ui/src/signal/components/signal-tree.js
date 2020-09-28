@@ -1,5 +1,8 @@
 import React from 'react';
 import { Tree } from 'antd';
+import { useQuery } from '@apollo/client';
+import { useQueryParams } from '../../common/hooks/use-query-params';
+import signalTreeQuery from '../queries/signal-tree.graphql';
 
 function create_tree(nodes) {
     return nodes.map(node => ({
@@ -22,12 +25,27 @@ function get_children(parent, nodes) {
     }));
 }
 
-export function SignalTree({ signals }) {
-    const tree = create_tree(signals);
+export function SignalTree() {
+    const params = useQueryParams();
+    const { data, loading } = useQuery(signalTreeQuery, {
+        variables: {
+            url: params.get('url')
+        }
+    });
+
+    if (loading) {
+        return 'Loading...';
+    }
+
+    if (!data) {
+        return null;
+    }
+
+    const signals = data.measurement.children;
 
     return (
         <Tree 
-            treeData={ tree }
+            treeData={ create_tree(signals) }
         />
     );
 }

@@ -1,13 +1,15 @@
 import React, { useRef } from 'react';
+import { useQueryParams } from '../../common/hooks/use-query-params';
 import { useSize } from '../../common/hooks/use-size';
 
-export function Figure({ measurementId }) {
+export function Figure() {
+    const params = useQueryParams();
     const imgRef = useRef();
     const { width, height } = useSize(imgRef, 100);
     const queryParams = Object.entries({
         width,
         height,
-        measurementId
+        url: encodeURIComponent(params.get('url'))
     }).map(([key, value]) => `${key}=${value}`).join('&');
 
     let src = '';

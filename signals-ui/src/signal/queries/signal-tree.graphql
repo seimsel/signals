@@ -1,0 +1,13 @@
+query SignalTree($url: String!) {
+    measurement(url: $url) {
+        id
+
+        children {
+            id
+            name
+            children {
+                id
+            }
+        }
+    }
+}

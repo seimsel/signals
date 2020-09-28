@@ -17,20 +17,6 @@ from starlette.middleware.cors import CORSMiddleware
 from matplotlib.pyplot import style
 from matplotlib.figure import Figure
 
-import uvicorn
-
-# This is necessary so pyinstaller includes these modules
-import uvicorn.logging
-import uvicorn.loops
-import uvicorn.loops.auto
-import uvicorn.protocols
-import uvicorn.protocols.http
-import uvicorn.protocols.http.auto
-import uvicorn.protocols.websockets
-import uvicorn.protocols.websockets.auto
-import uvicorn.lifespan
-import uvicorn.lifespan.on
-
 from uuid import uuid4
 from pathlib import Path
 from io import BytesIO
@@ -41,8 +27,6 @@ from signals.session import Session
 from signals.measurement import Measurement
 from signals.measurement_types.file_measurement import FileMeasurement
 from signals.signal import Signal
-from signals.spa_staticfiles import SpaStaticFiles
-
 development = os.environ.get('DEVELOPMENT', 'false') == 'true'
 
 DPI = 96
@@ -52,57 +36,19 @@ style.use('./styles/dark.mplstyle')
 query = QueryType()
 mutation = MutationType()
 
-sessions = {}
-
-@query.field('session')
-async def resolve_session(obj, info):
-    session = info.context['request'].session
-
-    session_id = session.get('id', '')
-    session_object = sessions.get(session_id, Session())
-
-    if not session_id:
-        session['id'] = session_object.id
-    
-    sessions[session_id] = session_object
-
-    return session_object
-
-@mutation.field('openFiles')
-async def resolve_open_files(obj, info, urls, windowId):
-    session = info.context['request'].session
-
-    window = sessions[session['id']].window_with_id(windowId)
-    
-    for url in urls:
-        window.add_measurement(FileMeasurement(url))
-
-    return {
-        'windows': [
-            window
-        ],
-        'errors': []
-    }
-
-@mutation.field('closeMeasurement')
-async def resolve_close_measurement(obj, info, measurementId, windowId):
-    session = info.context['request'].session
-
-    window = sessions[session['id']].window_with_id(windowId)
-    
-    window.remove_measurement(measurementId)
-
-    return {
-        'window': window,
-        'error': None
-    }
+@query.field('measurement')
+async def resolve_session(obj, info, url):
+    request = info.context['request']
+    session = request.app.session(request)
+    return session.measurement_with_url(url)
 
 def figure(request):
-    session = request.session
+    session = request.app.session(request)
+
     width = int(request.query_params['width'])
     height = int(request.query_params['height'])
-    measurementId = request.query_params['measurementId']
-    measurement = sessions[session['id']].measurement_with_id(measurementId)
+    url = request.query_params['url']
+    measurement = session.measurement_with_url(url)
 
     figure = Figure(
         figsize=(width/DPI, height/DPI),
@@ -130,10 +76,6 @@ routes = [
     Mount('/graphql', app=GraphQL(
         schema,
         debug=development
-    )),
-    Mount('/', app=SpaStaticFiles(
-        directory='./static',
-        html=True
     ))
 ]
 
@@ -151,15 +93,25 @@ middleware = [
     )
 ]
 
-app = Starlette(
+class Application(Starlette):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.state.sessions = {}
+
+    def session(self, request):
+        session = request.session
+        session_id = session.get('id', '')
+
+        if not session_id or not session_id in self.state.sessions:
+            session_object = Session()
+            session['id'] = session_object.id
+            self.state.sessions[session_object.id] = session_object
+            return session_object
+        
+        return self.state.sessions[session_id]
+
+app = Application(
     debug=True,
     routes=routes,
     middleware=middleware
 )
-
-if __name__ == '__main__':
-    uvicorn.run(
-        'server:app' if development else app,
-        reload=development,
-        port=int(os.environ.get('SERVER_PORT', 8000))
-    )

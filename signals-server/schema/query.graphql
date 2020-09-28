@@ -1,3 +1,3 @@
 type Query {
-    session: Session
+    measurement(url: String!): Measurement
 }

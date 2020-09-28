@@ -1,6 +1,7 @@
+import { useQuery } from '@apollo/client';
 import React from 'react';
 import { Figure } from '../../figure/components/figure';
 
-export function Content({ measurement }) {
-    return <Figure measurementId={ measurement.id } />
+export function Content() {
+    return <Figure />
 }
