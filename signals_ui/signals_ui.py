@@ -30,11 +30,42 @@ class SignalsUI(Observable):
                 continue
 
             with node(f'signal_{signal.id}', parent='Signal Editor', label=signal.name):
-                pass
+                inputs = signal.inputs
+                
+                if type(inputs) == list:
+                    inputs = range(0, len(inputs))
+                
+                for input in inputs:
+                    with node_attribute(
+                        f'{input}##{signal.id}'
+                    ):
+                        add_text(str(input))
 
         for item in items:
             if 'signal_' in item and f'{item[7:]}' not in signals.keys():
                 delete_item(item)
+
+    def inputs_changed(self, signal):
+        pass
+        # items = get_all_items()
+
+        # for input in signal.inputs:
+        #     if f'input_{signal.id}_{input}' in items:
+        #         continue
+
+        #     with node_attribute(
+        #         f'input_{signal.id}_{input}',
+        #         parent=f'signal_{signal.id}',
+        #         label=f'{signal.name}_{input}'
+        #     ):
+        #         pass
+
+        # for item in items:
+        #     if 'input_' in item and f'{item[43:]}' not in signal.inputs:
+        #         delete_item(item)
+
+    def outputs_changed(self, signal):
+        pass
 
     def connections_changed(self, connections):
         pass

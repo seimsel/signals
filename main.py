@@ -27,6 +27,7 @@ def main(argv, signals, ui):
     signals.add_connection(addition.id, 0, graph.id, 0)
 
     signals.subscribe('signals_changed', ui.signals_changed)
+    signals.subscribe('inputs_changed', ui.inputs_changed)
     signals.subscribe('connections_changed', ui.connections_changed)
     ui.subscribe('started', lambda: signals.emit('signals_changed', signals.signals))
     ui.subscribe('started', lambda: signals.emit('connections_changed', signals.connections))

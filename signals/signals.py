@@ -6,6 +6,7 @@ class Signals(Observable):
     def __init__(self):
         super().__init__([
             'signals_changed',
+            'inputs_changed',
             'connections_changed'
         ])
         self._signals = {}
@@ -17,13 +18,13 @@ class Signals(Observable):
         return self._signals
 
     def add_signal(self, signal):
+        signal.signals = self
         self._signals[signal.id] = signal
 
         if signal.category == 'Sinks':
             self._sink_ids.append(signal.id)
 
         self.emit('signals_changed', self.signals)
-        print(signal.id)
 
     def remove_signal(self, id):
         del self._signals[id]
@@ -65,7 +66,7 @@ class Signals(Observable):
 
         while True:
             for signal in self.signals.values():
-                signal.outputs = None
+                signal.outputs = []
 
             for signal in self.sinks:
                 print(await process(signal))    

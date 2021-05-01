@@ -1,18 +1,23 @@
 from uuid import uuid4
 
 class Signal:
+    min_inputs = 1
+    max_inputs = 64
+    min_outputs = 1
+    max_outputs = 64
+
     def __init__(self, name):
         self.id = str(uuid4())
         self.name = name
-        self.inputs = None
-        self._outputs = None
+        self.inputs = []
+        self._outputs = []
 
     async def process(self):
         raise NotImplementedError('A Signal needs to implement "process"')
 
     @property
     async def outputs(self):
-        while self._outputs is None:
+        while self._outputs == []:
             self._outputs = await self.process()
 
         return self._outputs
