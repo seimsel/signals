@@ -23,6 +23,7 @@ class Signals(Observable):
             self._sink_ids.append(signal.id)
 
         self.emit('signals_changed', self.signals)
+        print(signal.id)
 
     def remove_signal(self, id):
         del self._signals[id]

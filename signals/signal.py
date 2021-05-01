@@ -2,7 +2,7 @@ from uuid import uuid4
 
 class Signal:
     def __init__(self):
-        self.id = uuid4()
+        self.id = str(uuid4())
         self.inputs = None
         self._outputs = None
 
