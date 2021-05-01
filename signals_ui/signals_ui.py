@@ -6,7 +6,8 @@ from dearpygui.simple import *
 class SignalsUI(Observable):
     def __init__(self):
         super().__init__([
-            'started'
+            'started',
+            'stopped'
         ])
 
         set_start_callback(lambda: self.emit('started'))
@@ -29,3 +30,4 @@ class SignalsUI(Observable):
 
     async def start(self):
         start_dearpygui(primary_window='Signals')
+        self.emit('stopped')

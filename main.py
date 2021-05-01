@@ -30,6 +30,7 @@ def main(argv, signals, ui):
     signals.subscribe('connections_changed', ui.connections_changed)
     ui.subscribe('started', lambda: signals.emit('signals_changed', signals.signals))
     ui.subscribe('started', lambda: signals.emit('connections_changed', signals.connections))
+    ui.subscribe('stopped', signals.stop)
 
     event_loop = get_event_loop()
     event_loop.create_task(signals.start())
