@@ -13,9 +13,9 @@ from asyncio import get_event_loop
 import signals_ui
 
 def main(argv, signals, ui):
-    file = FileSourceSignal()
-    addition = AdditionSignal()
-    graph = GraphSinkSignal()
+    file = FileSourceSignal('File_0')
+    addition = AdditionSignal('Addition_0')
+    graph = GraphSinkSignal('Graph_0')
 
     signals.add_signal(file)
     signals.add_signal(addition)

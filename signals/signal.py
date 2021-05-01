@@ -1,8 +1,9 @@
 from uuid import uuid4
 
 class Signal:
-    def __init__(self):
+    def __init__(self, name):
         self.id = str(uuid4())
+        self.name = name
         self.inputs = None
         self._outputs = None
 

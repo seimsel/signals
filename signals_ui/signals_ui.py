@@ -29,7 +29,7 @@ class SignalsUI(Observable):
             if f'signal_{signal.id}' in items:
                 continue
 
-            with node(f'signal_{signal.id}', parent='Signal Editor'):
+            with node(f'signal_{signal.id}', parent='Signal Editor', label=signal.name):
                 pass
 
         for item in items:

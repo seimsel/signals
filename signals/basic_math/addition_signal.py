@@ -4,8 +4,8 @@ class AdditionSignal(Signal):
     category = 'Basic Math'
     type_name = 'Addition'
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.inputs = [None] * 2
 
     async def process(self):

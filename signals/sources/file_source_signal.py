@@ -6,8 +6,8 @@ import numpy as np
 class FileSourceSignal(SourceSignal):
     type_name = 'File'
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.file_changed = True
 
     async def process(self):
