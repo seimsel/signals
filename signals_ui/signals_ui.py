@@ -11,6 +11,8 @@ class SignalsUI(Observable):
             'node_removed'
         ])
 
+        self._node_x = 100
+
         set_start_callback(lambda: self.emit('started'))
         set_key_press_callback(self._key_pressed)
 
@@ -29,7 +31,7 @@ class SignalsUI(Observable):
             if f'signal_{signal.id}' in items:
                 continue
 
-            with node(f'signal_{signal.id}', parent='Signal Editor', label=signal.name):
+            with node(f'signal_{signal.id}', parent='Signal Editor', label=signal.name, x_pos=self._node_x):
                 inputs = signal.input_descriptor
                 
                 if type(inputs) == int:
@@ -47,6 +49,8 @@ class SignalsUI(Observable):
                 for output in outputs:
                     with node_attribute(f'output_{signal.id}_{output}', output=True):
                         add_text(str(output))
+
+            self._node_x += 200
 
         for item in items:
             if 'signal_' in item and f'{item[7:]}' not in signals.keys():
