@@ -9,6 +9,8 @@ class Signal:
     def __init__(self, name):
         self.id = str(uuid4())
         self.name = name
+        self.input_descriptor = self.min_inputs
+        self.output_descriptor = self.min_outputs
         self.inputs = []
         self._outputs = []
 

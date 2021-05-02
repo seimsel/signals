@@ -30,16 +30,23 @@ class SignalsUI(Observable):
                 continue
 
             with node(f'signal_{signal.id}', parent='Signal Editor', label=signal.name):
-                inputs = signal.inputs
+                inputs = signal.input_descriptor
                 
-                if type(inputs) == list:
-                    inputs = range(0, len(inputs))
+                if type(inputs) == int:
+                    inputs = [f'I_{n}' for n in range(0, inputs)]
                 
                 for input in inputs:
-                    with node_attribute(
-                        f'{input}##{signal.id}'
-                    ):
+                    with node_attribute(f'input_{signal.id}_{input}'):
                         add_text(str(input))
+
+                outputs = signal.output_descriptor
+                
+                if type(outputs) == int:
+                    outputs = [f'O_{n}' for n in range(0, outputs)]
+
+                for output in outputs:
+                    with node_attribute(f'output_{signal.id}_{output}', output=True):
+                        add_text(str(output))
 
         for item in items:
             if 'signal_' in item and f'{item[7:]}' not in signals.keys():
@@ -47,28 +54,17 @@ class SignalsUI(Observable):
 
     def inputs_changed(self, signal):
         pass
-        # items = get_all_items()
-
-        # for input in signal.inputs:
-        #     if f'input_{signal.id}_{input}' in items:
-        #         continue
-
-        #     with node_attribute(
-        #         f'input_{signal.id}_{input}',
-        #         parent=f'signal_{signal.id}',
-        #         label=f'{signal.name}_{input}'
-        #     ):
-        #         pass
-
-        # for item in items:
-        #     if 'input_' in item and f'{item[43:]}' not in signal.inputs:
-        #         delete_item(item)
 
     def outputs_changed(self, signal):
         pass
 
     def connections_changed(self, connections):
-        pass
+        for connection in connections.values():
+            add_node_link(
+                'Signal Editor',
+                f'output_{connection.source_id}_O_{connection.output}',
+                f'input_{connection.sink_id}_I_{connection.input}'
+            )
 
     async def start(self):
         start_dearpygui(primary_window='Signals')

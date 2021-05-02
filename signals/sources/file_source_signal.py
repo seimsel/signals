@@ -1,4 +1,3 @@
-from dearpygui.simple import window
 from ..source_signal import SourceSignal
 
 import numpy as np
@@ -15,4 +14,6 @@ class FileSourceSignal(SourceSignal):
             pass
 
         self.file_changed = False
-        return np.loadtxt('example.csv').T[1:]
+        results = np.loadtxt('example.csv').T[1:]
+        self.output_descriptor = len(results)
+        return results

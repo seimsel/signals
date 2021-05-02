@@ -36,16 +36,16 @@ class Signals(Observable):
 
     def add_connection(self, connection):
         self._connections[connection.id] = connection
-        self.emit('connections_changed', self.signals)
+        self.emit('connections_changed', self.connections)
 
     def add_connection(self, source_signal_id, output, sink_id, input):
         connection = Connection(source_signal_id, output, sink_id, input)
         self._connections[connection.id] = connection
-        self.emit('connections_changed', self.signals)
+        self.emit('connections_changed', self.connections)
 
     def remove_connection(self, id):
         del self._connections[id]
-        self.emit('connections_changed', self.signals)
+        self.emit('connections_changed', self.connections)
 
     @property
     def sinks(self):
