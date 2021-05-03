@@ -14,6 +14,9 @@ class Signal:
         self.inputs = []
         self._outputs = []
 
+    def setup(self, signals):
+        pass
+
     async def process(self):
         raise NotImplementedError('A Signal needs to implement "process"')
 
