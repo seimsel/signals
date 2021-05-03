@@ -61,14 +61,14 @@ class Signals(Observable):
             ))
             
             for input_connection in input_connections:
-                outputs = await process(self.signals[input_connection.source_id])
-                signal.inputs[input_connection.input] = outputs[input_connection.output]
+                output_data = await process(self.signals[input_connection.source_id])
+                signal.input_data[input_connection.input] = output_data[input_connection.output]
 
-            return await signal.outputs
+            return await signal.output_data
 
         while True:
             for signal in self.signals.values():
-                signal.outputs = []
+                signal.clear_data_ready()
 
             for signal in self.sinks:
                 await process(signal)

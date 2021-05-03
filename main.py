@@ -1,5 +1,6 @@
 from signals_ui import (
     SignalsUI,
+    NodeAttribute,
     add_node
 )
 
@@ -44,7 +45,32 @@ class SignalsApplication:
 
     def _signal_added(self, id):
         signal = self.signals.signals[id]
-        add_node(signal.id, signal.name)
+        attributes = []
+
+        inputs = signal.inputs
+
+        if type(inputs) == int:
+            inputs = range(0, inputs)
+
+        for input in inputs:
+            if type(input) == int:
+                input = f'I_{input}'
+
+            attributes.append(NodeAttribute(input, type='input'))
+
+        outputs = signal.outputs
+
+        if type(outputs) == int:
+            outputs = range(0, outputs)
+
+        for output in outputs:
+            if type(output) == int:
+                output = f'O_{output}'
+
+            attributes.append(NodeAttribute(output, type='output'))
+        
+
+        add_node(signal.id, signal.name, attributes)
 
     def _signal_removed(self, id):
         pass

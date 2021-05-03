@@ -1,2 +1,2 @@
 from .signals_ui import SignalsUI
-from .node_editor import add_node
+from .node_editor import add_node, NodeAttribute

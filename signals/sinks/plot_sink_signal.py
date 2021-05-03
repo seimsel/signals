@@ -5,7 +5,7 @@ class PlotSinkSignal(SinkSignal):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.inputs = [None] * 3
+        self.inputs = 3
 
     def setup(self, signals):
         self.plot_data_changed = signals.register_event('plot_data_changed')
