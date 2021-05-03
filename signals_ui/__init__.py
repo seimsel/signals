@@ -1,2 +1,2 @@
-from .signals_ui import SignalsUI
-from .node_editor import add_node, NodeAttribute
+from .signals_ui import *
+from .node_editor import *

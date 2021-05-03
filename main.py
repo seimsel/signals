@@ -1,7 +1,8 @@
 from signals_ui import (
     SignalsUI,
     NodeAttribute,
-    add_node
+    ui_add_node,
+    ui_add_node_link
 )
 
 from signals import (
@@ -70,13 +71,20 @@ class SignalsApplication:
             attributes.append(NodeAttribute(output, type='output'))
         
 
-        add_node(signal.id, signal.name, attributes)
+        ui_add_node(signal.id, signal.name, attributes)
 
     def _signal_removed(self, id):
         pass
 
     def _connection_added(self, id):
-        pass
+        connection = self.signals.connections[id]
+
+        ui_add_node_link(
+            connection.source_id,
+            f'O_{connection.output}',
+            connection.sink_id,
+            f'I_{connection.input}'
+        )
 
     def _connection_removed(self, id):
         pass

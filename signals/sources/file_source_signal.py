@@ -7,6 +7,7 @@ class FileSourceSignal(SourceSignal):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.outputs = 2
         self.file_changed = True
 
     async def process(self):

@@ -1,4 +1,4 @@
-from .node_editor import add_node_editor
+from .node_editor import ui_add_node_editor
 from common import Observable
 
 from dearpygui.core import (
@@ -27,7 +27,7 @@ class SignalsUI(Observable):
                 with tab('Plot'):
                     pass
                 with tab('Signal Editor'):
-                    add_node_editor()
+                    ui_add_node_editor()
 
     def _key_pressed(self, sender, data):
         pass
