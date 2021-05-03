@@ -24,6 +24,7 @@ class SignalsApplication:
         self.signals.subscribe('signal_removed', self._signal_removed)
         self.signals.subscribe('connection_added', self._connection_added)
         self.signals.subscribe('connection_removed', self._connection_removed)
+        self.signals.subscribe('plot_data_changed', self._plot_data_changed)
 
         self.ui.subscribe('started', self._ui_started)
         self.ui.subscribe('stopped', self.signals.stop)
@@ -88,6 +89,9 @@ class SignalsApplication:
 
     def _connection_removed(self, id):
         pass
+
+    def _plot_data_changed(self, data):
+        print(data)
 
     def start(self):
         event_loop = get_event_loop()

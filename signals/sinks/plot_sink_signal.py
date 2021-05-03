@@ -7,8 +7,6 @@ class PlotSinkSignal(SinkSignal):
         super().__init__(*args, **kwargs)
         self.inputs = 3
 
-    def setup(self, signals):
-        self.plot_data_changed = signals.register_event('plot_data_changed')
-
     async def process(self):
-        self.plot_data_changed(self.inputs)
+        self.data_ready = True
+        return self.input_data

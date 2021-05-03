@@ -1,3 +1,4 @@
+from signals.sinks.plot_sink_signal import PlotSinkSignal
 from .connection import Connection
 from common import Observable
 from asyncio import get_running_loop, sleep
@@ -13,6 +14,7 @@ class Signals(Observable):
         self._signal_removed = self.register_event('signal_removed')
         self._connection_added = self.register_event('connection_added')
         self._connection_removed = self.register_event('connection_removed')
+        self._plot_data_changed = self.register_event('plot_data_changed')
 
     @property
     def signals(self):
@@ -26,7 +28,6 @@ class Signals(Observable):
             self._sink_ids.append(signal.id)
 
         self._signal_added(signal.id)
-        signal.setup(self)
 
     def remove_signal(self, id):
         del self._signals[id]
@@ -68,11 +69,13 @@ class Signals(Observable):
 
         while True:
             for signal in self.signals.values():
-                signal.clear_data_ready()
+                signal.data_ready = False
 
             for signal in self.sinks:
-                await process(signal)
+                data = await process(signal)
 
+                if type(signal) == PlotSinkSignal:
+                    self._plot_data_changed(data)
             await sleep(0.01)
 
     def stop(self):

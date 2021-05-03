@@ -1,4 +1,8 @@
-from dearpygui.core import add_node_link, add_text
+from dearpygui.core import (
+    add_node_link,
+    add_text
+)
+
 from dearpygui.simple import (
     node_attribute,
     node_editor,
@@ -23,11 +27,6 @@ def ui_add_node(id, name, attributes):
                 add_text(f'{attribute.name}')
 
 def ui_add_node_link(source_id, source_attribute_name, sink_id, sink_attribute_name):
-    print(source_id)
-    print(source_attribute_name)
-    print(sink_id)
-    print(sink_attribute_name)
-
     add_node_link(
         'node_editor',
         f'{source_attribute_name}##{source_id}',

@@ -11,4 +11,5 @@ class AdditionSignal(Signal):
         for channel in self.input_data[1:]:
             output_data += channel
 
+        self.data_ready = True
         return [output_data]

@@ -1,3 +1,4 @@
+from .plot import ui_add_plot
 from .node_editor import ui_add_node_editor
 from common import Observable
 
@@ -25,7 +26,7 @@ class SignalsUI(Observable):
         with window('Signals'):
             with tab_bar('Tab_Bar'):
                 with tab('Plot'):
-                    pass
+                    ui_add_plot()
                 with tab('Signal Editor'):
                     ui_add_node_editor()
 

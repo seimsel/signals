@@ -1,7 +1,12 @@
-from dearpygui.core import *
-from dearpygui.simple import *
+from dearpygui.core import (
+    add_line_series,
+    add_plot
+)
 
 import numpy as np
+
+def ui_add_plot():
+    add_plot('plot')
 
 def update_plot(signal, data):
     outputs = range(0, len(data))

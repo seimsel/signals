@@ -17,4 +17,5 @@ class FileSourceSignal(SourceSignal):
         self.file_changed = False
         results = np.loadtxt('example.csv').T[1:]
         self.output_descriptor = len(results)
+        self.data_ready = True
         return results

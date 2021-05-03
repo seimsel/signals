@@ -13,20 +13,14 @@ class Signal:
         self.outputs = self.min_outputs
         self.input_data = None
         self._output_data = None
-        self._data_ready = False
-
-    def setup(self, signals):
-        pass
-
-    def clear_data_ready(self):
-        self._data_ready = False
+        self.data_ready = False
 
     async def process(self):
-        self._data_ready = True
+        raise NotImplementedError('A Signal must implement "process"')
 
     @property
     async def output_data(self):
-        while self._data_ready == False:
+        while self.data_ready == False:
             self._output_data = await self.process()
 
         return self._output_data
