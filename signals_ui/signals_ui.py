@@ -1,3 +1,5 @@
+from .signal_editor import *
+from .graph import *
 from common import Observable
 
 from dearpygui.core import *
@@ -17,44 +19,21 @@ class SignalsUI(Observable):
         set_key_press_callback(self._key_pressed)
 
         with window('Signals'):
-            with node_editor('Signal Editor'):
-                pass
+            with tab_bar('Tab_Bar'):
+                with tab('Graph'):
+                    add_plot('Plot')
+                with tab('Signal Editor'):
+                    with node_editor('Node_Editor'):
+                        pass
 
     def _key_pressed(self, sender, data):
         if data == 259:
-            for node_id in get_selected_nodes('Signal Editor'):
-                self.emit('node_removed', node_id[7:])
+            remove_selected_nodes(
+                lambda node_id: self.emit('node_removed', node_id)
+            )
 
     def signals_changed(self, signals):
-        items = get_all_items()
-        for signal in signals.values():
-            if f'signal_{signal.id}' in items:
-                continue
-
-            with node(f'signal_{signal.id}', parent='Signal Editor', label=signal.name, x_pos=self._node_x):
-                inputs = signal.input_descriptor
-                
-                if type(inputs) == int:
-                    inputs = [f'I_{n}' for n in range(0, inputs)]
-                
-                for input in inputs:
-                    with node_attribute(f'input_{signal.id}_{input}'):
-                        add_text(str(input))
-
-                outputs = signal.output_descriptor
-                
-                if type(outputs) == int:
-                    outputs = [f'O_{n}' for n in range(0, outputs)]
-
-                for output in outputs:
-                    with node_attribute(f'output_{signal.id}_{output}', output=True):
-                        add_text(str(output))
-
-            self._node_x += 200
-
-        for item in items:
-            if 'signal_' in item and f'{item[7:]}' not in signals.keys():
-                delete_item(item)
+        update_nodes(signals)
 
     def inputs_changed(self, signal):
         pass
@@ -62,14 +41,13 @@ class SignalsUI(Observable):
     def outputs_changed(self, signal):
         pass
 
+    def data_changed(self, signal, data):
+        update_plot(signal, data)
+
     def connections_changed(self, connections):
-        for connection in connections.values():
-            add_node_link(
-                'Signal Editor',
-                f'output_{connection.source_id}_O_{connection.output}',
-                f'input_{connection.sink_id}_I_{connection.input}'
-            )
+        update_links(connections)
 
     async def start(self):
+        show_debug()
         start_dearpygui(primary_window='Signals')
         self.emit('stopped')

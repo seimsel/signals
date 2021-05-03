@@ -5,7 +5,7 @@ class GraphSinkSignal(SinkSignal):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.inputs = [None]
+        self.inputs = [None] * 3
 
     async def process(self):
         outputs = self.inputs

@@ -7,7 +7,8 @@ class Signals(Observable):
         super().__init__([
             'signals_changed',
             'inputs_changed',
-            'connections_changed'
+            'connections_changed',
+            'data_changed'
         ])
         self._signals = {}
         self._connections = {}
@@ -69,7 +70,8 @@ class Signals(Observable):
                 signal.outputs = []
 
             for signal in self.sinks:
-                print(await process(signal))    
+                data = await process(signal)
+                self.emit('data_changed', signal, data)
 
             await sleep(0.01)
 
