@@ -9,14 +9,23 @@ class Signal:
     def __init__(self, name):
         self.id = str(uuid4())
         self.name = name
-        self.inputs = self.min_inputs
+        self._inputs = self.min_inputs
         self.outputs = self.min_outputs
-        self.input_data = None
+        self.input_data = [None] * self.inputs
         self._output_data = None
         self.data_ready = False
 
     async def process(self):
         raise NotImplementedError('A Signal must implement "process"')
+
+    @property
+    def inputs(self):
+        return self._inputs
+
+    @inputs.setter
+    def inputs(self, inputs):
+        self._inputs = inputs
+        self.input_data = [None] * inputs
 
     @property
     async def output_data(self):

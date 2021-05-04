@@ -1,11 +1,19 @@
 from signals.sinks.plot_sink_signal import PlotSinkSignal
 from .connection import Connection
 from common import Observable
-from asyncio import get_running_loop, sleep
+
+import asyncio
+import os
+import queue
+from multiprocessing import Process
 
 class Signals(Observable):
-    def __init__(self):
+    def __init__(self, queue):
         super().__init__()
+        self.queue = queue
+        self._cwd = os.getcwd()
+        self._process = None
+        self._memory = None
         self._signals = {}
         self._connections = {}
         self._sink_ids = []
@@ -14,7 +22,6 @@ class Signals(Observable):
         self._signal_removed = self.register_event('signal_removed')
         self._connection_added = self.register_event('connection_added')
         self._connection_removed = self.register_event('connection_removed')
-        self._plot_data_changed = self.register_event('plot_data_changed')
 
     @property
     def signals(self):
@@ -28,10 +35,12 @@ class Signals(Observable):
             self._sink_ids.append(signal.id)
 
         self._signal_added(signal.id)
+        self.restart()
 
     def remove_signal(self, id):
         del self._signals[id]
         self._signal_removed(id)
+        self.restart()
 
     @property
     def connections(self):
@@ -40,21 +49,39 @@ class Signals(Observable):
     def add_connection(self, connection):
         self._connections[connection.id] = connection
         self._connection_added(connection.id)
+        self.restart()
 
     def add_connection(self, source_signal_id, output, sink_id, input):
         connection = Connection(source_signal_id, output, sink_id, input)
         self._connections[connection.id] = connection
         self._connection_added(connection.id)
+        self.restart()
 
     def remove_connection(self, id):
         del self._connections[id]
         self._connection_removed(id)
+        self.restart()
 
     @property
     def sinks(self):
         return [self.signals[id] for id in self._sink_ids]
 
-    async def start(self):
+    def _run(self):
+        os.chdir(self._cwd)
+        async def process_all():
+            while True:
+                for signal in self.signals.values():
+                    signal.data_ready = False
+
+                for signal in self.sinks:
+                    data = await process(signal)
+
+                    if type(signal) == PlotSinkSignal:
+                        try:
+                            self.queue.put(data)
+                        except queue.Full:
+                            pass
+
         async def process(signal):
             input_connections = list(filter(
                 lambda connection: connection.sink_id == signal.id,
@@ -65,18 +92,22 @@ class Signals(Observable):
                 output_data = await process(self.signals[input_connection.source_id])
                 signal.input_data[input_connection.input] = output_data[input_connection.output]
 
-            return await signal.output_data
 
-        while True:
-            for signal in self.signals.values():
-                signal.data_ready = False
+            output_data = await signal.output_data
+            return output_data
 
-            for signal in self.sinks:
-                data = await process(signal)
+        asyncio.run(process_all())
 
-                if type(signal) == PlotSinkSignal:
-                    self._plot_data_changed(data)
-            await sleep(0.01)
+    def start(self):
+        self._process = Process(target=self._run)
+        self._process.start()
+
+    def restart(self):
+        self.stop()
+        self.start()
 
     def stop(self):
-        get_running_loop().stop()
+        if self._process:
+            self._process.terminate()
+            self._process.join()
+            self._process.close()

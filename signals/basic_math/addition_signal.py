@@ -1,4 +1,5 @@
 from ..signal import Signal
+import numpy as np
 
 class AdditionSignal(Signal):
     category = 'Basic Math'
@@ -6,7 +7,7 @@ class AdditionSignal(Signal):
     min_inputs = 2
 
     async def process(self):
-        output_data = self.input_data[0]
+        output_data = np.array(self.input_data[0])
 
         for channel in self.input_data[1:]:
             output_data += channel
