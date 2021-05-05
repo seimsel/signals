@@ -4,13 +4,13 @@ from common import Observable
 
 import asyncio
 import os
-import queue
-from multiprocessing import Process
+from queue import Full, Empty
+from multiprocessing import Process, Queue
 
 class Signals(Observable):
-    def __init__(self, queue):
+    def __init__(self):
         super().__init__()
-        self.queue = queue
+        self._queue = None
         self._cwd = os.getcwd()
         self._process = None
         self._memory = None
@@ -22,6 +22,7 @@ class Signals(Observable):
         self._signal_removed = self.register_event('signal_removed')
         self._connection_added = self.register_event('connection_added')
         self._connection_removed = self.register_event('connection_removed')
+        self._data_changed = self.register_event('data_changed')
 
     @property
     def signals(self):
@@ -66,7 +67,7 @@ class Signals(Observable):
     def sinks(self):
         return [self.signals[id] for id in self._sink_ids]
 
-    def _run(self):
+    def _run(self, queue):
         os.chdir(self._cwd)
         async def process_all():
             while True:
@@ -78,8 +79,11 @@ class Signals(Observable):
 
                     if type(signal) == PlotSinkSignal:
                         try:
-                            self.queue.put(data)
-                        except queue.Full:
+                            queue.put([
+                                signal.id,
+                                data
+                            ])
+                        except Full:
                             pass
 
         async def process(signal):
@@ -99,8 +103,16 @@ class Signals(Observable):
         asyncio.run(process_all())
 
     def start(self):
-        self._process = Process(target=self._run)
+        self._queue = Queue()
+        self._process = Process(target=self._run, args=(self._queue,))
         self._process.start()
+
+    def handle_process_events(self):
+        try:
+            signal_id, data = self._queue.get_nowait()
+            self._data_changed(signal_id, data)
+        except Empty:
+            pass
 
     def restart(self):
         self.stop()

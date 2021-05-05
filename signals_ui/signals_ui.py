@@ -1,10 +1,8 @@
-from .plot import ui_add_plot, ui_update_plot
+from .plot import ui_add_plot
 from .node_editor import ui_add_node_editor
 from common import Observable
-import queue
 
 from dearpygui.core import (
-    delete_item,
     set_render_callback,
     start_dearpygui,
     set_start_callback,
@@ -17,15 +15,15 @@ from dearpygui.simple import (
 )
 
 class SignalsUI(Observable):
-    def __init__(self, queue):
+    def __init__(self):
         super().__init__()
-        self.queue = queue
 
         self._started = self.register_event('started')
         self._stopped = self.register_event('stopped')
+        self._rendered = self.register_event('rendered')
 
         set_start_callback(lambda: self._started())
-        set_render_callback(self._render)
+        set_render_callback(lambda: self._rendered())
         set_key_press_callback(self._key_pressed)
 
         with window('Signals'):
@@ -37,13 +35,6 @@ class SignalsUI(Observable):
 
     def _key_pressed(self, sender, data):
         pass
-
-    def _render(self):
-        try:
-            data = self.queue.get_nowait()
-            ui_update_plot(data)
-        except queue.Empty:
-            pass
 
     def start(self):
         start_dearpygui(primary_window='Signals')

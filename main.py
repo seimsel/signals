@@ -3,32 +3,28 @@ from multiprocessing import Queue
 from signals_ui import (
     SignalsUI,
     NodeAttribute,
-    ui_update_plot,
     ui_add_node,
-    ui_add_node_link
+    ui_add_node_link,
+    ui_update_plot
 )
 
-from signals import (
-    Signals,
-    FileSourceSignal,
-    AdditionSignal,
-    PlotSinkSignal
-)
+from signals import Signals, FileSourceSignal, AdditionSignal, PlotSinkSignal
 
 import sys
 
 class SignalsApplication:
     def __init__(self, argv):
-        self.queue = Queue()
-        self.signals = Signals(self.queue)
-        self.ui = SignalsUI(self.queue)
+        self.signals = Signals()
+        self.ui = SignalsUI()
 
         self.signals.subscribe('signal_added', self._signal_added)
         self.signals.subscribe('signal_removed', self._signal_removed)
         self.signals.subscribe('connection_added', self._connection_added)
         self.signals.subscribe('connection_removed', self._connection_removed)
+        self.signals.subscribe('data_changed', self._data_changed)
 
         self.ui.subscribe('started', self._ui_started)
+        self.ui.subscribe('rendered', self._rendered)
         self.ui.subscribe('stopped', self.signals.stop)
 
     def _ui_started(self):
@@ -94,7 +90,14 @@ class SignalsApplication:
     def _connection_removed(self, id):
         pass
 
+    def _data_changed(self, signal_id, data):
+        ui_update_plot(data)
+
+    def _rendered(self):
+        self.signals.handle_process_events()
+
     def start(self):
+        self.signals.start()
         self.ui.start()
 
 if __name__ == '__main__':

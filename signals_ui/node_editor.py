@@ -6,7 +6,8 @@ from dearpygui.core import (
 from dearpygui.simple import (
     node_attribute,
     node_editor,
-    node
+    node,
+    popup
 )
 
 class NodeAttribute:
@@ -16,6 +17,9 @@ class NodeAttribute:
 
 def ui_add_node_editor():
     with node_editor('node_editor'):
+        pass
+
+    with popup('node_editor', 'popup', mousebutton=1):
         pass
 
 def ui_add_node(id, name, attributes):
