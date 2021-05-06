@@ -10,7 +10,7 @@ class FileSourceSignal(SourceSignal):
         self.outputs = 2
         self.file_changed = True
 
-    async def process(self):
+    async def process(self, _):
         while not self.file_changed:
             pass
 

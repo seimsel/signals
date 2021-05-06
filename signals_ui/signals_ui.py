@@ -20,6 +20,7 @@ class SignalsUI(Observable):
 
         self._started = self.register_event('started')
         self._stopped = self.register_event('stopped')
+        self._link_added = self.register_event('link_added')
         self._rendered = self.register_event('rendered')
 
         set_start_callback(lambda: self._started())
@@ -31,7 +32,7 @@ class SignalsUI(Observable):
                 with tab('Plot'):
                     ui_add_plot()
                 with tab('Signal Editor'):
-                    ui_add_node_editor()
+                    ui_add_node_editor(self._link_added)
 
     def _key_pressed(self, sender, data):
         pass

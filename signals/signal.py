@@ -11,9 +11,13 @@ class Signal:
         self.name = name
         self._inputs = self.min_inputs
         self.outputs = self.min_outputs
-        self.input_data = [None] * self.inputs
+        self.input_data = None
         self._output_data = None
         self.data_ready = False
+
+    @classmethod
+    def setup(cls, signals):
+        pass
 
     async def process(self):
         raise NotImplementedError('A Signal must implement "process"')
@@ -25,7 +29,6 @@ class Signal:
     @inputs.setter
     def inputs(self, inputs):
         self._inputs = inputs
-        self.input_data = [None] * inputs
 
     @property
     async def output_data(self):
