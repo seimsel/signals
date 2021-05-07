@@ -1,21 +1,15 @@
 from ..source_signal import SourceSignal
-
 import numpy as np
+from pathlib import Path
 
 class FileSourceSignal(SourceSignal):
     type_name = 'File'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.outputs = 2
-        self.file_changed = True
+    def __init__(self, name, path=None):
+        if path:
+            path = Path(path)
 
-    async def process(self, _):
-        while not self.file_changed:
-            pass
+        super().__init__(name, path=path)
 
-        self.file_changed = False
-        results = np.loadtxt('example.csv').T[1:]
-        self.output_descriptor = len(results)
-        self.data_ready = True
-        return results
+    def process(self):
+        return np.loadtxt(self.path).T

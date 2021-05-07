@@ -1,42 +1,48 @@
+from common.observable import Observable
 from uuid import uuid4
 
-class Signal:
-    min_inputs = 1
-    max_inputs = 64
-    min_outputs = 1
-    max_outputs = 64
+class Signal(Observable):
+    type_id = str(uuid4())
 
-    def __init__(self, name):
-        self.id = str(uuid4())
-        self.name = name
-        self._inputs = self.min_inputs
-        self.outputs = self.min_outputs
-        self.input_data = None
-        self._output_data = None
-        self.data_ready = False
+    def __init__(self, name, **params):
+        super().__init__()
+        self._id = str(uuid4())
+        self._params = params
+        self._params['name'] = name
 
-    @classmethod
-    def setup(cls, signals):
-        pass
+        self._parameter_changed = self.register_event('parameter_changed')
+        self.request_process = self.register_event('request_process')
 
-    async def process(self):
-        raise NotImplementedError('A Signal must implement "process"')
+        self._ready = False
+
+        self.subscribe('parameter_changed', self._on_parameter_changed)
 
     @property
-    def inputs(self):
-        return self._inputs
+    def id(self):
+        return self._id
 
-    @inputs.setter
-    def inputs(self, inputs):
-        self._inputs = inputs
+    def __getattr__(self, name):
+        try:
+            return self._params[name]
+        except KeyError:
+            raise AttributeError
 
-    @property
-    async def output_data(self):
-        while self.data_ready == False:
-            self._output_data = await self.process()
+    def __setattr__(self, name, value):
+        try:
+            super().__setattr__(name, value)
+        except KeyError:
+            self._params[name] = value
+            self._parameter_changed(name, value)
 
-        return self._output_data
+    def _on_parameter_changed(self, name, value):
+        if name == 'name':
+            return
 
-    @output_data.setter
-    def output_data(self, output_data):
-        self._output_data = output_data
+        self.request_process()
+
+    def setup(self):
+        for name, value in self._params.items():
+            if not value:
+                continue
+
+            self._parameter_changed(name, value)

@@ -6,11 +6,10 @@ class AdditionSignal(Signal):
     type_name = 'Addition'
     min_inputs = 2
 
-    async def process(self):
-        output_data = np.array(self.input_data[0])
+    def process(self, input_data):
+        output_data = input_data[0]
 
         for channel in self.input_data[1:]:
-            output_data += channel
+            output_data[1:] += channel[1:]
 
-        self.data_ready = True
-        return [output_data]
+        return np.array([output_data])
