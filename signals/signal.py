@@ -6,14 +6,15 @@ class Signal(Observable):
 
     def __init__(self, name, **params):
         super().__init__()
+
+        self.inputs = self.min_inputs
+
         self._id = str(uuid4())
         self._params = params
         self._params['name'] = name
 
         self._parameter_changed = self.register_event('parameter_changed')
         self.request_process = self.register_event('request_process')
-
-        self._ready = False
 
         self.subscribe('parameter_changed', self._on_parameter_changed)
 
@@ -39,10 +40,3 @@ class Signal(Observable):
             return
 
         self.request_process()
-
-    def setup(self):
-        for name, value in self._params.items():
-            if not value:
-                continue
-
-            self._parameter_changed(name, value)

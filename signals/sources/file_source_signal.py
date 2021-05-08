@@ -12,4 +12,12 @@ class FileSourceSignal(SourceSignal):
         super().__init__(name, path=path)
 
     def process(self):
-        return np.loadtxt(self.path).T
+        input_data = np.loadtxt(str(self.path)).T
+        output_data = {
+            't': input_data[0]
+        }
+        
+        for i, channel in enumerate(input_data[1:]):
+            output_data[f'Ch_{i+1}'] = channel
+
+        return output_data

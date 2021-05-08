@@ -7,9 +7,10 @@ class AdditionSignal(Signal):
     min_inputs = 2
 
     def process(self, input_data):
-        output_data = input_data[0]
+        output_data = {
+            't': input_data.pop('t')
+        }
 
-        for channel in self.input_data[1:]:
-            output_data[1:] += channel[1:]
+        output_data['Out'] = np.sum(list(input_data.values()), axis=0)
 
-        return np.array([output_data])
+        return output_data

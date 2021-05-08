@@ -8,8 +8,8 @@ import numpy as np
 def ui_add_plot():
     add_plot('plot')
 
-def ui_update_plot(id, data):
-    x = np.arange(0, len(data[0])).astype(float)
+def ui_update_plot(id, input_data):
+    t = input_data.pop('t')
 
-    for i, channel in enumerate(data[1:]):
-        add_line_series('plot', f'Channel {i}##{id}', x, channel.astype(float))
+    for channel_name, channel_data in input_data.items():
+        add_line_series('plot', f'{channel_name}##{id}', t, channel_data.astype(float))

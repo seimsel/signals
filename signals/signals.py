@@ -46,15 +46,16 @@ class Signals(Observable):
         self._signals[signal.id] = signal
         self._signal_added(signal.id)
         signal.subscribe('request_process', self._request_process)
-        signal.setup()
+        self._request_process()
 
     def remove_signal(self, id):
         del self._signals[id]
         self._signal_removed(id)
+        self._request_process()
 
     @property
     def leaves(self):
-        sources = (connection.source_id for connection in self.connections)
+        sources = (connection.source_id for connection in self.connections.values())
         return filter(
             lambda signal: signal.id not in sources,
             self.values()
@@ -67,22 +68,22 @@ class Signals(Observable):
     def add_connection(self, connection):
         self._connections[connection.id] = connection
         self._connection_added(connection.id)
-        self.restart()
+        self._request_process()
 
     def add_connection(self, source_id, output, sink_id, input):
         connection = Connection(source_id, output, sink_id, input)
         self._connections[connection.id] = connection
         self._connection_added(connection.id)
-        self.restart()
+        self._request_process()
 
     def remove_connection(self, id):
         del self._connections[id]
         self._connection_removed(id)
-        self.restart()
+        self._request_process()
 
     def source_connections(self, signal_id):
         return filter(
-            lambda connection: connection.source_id == signal_id,
+            lambda connection: connection.sink_id == signal_id,
             self._connections.values()
         )
 
@@ -95,13 +96,21 @@ class Signals(Observable):
         return output_data
 
     def _process(self, signal, output_data):
+        input_data = {}
+        for connection in self.source_connections(signal.id):
+            self._process(
+                self[connection.source_id],
+                output_data
+            )
+
+            input_data['t'] = output_data[connection.source_id]['t']
+            input_data[connection.input] = output_data[connection.source_id][connection.output]
+
         if issubclass(type(signal), SourceSignal):
             output_data[signal.id] = signal.process()
             return
 
-        for connection in self.source_connections(signal.id):
-            output_data[connection.source_id] = self._process(
-                self[connection.source_id]
-            )
+        if input_data == {}:
+            return
 
-            output_data[signal.id] = signal.process(output_data[connection.source_id])
+        output_data[signal.id] = signal.process(input_data.copy())

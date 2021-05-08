@@ -1,5 +1,5 @@
 from signals_ui.plot import ui_update_plot
-from signals import Signals, FileSourceSignal
+from signals import Signals, FileSourceSignal, AdditionSignal
 from signals_ui import SignalsUI
 
 import sys
@@ -19,10 +19,19 @@ class SignalsController:
         self._signals.subscribe('request_process', self._process)
 
         self._signals.register_signal_type(FileSourceSignal)
-        self._signals.add_signal(FileSourceSignal('File_0', path='example.csv'))
+        self._signals.register_signal_type(AdditionSignal)
+
+        file = FileSourceSignal('File_0', path='example.csv')
+        addition = AdditionSignal('Addition_0', path='example.csv')
+
+        self._signals.add_signal(file)
+        self._signals.add_signal(addition)
+        self._signals.add_connection(file.id, 'Ch_1', addition.id, 1)
+        self._signals.add_connection(file.id, 'Ch_2', addition.id, 2)
 
     def _process(self):
-        self._queue.put(['data_changed', self._signals.process_all()])
+        output_data = self._signals.process_all()
+        self._queue.put(['data_changed', output_data])
 
     def _signal_type_registered(self, signal_type_id):
         signal_type = self._signals.signal_types[signal_type_id]
