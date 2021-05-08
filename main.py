@@ -30,7 +30,11 @@ class SignalsController:
         self._signals.add_connection(file.id, 'Ch_2', addition.id, 2)
 
     def _process(self):
-        output_data = self._signals.process_all()
+        output_data = {
+            self._signals[signal_id].name:output_data
+            for (signal_id, output_data)
+            in self._signals.process_all().items()
+        }
         self._queue.put(['data_changed', output_data])
 
     def _signal_type_registered(self, signal_type_id):
@@ -56,8 +60,11 @@ class UIController:
 
     def _handle_event(self, event, payload):
         if event == 'data_changed':
-            for id, data in payload.items():
-                ui_update_plot(id, data)
+            for signal_name, output_data in payload.items():
+                t = output_data.pop('t')
+
+                for channel_name, channel_data in output_data.items():
+                    ui_update_plot(f'{signal_name}_{channel_name}', t, channel_data)
 
     def _rendered(self):
         try:
